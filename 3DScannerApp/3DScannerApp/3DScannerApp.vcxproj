@@ -73,24 +73,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\3DScanner\3DScanner\calibrationController.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\calibrationModel.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\extrinsic.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\extrinsicController.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\image.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\intrinsic.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\intrinsicController.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\line.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\main.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\objectPoint.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\plane.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\polygonalMesh.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\scanController.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\scanModel.cpp" />
-    <ClCompile Include="..\..\3DScanner\3DScanner\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="calibrationController.cpp" />
+    <ClCompile Include="calibrationModel.cpp" />
+    <ClCompile Include="extrinsic.cpp" />
+    <ClCompile Include="extrinsicController.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_homeview.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -104,7 +90,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="homeview.cpp" />
+    <ClCompile Include="image.cpp" />
+    <ClCompile Include="intrinsic.cpp" />
+    <ClCompile Include="intrinsicController.cpp" />
+    <ClCompile Include="line.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="objectPoint.cpp" />
+    <ClCompile Include="plane.cpp" />
+    <ClCompile Include="polygonalMesh.cpp" />
+    <ClCompile Include="scanController.cpp" />
+    <ClCompile Include="scanModel.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="homeview.h">
@@ -132,22 +131,22 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\3DScanner\3DScanner\calibrationController.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\calibrationModel.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\extrinsic.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\extrinsicController.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\image.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\intrinsic.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\intrinsicController.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\line.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\objectPoint.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\plane.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\polygonalMesh.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\scanController.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\scanModel.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\stdafx.h" />
-    <ClInclude Include="..\..\3DScanner\3DScanner\targetver.h" />
+    <ClInclude Include="calibrationController.h" />
+    <ClInclude Include="calibrationModel.h" />
+    <ClInclude Include="extrinsic.h" />
+    <ClInclude Include="extrinsicController.h" />
     <ClInclude Include="GeneratedFiles\ui_homeview.h" />
+    <ClInclude Include="image.h" />
+    <ClInclude Include="intrinsic.h" />
+    <ClInclude Include="intrinsicController.h" />
+    <ClInclude Include="line.h" />
+    <ClInclude Include="objectPoint.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="polygonalMesh.h" />
+    <ClInclude Include="scanController.h" />
+    <ClInclude Include="scanModel.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="homeview.qrc">

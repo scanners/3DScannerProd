@@ -50,49 +50,46 @@
     <ClCompile Include="GeneratedFiles\qrc_homeview.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\calibrationController.cpp">
+    <ClCompile Include="calibrationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\calibrationModel.cpp">
+    <ClCompile Include="calibrationModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\extrinsic.cpp">
+    <ClCompile Include="extrinsic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\extrinsicController.cpp">
+    <ClCompile Include="extrinsicController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\image.cpp">
+    <ClCompile Include="image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\intrinsic.cpp">
+    <ClCompile Include="intrinsic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\intrinsicController.cpp">
+    <ClCompile Include="intrinsicController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\line.cpp">
+    <ClCompile Include="line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\main.cpp">
+    <ClCompile Include="objectPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\objectPoint.cpp">
+    <ClCompile Include="plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\plane.cpp">
+    <ClCompile Include="polygonalMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\polygonalMesh.cpp">
+    <ClCompile Include="scanController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\scanController.cpp">
+    <ClCompile Include="scanModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\scanModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\3DScanner\3DScanner\stdafx.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -111,49 +108,49 @@
     <ClInclude Include="GeneratedFiles\ui_homeview.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\calibrationController.h">
+    <ClInclude Include="calibrationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\calibrationModel.h">
+    <ClInclude Include="calibrationModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\extrinsic.h">
+    <ClInclude Include="extrinsic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\extrinsicController.h">
+    <ClInclude Include="extrinsicController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\image.h">
+    <ClInclude Include="image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\intrinsic.h">
+    <ClInclude Include="intrinsic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\intrinsicController.h">
+    <ClInclude Include="intrinsicController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\line.h">
+    <ClInclude Include="line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\objectPoint.h">
+    <ClInclude Include="objectPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\plane.h">
+    <ClInclude Include="plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\polygonalMesh.h">
+    <ClInclude Include="polygonalMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\scanController.h">
+    <ClInclude Include="scanController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\scanModel.h">
+    <ClInclude Include="scanModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\stdafx.h">
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3DScanner\3DScanner\targetver.h">
+    <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
