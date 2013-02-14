@@ -6,8 +6,8 @@ void CalibrationController::takePicture() {
 
 }
 
-void CalibrationController::startCalibration() {
-
+void CalibrationController::startCalibration(int horizontal, int vertical) {
+	string message = calibrationModel.startCalibration(horizontal, vertical);
 }
 
 void CalibrationController::setCalibrationModel(CalibrationModel calibModel) {
@@ -16,8 +16,4 @@ void CalibrationController::setCalibrationModel(CalibrationModel calibModel) {
 
 void CalibrationController::saveFiles(string directory) {
 
-}
-
-int CalibrationController::findCorners() {
-	return 0;
 }

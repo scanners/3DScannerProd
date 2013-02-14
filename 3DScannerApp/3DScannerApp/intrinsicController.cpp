@@ -5,3 +5,8 @@
 IntrinsicController::IntrinsicController() {
 
 }
+
+void IntrinsicController::findCorners(Mat image) {
+	int successes = calibrationModel.findCorners(image);
+	calibrationModel.getMaxNumSuccesses(CalibrationController::INTRINSIC);
+}

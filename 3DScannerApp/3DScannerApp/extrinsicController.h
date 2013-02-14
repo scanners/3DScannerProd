@@ -7,6 +7,7 @@ class ExtrinsicController : CalibrationController {
 public:
 	ExtrinsicController();
 	bool loadXML();
+	void findCorners(Mat);
 };
 
 #endif //EXTRINSICCONTROLLER_H

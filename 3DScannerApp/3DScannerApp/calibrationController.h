@@ -3,20 +3,25 @@
 
 #include <string>
 using std::string;
+using cv::Mat;
 #include "calibrationModel.h"
+
+//class CalibrationModel;
 
 class CalibrationController {
 private:
 	//TakePicView: takePicView;
 	//SaveView saveView;
 	//InputView inputView;
+protected:
 	CalibrationModel calibrationModel;
 public:
+	enum calibrationTypes {INTRINSIC, EXTRINSIC};
 	void takePicture();
-	void startCalibration();
+	void startCalibration(int, int);
 	void setCalibrationModel(CalibrationModel);
 	void saveFiles(string);
-	int findCorners();
+	virtual void findCorners(Mat) = 0; 
 };
 
 #endif //CALIBRATIONCONTROLLER_H
