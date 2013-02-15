@@ -7,7 +7,7 @@ void CalibrationController::takePicture() {
 }
 
 void CalibrationController::startCalibration(int horizontal, int vertical) {
-	string message = calibrationModel.startCalibration(horizontal, vertical);
+	//int enum = calibrationModel.startCalibration(horizontal, vertical);
 }
 
 void CalibrationController::setCalibrationModel(CalibrationModel calibModel) {

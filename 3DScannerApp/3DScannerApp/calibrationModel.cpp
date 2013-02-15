@@ -20,14 +20,14 @@ bool CalibrationModel::loadXML() {
 }
 
 int CalibrationModel::getMaxNumSuccesses(int controllerType) {
-	if (controllerType == CalibrationController::INTRINSIC) {
+	switch (controllerType) {
+	case Enums::controllerEnum::INTRINSIC:
 		return INTRINSIC_MAX_NUM_SUCCESSES;
-	} else if (controllerType == CalibrationController::EXTRINSIC) {
+	case Enums::controllerEnum::EXTRINSIC:
 		return EXTRINSIC_MAX_NUM_SUCCESSES;
-	} else {
+	default:
 		return -1;
 	}
-
 }
 
 int CalibrationModel::findCorners(Mat image) {
@@ -35,9 +35,11 @@ int CalibrationModel::findCorners(Mat image) {
 }
 
 bool CalibrationModel::calibrateIntrinsics() {
+
 	return false;
 }
 
-string CalibrationModel::startCalibration(int horizontal, int vertical) {
-	return "";
+int CalibrationModel::startCalibration(int horizontal, int vertical) {
+	int innerCorners = (horizontal - 1) * (vertical - 1);
+	return Enums::calibrationEnum::TAKE_PIC;
 }

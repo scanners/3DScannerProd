@@ -6,17 +6,18 @@
 #define EXTRINSIC_MAX_NUM_SUCCESSES 5
 
 #include <string>
-using std::string;
-using cv::Mat;
+using namespace::cv;
+#include "enums.h"
 
 class CalibrationController;
 
 class CalibrationModel {
 private:
-	int verticalSquares;
+	int corners;
+	vector<vector<Point3f>> objectPoints;
+    vector<vector<Point2f>> imagePoints;
 	int maxSuccesses;
 	Mat intrinsic;
-	int horizontalSquares;
 	Mat distortion;
 	string intrinsicFileName;
 	string extBackRotFileName;
@@ -32,7 +33,7 @@ public:
 	int getMaxNumSuccesses(int);
 	int findCorners(Mat);
 	bool calibrateIntrinsics();
-	string startCalibration(int, int);
+	int startCalibration(int, int);
 };
 
 #endif // CALIBRATIONMODEL_H
