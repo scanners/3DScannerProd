@@ -13,6 +13,7 @@
 #include <qapplication.h>
 #include <qboxlayout.h>
 #include <qlineedit.h>
+#include <qfiledialog.h>
 
 class ResultsView : public QWidget
 {
@@ -31,6 +32,9 @@ private:
 	QLineEdit * outputDirTextField;
 	QLabel * outputDirLabel;
 	QLabel * pointCloudLabel;
+	QString dir;
+private slots:
+	void createFileDialog();
 
 };
 

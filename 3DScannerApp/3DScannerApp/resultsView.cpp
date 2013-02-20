@@ -12,12 +12,14 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 	title = new QLabel("<h1>Scan Results</h1>");
 	browseButton = new QPushButton("Browse...");
 	exitButton = new QPushButton("Exit");
-	outputDirTextField = new QLineEdit("[Input Here or click browse]");
+	outputDirTextField = new QLineEdit();
+	outputDirTextField->setPlaceholderText("Type directory, or click \"browse\" to the right");
 	outputDirLabel = new QLabel("Output Directory:");
 	exitButton->setMaximumWidth(80);
 	browseButton->setMaximumWidth(80);
 
 	connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+	connect(browseButton, SIGNAL(clicked()), this, SLOT(createFileDialog()));
 
 	mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	mainLayout->addWidget(title);
@@ -30,4 +32,11 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 	mainLayout->addWidget(pointCloudFrame);
 	mainLayout->addWidget(exitButton);
 	setLayout(mainLayout);
+}
+
+void ResultsView::createFileDialog()
+{
+	dir = QFileDialog::getExistingDirectory(this, "Select Output Directory",
+		"C:/", QFileDialog::ShowDirsOnly);
+	outputDirTextField->setText(dir);
 }

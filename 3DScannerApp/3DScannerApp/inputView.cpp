@@ -33,8 +33,10 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 		connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 		connect(startButton, SIGNAL(clicked()), this, SLOT(createTakePicView()));
 
-		QLineEdit * horizontalText = new QLineEdit("[Input Here]");
-		QLineEdit * verticalText = new QLineEdit("[Input Here]");
+		QLineEdit * horizontalText = new QLineEdit();
+		horizontalText->setPlaceholderText("Number of Horizontal Squares");
+		QLineEdit * verticalText = new QLineEdit();
+		verticalText->setPlaceholderText("Number of Vertical Squares");
 		mainLayout->addWidget(horizontalLabel, 1, 0);
 		mainLayout->addWidget(horizontalText, 1, 1);
 		mainLayout->addWidget(verticalLabel, 3, 0);
@@ -59,12 +61,15 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 		QPushButton * startButton = new QPushButton("Start");
 		QPushButton * exitButton = new QPushButton("Exit");
 		QPushButton * browseButton = new QPushButton("Browse...");
-		QLineEdit * horizontalText = new QLineEdit("[Input Here]");
-		QLineEdit * verticalText = new QLineEdit("[Input Here]");
-		QLineEdit * loadDirText = new QLineEdit();
+		QLineEdit * horizontalText = new QLineEdit();
+		horizontalText->setPlaceholderText("Number of Horizontal Squares");
+		QLineEdit * verticalText = new QLineEdit();
+		verticalText->setPlaceholderText("Number of Vertical Squares");
+		loadDirText = new QLineEdit();
 
 		connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 		connect(startButton, SIGNAL(clicked()), this, SLOT(createTakePicView()));
+		connect(browseButton, SIGNAL(clicked()), this, SLOT(createFileDialog()));
 
 		mainLayout->addWidget(horizontalLabel, 0, 0);
 		mainLayout->addWidget(horizontalText, 0, 1);
@@ -96,6 +101,13 @@ void InputView::createTakePicView()
 		calibPicView = new TakePicView(calibrationType);
 		calibPicView->setModal(true);
 		calibPicView->show();
+}
+
+void InputView::createFileDialog()
+{
+	dir = QFileDialog::getExistingDirectory(this, "Select Calibration Load Directory",
+		"C:/", QFileDialog::ShowDirsOnly);
+	loadDirText->setText(dir);
 }
 
 /*
