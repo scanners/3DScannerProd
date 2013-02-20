@@ -9,6 +9,7 @@
 #include "inputView.h"
 #include "enums.h"
 #include <qapplication.h>
+#include <iostream>
 
 InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 {
@@ -16,8 +17,9 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 	message->setVisible(false);
 
 	// Check to see what type of input view this is:
-	if (calibType == Enums::INTRINSIC)
+	if (calibType == Enums::controllerEnum::INTRINSIC)
 	{
+		calibrationType = calibType;
 		// create intrinsic buttons, etc for intrinsic view
 		QGridLayout * mainLayout = new QGridLayout();
 		QLabel * horizontalLabel = new QLabel("Horizontal Squares:");
@@ -28,7 +30,8 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 
 		// connect the exit button's clicked() signal to the qapplication's quit() slot:
 		// (note: qApp is a global pointer to the application object)
-		connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit())); 
+		connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+		connect(startButton, SIGNAL(clicked()), this, SLOT(createTakePicView()));
 
 		QLineEdit * horizontalText = new QLineEdit("[Input Here]");
 		QLineEdit * verticalText = new QLineEdit("[Input Here]");
@@ -42,8 +45,9 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 		setLayout(mainLayout);
 				
 	}
-	else if(calibType == Enums::EXTRINSIC)
+	else if(calibType == Enums::controllerEnum::EXTRINSIC)
 	{
+		calibrationType = calibType;
 		// create extrinsic buttons, etc for extrinsic view
 		QGridLayout * mainLayout = new QGridLayout();
 		QLabel * horizontalLabel = new QLabel("Horizontal Squares:");
@@ -58,6 +62,9 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 		QLineEdit * horizontalText = new QLineEdit("[Input Here]");
 		QLineEdit * verticalText = new QLineEdit("[Input Here]");
 		QLineEdit * loadDirText = new QLineEdit();
+
+		connect(startButton, SIGNAL(clicked()), this, SLOT(createTakePicView()));
+
 		mainLayout->addWidget(horizontalLabel, 0, 0);
 		mainLayout->addWidget(horizontalText, 0, 1);
 		mainLayout->addWidget(verticalLabel, 1, 0);
@@ -78,6 +85,16 @@ void InputView::showMessage(QString msg)
 	// todo
 	message->setText(msg);
 	message->setVisible(true);
+}
+
+void InputView::createTakePicView()
+{
+		using std::cout;
+		using std:: endl;
+		cout << "TEST" << endl;
+		calibPicView = new TakePicView(calibrationType);
+		calibPicView->setModal(true);
+		calibPicView->show();
 }
 
 /*

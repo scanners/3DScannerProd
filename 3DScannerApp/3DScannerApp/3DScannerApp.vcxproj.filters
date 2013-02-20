@@ -116,6 +116,15 @@
     <ClCompile Include="scanInputView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_takePicView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_takePicView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="takePicView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calibrationController.h">
@@ -178,6 +187,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="scanInputView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="takePicView.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -15,8 +15,10 @@ ScanningView::ScanningView(QWidget *parent) : QDialog(parent)
 	QPushButton * startButton = new QPushButton("Start Scan");
 	startButton->setMaximumWidth(80);
 	
-	QPushButton * exitButton = new QPushButton("Exit");
+	QPushButton * exitButton = new QPushButton("Cancel");
 	exitButton->setMaximumWidth(80);
+
+	connect(exitButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 	QBoxLayout * mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	mainLayout->addWidget(titleLabel);
