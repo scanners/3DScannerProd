@@ -1,6 +1,9 @@
 #ifndef HOMEVIEW_H
 #define HOMEVIEW_H
 
+// NOTE: THIS CLASS AND OTHER CLASSES THAT HAVE POINTERS NEED DESTRUCTORS, ETC!
+// OTHERWISE WE WILL RUN INTO MEMORY LEAK PROBLEMS
+
 #include <qdialog.h>
 #include <qdialogbuttonbox.h>
 #include <qtabwidget.h>

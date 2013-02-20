@@ -3,6 +3,7 @@
 
 //#include "scanController.h"
 #include <qwidget.h>
+#include <qapplication.h>
 #include "scanningView.h"
 class ScanController;
 

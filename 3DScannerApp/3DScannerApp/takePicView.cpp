@@ -19,6 +19,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QPushButton * takePicButton = new QPushButton("Take Picture");
 		QPushButton * cancelButton = new QPushButton("Cancel");
 
+		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+
 		// layout code
 		QBoxLayout * mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 		mainLayout->addWidget(titleLabel);
@@ -40,6 +42,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QLabel * messageLabel = new QLabel("Messages: ");
 		QPushButton * takePicButton = new QPushButton("Take Picture");
 		QPushButton * cancelButton = new QPushButton("Cancel");
+
+		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 		// layout code
 		QBoxLayout * mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);

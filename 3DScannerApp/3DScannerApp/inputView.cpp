@@ -63,6 +63,7 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 		QLineEdit * verticalText = new QLineEdit("[Input Here]");
 		QLineEdit * loadDirText = new QLineEdit();
 
+		connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 		connect(startButton, SIGNAL(clicked()), this, SLOT(createTakePicView()));
 
 		mainLayout->addWidget(horizontalLabel, 0, 0);

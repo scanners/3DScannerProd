@@ -14,6 +14,7 @@ ScanInputView::ScanInputView(QWidget *parent) : QWidget(parent)
 	mainLayout->addWidget(exitButton, 0, 2);
 
 	connect(startButton, SIGNAL(clicked()), this, SLOT(createScanView()));
+	connect(exitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 
 	setLayout(mainLayout);
 }
