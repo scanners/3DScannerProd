@@ -22,10 +22,13 @@ private:
 	Mat image;
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
-	void stopVideo();
+
+protected:
+	void closeEvent(QCloseEvent * event);
 private slots:
 	void displayVideoFrame();
 	void takePicture();
+	void stopVideo();
 };
 
 #endif

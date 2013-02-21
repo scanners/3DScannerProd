@@ -19,6 +19,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QPushButton * cancelButton = new QPushButton("Cancel");
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture));
+		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 		// layout code
@@ -43,6 +44,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QPushButton * cancelButton = new QPushButton("Cancel");
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture));
+		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 		// layout code
@@ -69,9 +71,20 @@ void TakePicView::displayVideoFrame()
 	videoLabel->setPixmap(QPixmap::fromImage(qimg));
 }
 
+
+// releases the video input and stops the timer.
+// we might need to do some extra clean up here.
+// doesn't work when the window is closed with the "X" button.
 void TakePicView::stopVideo()
 {
+	capture.release();
+	timer->stop();
+}
 
+// this is for the "X" Button event
+void TakePicView::closeEvent(QCloseEvent * event)
+{
+	this->stopVideo();
 }
 
 void TakePicView::takePicture()
