@@ -58,9 +58,12 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		setLayout(mainLayout);
 	}
 	capture.open(0);
-	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
-	timer->start(20);
+	if (capture.isOpened())
+	{
+		timer = new QTimer(this);
+		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
+		timer->start(20);
+	}
 }
 
 void TakePicView::displayVideoFrame()
@@ -77,8 +80,11 @@ void TakePicView::displayVideoFrame()
 // doesn't work when the window is closed with the "X" button.
 void TakePicView::stopVideo()
 {
-	capture.release();
-	timer->stop();
+	if (capture.isOpened())
+	{
+		capture.release();
+		timer->stop();
+	}
 }
 
 // this is for the "X" Button event
