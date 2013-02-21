@@ -95,12 +95,12 @@ void InputView::showMessage(QString msg)
 
 void InputView::createTakePicView()
 {
-		using std::cout;
-		using std:: endl;
-		cout << "TEST" << endl;
-		calibPicView = new TakePicView(calibrationType);
-		calibPicView->setModal(true);
-		calibPicView->show();
+	using std::cout;
+	using std:: endl;
+	cout << "TEST" << endl;
+	calibPicView = new TakePicView(calibrationType);
+	calibPicView->setModal(true);
+	calibPicView->show();
 }
 
 void InputView::createFileDialog()

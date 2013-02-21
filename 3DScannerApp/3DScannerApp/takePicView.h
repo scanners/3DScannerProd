@@ -2,8 +2,13 @@
 #define TAKEPICVIEW_H
 
 //#include "scanController.h"
+#include "stdafx.h"
 #include <qwidget.h>
 #include <qdialog.h>
+#include <qlabel.h>
+#include <qtimer.h>
+using namespace::cv;
+
 class ScanController;
 
 class TakePicView : public QDialog
@@ -11,11 +16,16 @@ class TakePicView : public QDialog
     Q_OBJECT
 
 private:
-	QWidget * calibFrame;
+	QLabel * videoLabel;
+	QTimer * timer;
+	VideoCapture capture;
+	Mat image;
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
-	void displayVideo();
 	void stopVideo();
+private slots:
+	void displayVideoFrame();
+	void takePicture();
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "extrinsicController.h"
 
 ExtrinsicController::ExtrinsicController() {
@@ -12,5 +11,5 @@ bool ExtrinsicController::loadXML() {
 
 void ExtrinsicController::findCorners(Mat image) {
 	int successes = calibrationModel.findCorners(image);
-	calibrationModel.getMaxNumSuccesses(CalibrationController::EXTRINSIC);
+	calibrationModel.getMaxNumSuccesses(Enums::controllerEnum::EXTRINSIC);
 }

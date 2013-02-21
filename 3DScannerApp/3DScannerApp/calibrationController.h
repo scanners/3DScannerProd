@@ -16,7 +16,6 @@ private:
 protected:
 	CalibrationModel calibrationModel;
 public:
-	static enum calibrationTypes {INTRINSIC, EXTRINSIC};
 	void takePicture();
 	void startCalibration(int, int);
 	void setCalibrationModel(CalibrationModel);

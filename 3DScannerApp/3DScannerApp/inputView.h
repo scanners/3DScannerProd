@@ -8,6 +8,7 @@
 #include <qfiledialog.h>
 #include <string>
 #include "takePicView.h"
+
 class CalibrationController;
 
 class InputView : public QWidget
