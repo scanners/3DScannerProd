@@ -1,11 +1,13 @@
 #ifndef SCANINPUTVIEW_H
 #define SCANINPUTVIEW_H
 
-//#include "scanController.h"
 #include <qwidget.h>
-#include <qapplication.h>
 #include "scanningView.h"
+
 class ScanController;
+class QLabel;
+class QPushButton;
+class QGridLayout;
 
 class ScanInputView : public QWidget
 {
@@ -15,6 +17,11 @@ private slots:
 	void createScanView();
 private:
 	ScanningView * scanningView;
+	QLabel * infoLabel;
+	QPushButton * startButton;
+	QPushButton * exitButton;
+	QGridLayout * mainLayout;
+	void constructLayout();
 public:
     explicit ScanInputView(QWidget *parent = 0);
 

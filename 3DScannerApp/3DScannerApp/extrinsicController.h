@@ -3,7 +3,7 @@
 
 #include "calibrationController.h"
 
-class ExtrinsicController : CalibrationController {
+class ExtrinsicController : public CalibrationController {
 public:
 	ExtrinsicController();
 	bool loadXML();

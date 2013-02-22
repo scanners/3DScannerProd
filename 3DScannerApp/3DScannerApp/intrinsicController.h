@@ -3,7 +3,7 @@
 
 #include "calibrationController.h"
 
-class IntrinsicController : CalibrationController {
+class IntrinsicController : public CalibrationController {
 public:
 	IntrinsicController();
 	void findCorners(Mat);
