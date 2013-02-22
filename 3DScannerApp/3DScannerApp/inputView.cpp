@@ -7,6 +7,11 @@
 // Other Includes
 #include <string>
 #include "inputView.h"
+#include "takePicView.h"
+#include "calibrationController.h"
+#include "intrinsicController.h"
+#include "extrinsicController.h"
+#include "calibrationModel.h"
 #include "enums.h"
 #include <qapplication.h>
 #include <iostream>
@@ -95,12 +100,15 @@ void InputView::showMessage(QString msg)
 
 void InputView::createTakePicView()
 {
-	using std::cout;
-	using std:: endl;
-	cout << "TEST" << endl;
-	calibPicView = new TakePicView(calibrationType);
-	calibPicView->setModal(true);
-	calibPicView->show();
+	CalibrationController * controller;
+	if (calibrationType == Enums::controllerEnum::INTRINSIC) {
+		controller = new IntrinsicController();
+	} else if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
+		controller = new ExtrinsicController();
+	}
+	CalibrationModel * model = new CalibrationModel(10,10);
+	controller->setCalibrationModel(*model);
+	model->setCalibrationController(*controller);
 }
 
 void InputView::createFileDialog()
@@ -109,10 +117,3 @@ void InputView::createFileDialog()
 		"C:/", QFileDialog::ShowDirsOnly);
 	loadDirText->setText(dir);
 }
-
-/*
-void InputView::setCalibrationController(CalibrationController& calibControl)
-{
-	// todo
-}
-*/

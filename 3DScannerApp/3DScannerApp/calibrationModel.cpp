@@ -3,12 +3,12 @@
 #include "calibrationModel.h"
 #include "calibrationController.h"
 
-CalibrationModel::CalibrationModel() {
-
+CalibrationModel::CalibrationModel(int horizontal, int vertical) {
+	innerCorners = Size((horizontal - 1), (vertical - 1));
 }
 
-void CalibrationModel::setCalibrationController(CalibrationController* calibControl) {
-	calibrationController = calibControl;
+void CalibrationModel::setCalibrationController(CalibrationController& calibControl) {
+	calibrationController = &calibControl;
 }
 
 void CalibrationModel::saveFiles(string directory) {
@@ -41,11 +41,7 @@ int CalibrationModel::getMaxNumSuccesses(int controllerType) {
 int CalibrationModel::findCorners(Mat image) {
 	Mat grayImage;
 	bool foundCorrectNumCorners;
-	//clock_t prevTimestamp = 0;
-	//const Scalar RED(0,0,255), GREEN(0,255,0);
-	//const char ESC_KEY = 27;
 	vector<Point2f> pointBuffer;
-
 	imageSize = image.size();
 	foundCorrectNumCorners = findChessboardCorners(image, innerCorners, pointBuffer, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_NORMALIZE_IMAGE);
 	if (foundCorrectNumCorners) {
@@ -67,10 +63,4 @@ void CalibrationModel::calibrateIntrinsics() {
 	objectPoints.resize(imagePoints.size());
 	calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
-}
-
-int CalibrationModel::startCalibration(int horizontal, int vertical) {
-	innerCorners = Size((horizontal - 1), (vertical - 1));
-
-	return Enums::calibrationEnum::TAKE_PIC;
 }

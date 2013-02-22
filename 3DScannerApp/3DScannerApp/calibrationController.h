@@ -1,26 +1,27 @@
 #ifndef CALIBRATIONCONTROLLER_H
 #define CALIBRATIONCONTROLLER_H
 
+#include "stdafx.h"
 #include <string>
 using std::string;
 using cv::Mat;
-#include "calibrationModel.h"
 
-//class CalibrationModel;
+class CalibrationModel;
+class TakePicView;
 
 class CalibrationController {
 private:
-	//TakePicView: takePicView;
 	//SaveView saveView;
 	//InputView inputView;
 protected:
-	CalibrationModel calibrationModel;
+	CalibrationModel * calibrationModel;
+	TakePicView * calibPicView;
 public:
 	void takePicture();
 	void startCalibration(int, int);
-	void setCalibrationModel(CalibrationModel);
+	void setCalibrationModel(CalibrationModel& calibModel);
 	void saveFiles(string);
-	virtual void findCorners(Mat) = 0; 
+	void findCorners(Mat image); 
 };
 
 #endif //CALIBRATIONCONTROLLER_H

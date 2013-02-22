@@ -32,8 +32,8 @@ private:
 	string extGroundTransFileName;
 	CalibrationController* calibrationController;
 public:
-	CalibrationModel();
-	void setCalibrationController(CalibrationController* controller);
+	CalibrationModel(int horizontal, int vertical);
+	void setCalibrationController(CalibrationController& controller);
 	void saveFiles(string directory);
 	bool loadXML(string directory);
 	int getMaxNumSuccesses(int controllerType);

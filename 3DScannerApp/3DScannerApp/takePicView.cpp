@@ -18,7 +18,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QPushButton * takePicButton = new QPushButton("Take Picture");
 		QPushButton * cancelButton = new QPushButton("Cancel");
 
-		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture));
+		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -43,7 +43,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		QPushButton * takePicButton = new QPushButton("Take Picture");
 		QPushButton * cancelButton = new QPushButton("Cancel");
 
-		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture));
+		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -82,6 +82,7 @@ void TakePicView::stopVideo()
 {
 	if (capture.isOpened())
 	{
+		capture.read(image);
 		capture.release();
 		timer->stop();
 	}
@@ -95,5 +96,10 @@ void TakePicView::closeEvent(QCloseEvent * event)
 
 void TakePicView::takePicture()
 {
+	//this->stopVideo();
+	calibrationController->findCorners(image);
+}
 
+void TakePicView::setCalibrationController(CalibrationController& calibControl){
+	calibrationController = &calibControl;
 }

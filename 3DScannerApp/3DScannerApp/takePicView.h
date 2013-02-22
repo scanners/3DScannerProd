@@ -2,6 +2,7 @@
 #define TAKEPICVIEW_H
 
 //#include "scanController.h"
+#include "calibrationController.h"
 #include "stdafx.h"
 #include <qwidget.h>
 #include <qdialog.h>
@@ -20,9 +21,11 @@ private:
 	QTimer * timer;
 	VideoCapture capture;
 	Mat image;
+	//Mat displayImage;
+	CalibrationController * calibrationController;
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
-
+	void setCalibrationController(CalibrationController& calibControl);
 protected:
 	void closeEvent(QCloseEvent * event);
 private slots:

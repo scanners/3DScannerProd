@@ -13,7 +13,4 @@
 
 
 // TODO: reference additional headers your program requires here
-#include <cv.h>
-#include <highgui.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <opencv.hpp>
