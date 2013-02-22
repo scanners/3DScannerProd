@@ -4,16 +4,12 @@
 // NOTE: THIS CLASS AND OTHER CLASSES THAT HAVE POINTERS NEED DESTRUCTORS, ETC!
 // OTHERWISE WE WILL RUN INTO MEMORY LEAK PROBLEMS
 
-#include <qdialog.h>
 #include <qwidget.h>
-#include <qlabel.h>
-#include <qdialogbuttonbox.h>
-#include <qtabwidget.h>
-#include <qpushbutton.h>
-#include <qapplication.h>
-#include <qboxlayout.h>
-#include <qlineedit.h>
-#include <qfiledialog.h>
+class QLabel;
+class QPushButton;
+class QBoxLayout;
+class QLineEdit;
+class QString;
 
 class ResultsView : public QWidget
 {
@@ -33,6 +29,7 @@ private:
 	QLabel * outputDirLabel;
 	QLabel * pointCloudLabel;
 	QString dir;
+	void constructLayout();
 private slots:
 	void createFileDialog();
 

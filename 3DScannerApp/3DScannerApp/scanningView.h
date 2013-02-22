@@ -2,9 +2,13 @@
 #define SCANNINGVIEW_H
 
 //#include "scanController.h"
-#include <qwidget.h>
 #include <qdialog.h>
 class ScanController;
+class QWidget;
+class QLabel;
+class QPushButton;
+class QBoxLayout;
+class QGridLayout;
 
 class ScanningView : public QDialog
 {
@@ -12,6 +16,12 @@ class ScanningView : public QDialog
 
 private:
 	QWidget * scanFrame;
+	QLabel * titleLabel;
+	QPushButton * startButton;
+	QPushButton * exitButton;
+	QBoxLayout * mainLayout;
+	QGridLayout * buttonLayout;
+	void constructLayout();
 public:
     explicit ScanningView(QWidget *parent = 0);
 	void setScanController(ScanController& sc);

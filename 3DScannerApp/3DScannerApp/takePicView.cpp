@@ -4,6 +4,9 @@
 #include "qpushbutton.h"
 #include "qboxlayout.h"
 #include "qgridlayout.h"
+#include <qwidget.h>
+#include <qlabel.h>
+#include <qtimer.h>
 
 TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 {
@@ -12,21 +15,21 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		// create intrinsic calib stuff
 		videoLabel = new QLabel(this);
 		videoLabel->setFixedSize(300,300);
-		QLabel * titleLabel = new QLabel("Intrinsic Calibration");
-		QLabel * picProgressLabel = new QLabel("Picture 1 of 20");
-		QLabel * messageLabel = new QLabel("Messages: ");
-		QPushButton * takePicButton = new QPushButton("Take Picture");
-		QPushButton * cancelButton = new QPushButton("Cancel");
+		titleLabel = new QLabel("Intrinsic Calibration");
+		picProgressLabel = new QLabel("Picture 1 of 20");
+		messageLabel = new QLabel("Messages: ");
+		takePicButton = new QPushButton("Take Picture");
+		cancelButton = new QPushButton("Cancel");
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 		// layout code
-		QBoxLayout * mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+		mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 		mainLayout->addWidget(titleLabel);
 		mainLayout->addWidget(videoLabel);
-		QGridLayout * buttonLayout = new QGridLayout();
+		buttonLayout = new QGridLayout();
 		buttonLayout->addWidget(takePicButton, 0, 0);
 		buttonLayout->addWidget(cancelButton, 1, 0);
 		mainLayout->addLayout(buttonLayout);
@@ -37,21 +40,21 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		// create extrin calib stuff
 		videoLabel = new QLabel(this);
 		videoLabel->setFixedSize(300,300);
-		QLabel * titleLabel = new QLabel("Extrinsic Calibration");
-		QLabel * picProgressLabel = new QLabel("Picture 1 of 4");
-		QLabel * messageLabel = new QLabel("Messages: ");
-		QPushButton * takePicButton = new QPushButton("Take Picture");
-		QPushButton * cancelButton = new QPushButton("Cancel");
+		titleLabel = new QLabel("Extrinsic Calibration");
+		picProgressLabel = new QLabel("Picture 1 of 4");
+		messageLabel = new QLabel("Messages: ");
+		takePicButton = new QPushButton("Take Picture");
+		cancelButton = new QPushButton("Cancel");
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 		// layout code
-		QBoxLayout * mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+		mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 		mainLayout->addWidget(titleLabel);
 		mainLayout->addWidget(videoLabel);
-		QGridLayout * buttonLayout = new QGridLayout();
+		buttonLayout = new QGridLayout();
 		buttonLayout->addWidget(takePicButton, 0, 0);
 		buttonLayout->addWidget(cancelButton, 1, 0);
 		mainLayout->addLayout(buttonLayout);

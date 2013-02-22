@@ -8,6 +8,7 @@
 #include <qfiledialog.h>
 #include <string>
 
+class TakePicView;
 class InputView : public QWidget
 {
 	Q_OBJECT
@@ -17,6 +18,7 @@ private slots:
 	void createFileDialog();
 private:
 	QLabel * message;
+	TakePicView * calibPicView;
 	int calibrationType;
 	QString dir;
 	QLineEdit * loadDirText;

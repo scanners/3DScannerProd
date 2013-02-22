@@ -4,11 +4,14 @@
 //#include "scanController.h"
 #include "calibrationController.h"
 #include "stdafx.h"
-#include <qwidget.h>
 #include <qdialog.h>
-#include <qlabel.h>
-#include <qtimer.h>
+
 using namespace::cv;
+class QLabel;
+class QTimer;
+class QPushButton;
+class QGridLayout;
+class QBoxLayout;
 
 class ScanController;
 
@@ -17,8 +20,15 @@ class TakePicView : public QDialog
     Q_OBJECT
 
 private:
+	QLabel * titleLabel;
 	QLabel * videoLabel;
+	QLabel * picProgressLabel;
+	QLabel * messageLabel;
 	QTimer * timer;
+	QPushButton * takePicButton;
+	QPushButton * cancelButton;
+	QBoxLayout * mainLayout;
+	QGridLayout * buttonLayout;
 	VideoCapture capture;
 	Mat image;
 	//Mat displayImage;
