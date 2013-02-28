@@ -10,10 +10,15 @@ public:
 
 	enum calibrationEnum {
 		TAKE_PIC,
-		NUM_SUCCESSES,
-		FAILURE,
+		CORNERS_SUCCESS,
+		CORNERS_FAILURE,
 		CALIBRATION_SUCCESS,
 		SAVE_STATUS
+	};
+
+	enum extrinsicBoardLocation {
+		GROUND_PLANE,
+		BACK_PLANE
 	};
 };
 

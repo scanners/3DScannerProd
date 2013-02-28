@@ -4,7 +4,7 @@
 #include "intrinsicController.h"
 #include "extrinsicController.h"
 #include "calibrationController.h"
-#include "enums.h"
+
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qstring.h>

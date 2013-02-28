@@ -2,7 +2,7 @@
 
 #include "calibrationModel.h"
 
-CalibrationModel::CalibrationModel() {
+CalibrationModel::CalibrationModel(): successes(0) {
 	
 }
 
@@ -58,6 +58,26 @@ void CalibrationModel::calibrateIntrinsics() {
 	objectPoints.resize(imagePoints.size());
 	calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
+}
+
+void CalibrationModel::calibrateExtrinsics(int boardLocation) {
+	CvMat objectPointsC = Mat(objectPoints, true);
+	CvMat imagePointsC = Mat(imagePoints, true);
+	CvMat intrinsicMatrixC = intrinsicMatrix;
+	CvMat distortionCoefficientsC = distortionCoefficients;
+	//--------------MAY NEED TO PUT SOME DATA IN THESE (e.g. aspect ratio)
+	CvMat * rotationVectorC = cvCreateMat(3, 3, CV_32FC1);
+	CvMat * translationVectorC = cvCreateMat(4, 1, CV_32FC1);
+	cvFindExtrinsicCameraParams2(&objectPointsC, &imagePointsC, &intrinsicMatrixC, 
+		&distortionCoefficientsC, rotationVectorC, translationVectorC);
+	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
+		backRotationVector = Mat(rotationVectorC, true);
+		backTranslationVector = Mat(translationVectorC, true);
+	} else if (boardLocation == Enums::extrinsicBoardLocation::GROUND_PLANE) {
+		groundRotationVector = Mat(rotationVectorC, true);
+		groundTranslationVector = Mat(translationVectorC, true);
+	}
+	
 }
 
 void CalibrationModel::setNumCorners(int horizontal, int vertical) {

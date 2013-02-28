@@ -9,7 +9,7 @@
 #include "calibrationModel.h"
 #include <qlabel.h>
 #include <qboxlayout.h>
-#include "enums.h"
+
 
 HomeView::HomeView(QWidget *parent) : QDialog (parent)
 {

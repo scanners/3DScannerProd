@@ -8,6 +8,7 @@ public:
 	ExtrinsicController();
 	bool loadXML();
 	void createTakePicView();
+	void findCorners(Mat image);
 };
 
 #endif //EXTRINSICCONTROLLER_H

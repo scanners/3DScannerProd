@@ -14,3 +14,5 @@
 
 // TODO: reference additional headers your program requires here
 #include <opencv.hpp>
+#include "enums.h"
+#pragma warning( disable : 4482 )

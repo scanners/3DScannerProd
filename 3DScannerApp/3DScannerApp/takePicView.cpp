@@ -1,6 +1,6 @@
 #include "takePicView.h"
 
-#include "enums.h"
+
 #include "qpushbutton.h"
 #include "qboxlayout.h"
 #include "qgridlayout.h"
@@ -101,10 +101,17 @@ void TakePicView::closeEvent(QCloseEvent * event)
 
 void TakePicView::takePicture()
 {
-	//this->stopVideo();
 	calibrationController->findCorners(image);
 }
 
 void TakePicView::setCalibrationController(CalibrationController& calibControl){
 	calibrationController = &calibControl;
+}
+
+void TakePicView::incrementSuccesses(int successes, int maxNumSuccesses) {
+
+}
+
+void TakePicView::showMessage(int messageEnum) {
+
 }

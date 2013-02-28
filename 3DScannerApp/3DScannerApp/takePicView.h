@@ -36,6 +36,8 @@ private:
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
 	void setCalibrationController(CalibrationController& calibControl);
+	void incrementSuccesses(int successes, int maxNumSuccesses);
+	void showMessage(int messageEnum);
 protected:
 	void closeEvent(QCloseEvent * event);
 private slots:

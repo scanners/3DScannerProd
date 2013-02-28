@@ -2,13 +2,13 @@
 #define CALIBRATIONMODEL_H
 
 //////////////////  CHANGE THESE VALUES /////////////////////////////////////
-#define INTRINSIC_MAX_NUM_SUCCESSES 10
+#define INTRINSIC_MAX_NUM_SUCCESSES 1
 #define EXTRINSIC_MAX_NUM_SUCCESSES 5
 #define NUM_BOARDS_TO_FIND_CORNERS 20
 
 #include <string>
 using namespace::cv;
-#include "enums.h"
+
 
 class CalibrationModel {
 private:
@@ -23,6 +23,10 @@ private:
 	Mat distortionCoefficients;
 	vector<Mat> rotationVectors;
 	vector<Mat> translationVectors;
+	Mat backRotationVector;
+	Mat groundRotationVector;
+	Mat backTranslationVector;
+	Mat groundTranslationVector;
 	string intrinsicFileName;
 	string extBackRotFileName;
 	string extBackTransFileName;
@@ -35,6 +39,7 @@ public:
 	int getMaxNumSuccesses(int controllerType);
 	int findCorners(Mat image);
 	void calibrateIntrinsics();
+	void calibrateExtrinsics(int boardLocation);
 	void setNumCorners(int horizontal, int vertical);
 };
 
