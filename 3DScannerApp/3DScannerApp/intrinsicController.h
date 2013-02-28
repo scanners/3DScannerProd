@@ -6,6 +6,7 @@
 class IntrinsicController : public CalibrationController {
 public:
 	IntrinsicController();
+	void createTakePicView();
 };
 
 #endif //INTRINSICCONTROLLER_H

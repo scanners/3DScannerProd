@@ -1,14 +1,9 @@
 #include "stdafx.h"
 
 #include "calibrationModel.h"
-#include "calibrationController.h"
 
-CalibrationModel::CalibrationModel(int horizontal, int vertical) {
-	innerCorners = Size((horizontal - 1), (vertical - 1));
-}
-
-void CalibrationModel::setCalibrationController(CalibrationController& calibControl) {
-	calibrationController = &calibControl;
+CalibrationModel::CalibrationModel() {
+	
 }
 
 void CalibrationModel::saveFiles(string directory) {
@@ -63,4 +58,8 @@ void CalibrationModel::calibrateIntrinsics() {
 	objectPoints.resize(imagePoints.size());
 	calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
+}
+
+void CalibrationModel::setNumCorners(int horizontal, int vertical) {
+	innerCorners = Size((horizontal - 1), (vertical - 1));
 }

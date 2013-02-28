@@ -24,9 +24,10 @@ private:
 	QTabWidget *tabWidget;
 	QDialogButtonBox *buttonBox;
 	ScanController * scanControl;
-	CalibrationController * intrinsicControl;
-	CalibrationController * extrinsicControl;
-	CalibrationModel * calibModel;
+	CalibrationController * intrinsicController;
+	CalibrationController * extrinsicController;
+	CalibrationModel * intrinsicCalibrationModel;
+	CalibrationModel * extrinsicCalibrationModel;
 	ScanModel * scanModel;
 };
 

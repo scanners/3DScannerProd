@@ -17,6 +17,7 @@ class QPushButton;
 
 
 class TakePicView;
+class CalibrationController;
 
 class InputView : public QWidget
 {
@@ -26,7 +27,8 @@ private slots:
 	void createTakePicView();
 	void createFileDialog();
 private:
-	TakePicView * calibPicView;
+	TakePicView * takePicView;
+	CalibrationController * calibrationController;
 	QLabel * message;
 	int calibrationType;
 	QString dir;
@@ -45,6 +47,7 @@ private:
 public:
 	explicit InputView(int calibType, QWidget *parent = 0);
 	void showMessage(QString msg);
+	void setCalibrationController(CalibrationController& calibControl);
 };
 
 #endif

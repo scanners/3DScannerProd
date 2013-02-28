@@ -10,8 +10,6 @@
 using namespace::cv;
 #include "enums.h"
 
-class CalibrationController;
-
 class CalibrationModel {
 private:
 	Size innerCorners;
@@ -30,16 +28,14 @@ private:
 	string extBackTransFileName;
 	string extGroundRotFileName;
 	string extGroundTransFileName;
-	CalibrationController* calibrationController;
 public:
-	CalibrationModel(int horizontal, int vertical);
-	void setCalibrationController(CalibrationController& controller);
+	CalibrationModel();
 	void saveFiles(string directory);
 	bool loadXML(string directory);
 	int getMaxNumSuccesses(int controllerType);
 	int findCorners(Mat image);
 	void calibrateIntrinsics();
-	int startCalibration(int horizontal, int vertical);
+	void setNumCorners(int horizontal, int vertical);
 };
 
 #endif // CALIBRATIONMODEL_H

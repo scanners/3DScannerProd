@@ -7,6 +7,7 @@ using std::string;
 using cv::Mat;
 
 class CalibrationModel;
+class InputView;
 class TakePicView;
 
 class CalibrationController {
@@ -15,13 +16,16 @@ private:
 	//InputView inputView;
 protected:
 	CalibrationModel * calibrationModel;
-	TakePicView * calibPicView;
+	InputView * inputView;
+	TakePicView * takePicView;
 public:
 	void takePicture();
-	void startCalibration(int, int);
 	void setCalibrationModel(CalibrationModel& calibModel);
 	void saveFiles(string);
-	void findCorners(Mat image); 
+	void findCorners(Mat image);
+	void setInputView(InputView& inpView);
+	void setNumCorners(int horizontal, int vertical);
+	virtual void createTakePicView() = 0;
 };
 
 #endif //CALIBRATIONCONTROLLER_H

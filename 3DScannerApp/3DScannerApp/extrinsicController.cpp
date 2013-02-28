@@ -4,13 +4,16 @@
 #include "enums.h"
 
 ExtrinsicController::ExtrinsicController() {
-	calibPicView = new TakePicView(Enums::controllerEnum::EXTRINSIC);
-	calibPicView->setModal(true);
-	calibPicView->show();
-	calibPicView->setCalibrationController(*this);
+	
 }
 
 bool ExtrinsicController::loadXML() {
 	return false;
 }
 
+void ExtrinsicController::createTakePicView() {
+	takePicView = new TakePicView(Enums::controllerEnum::EXTRINSIC);
+	takePicView->setCalibrationController(*this);
+	takePicView->setModal(true);
+	takePicView->show();
+}

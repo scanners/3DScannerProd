@@ -5,8 +5,12 @@
 #include "enums.h"
 
 IntrinsicController::IntrinsicController() {
-	calibPicView = new TakePicView(Enums::controllerEnum::INTRINSIC);
-	calibPicView->setModal(true);
-	calibPicView->show();
-	calibPicView->setCalibrationController(*this);
+	
+}
+
+void IntrinsicController::createTakePicView() {
+	takePicView = new TakePicView(Enums::controllerEnum::INTRINSIC);
+	takePicView->setCalibrationController(*this);
+	takePicView->setModal(true);
+	takePicView->show();
 }

@@ -4,18 +4,37 @@
 #include "scanningView.h"
 #include "scanInputView.h"
 #include "resultsView.h"
+#include "intrinsicController.h"
+#include "extrinsicController.h"
+#include "calibrationModel.h"
 #include <qlabel.h>
 #include <qboxlayout.h>
 #include "enums.h"
 
 HomeView::HomeView(QWidget *parent) : QDialog (parent)
 {
+	InputView * intrinsicInputView = new InputView(Enums::controllerEnum::INTRINSIC);
+	InputView * extrinsicInputView = new InputView(Enums::controllerEnum::EXTRINSIC);
+	ScanInputView * scanInputView = new ScanInputView();
+	ResultsView * resultsView = new ResultsView();
+
+	intrinsicController = new IntrinsicController();
+	extrinsicController = new ExtrinsicController();
+	intrinsicCalibrationModel = new CalibrationModel();
+	extrinsicCalibrationModel = new CalibrationModel();
+	intrinsicController->setCalibrationModel(*intrinsicCalibrationModel);
+	extrinsicController->setCalibrationModel(*extrinsicCalibrationModel);
+	intrinsicInputView->setCalibrationController(*intrinsicController);
+	extrinsicInputView->setCalibrationController(*extrinsicController);
+	intrinsicController->setInputView(*intrinsicInputView);
+	extrinsicController->setInputView(*extrinsicInputView);
+
 	tabWidget = new QTabWidget;
 	tabWidget->addTab(new TestTab(), "Home");
-	tabWidget->addTab(new InputView(Enums::INTRINSIC), "Intrinsic Calibration");
-	tabWidget->addTab(new InputView(Enums::EXTRINSIC), "Extrinsic Calibration");
-	tabWidget->addTab(new ScanInputView(), "Scan Object");
-	tabWidget->addTab(new ResultsView(), "Results/Export");
+	tabWidget->addTab(intrinsicInputView, "Intrinsic Calibration");
+	tabWidget->addTab(extrinsicInputView, "Extrinsic Calibration");
+	tabWidget->addTab(scanInputView, "Scan Object");
+	tabWidget->addTab(resultsView, "Results/Export");
 
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);

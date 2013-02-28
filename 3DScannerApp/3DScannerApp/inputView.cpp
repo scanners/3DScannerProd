@@ -1,10 +1,9 @@
 // Other Includes
 #include "inputView.h"
 #include "takePicView.h"
-#include "calibrationController.h"
 #include "intrinsicController.h"
 #include "extrinsicController.h"
-#include "calibrationModel.h"
+#include "calibrationController.h"
 #include "enums.h"
 #include <qapplication.h>
 #include <qlabel.h>
@@ -47,6 +46,10 @@ InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 	
 }
 
+void InputView::setCalibrationController(CalibrationController& calibControl) {
+	calibrationController = &calibControl;
+}
+
 void InputView::showMessage(QString msg)
 {
 	// todo
@@ -56,15 +59,9 @@ void InputView::showMessage(QString msg)
 
 void InputView::createTakePicView()
 {
-	CalibrationController * controller;
-	if (calibrationType == Enums::controllerEnum::INTRINSIC) {
-		controller = new IntrinsicController();
-	} else if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
-		controller = new ExtrinsicController();
-	}
-	CalibrationModel * model = new CalibrationModel(10,10);
-	controller->setCalibrationModel(*model);
-	model->setCalibrationController(*controller);
+	//--------------HANDLE ERRORS-----------------------
+	calibrationController->setNumCorners(horizontalText->text().toInt(), verticalText->text().toInt());
+	calibrationController->createTakePicView();
 }
 
 void InputView::createFileDialog()
@@ -73,13 +70,6 @@ void InputView::createFileDialog()
 		"C:/", QFileDialog::ShowDirsOnly);
 	loadDirText->setText(dir);
 }
-
-/*
-void InputView::setCalibrationController(CalibrationController& calibControl)
-{
-	// todo
-}
-*/
 
 void InputView::constructLayout(int calibType)
 {

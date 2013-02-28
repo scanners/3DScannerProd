@@ -14,7 +14,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 	{
 		// create intrinsic calib stuff
 		videoLabel = new QLabel(this);
-		videoLabel->setFixedSize(300,300);
+		videoLabel->setMinimumWidth(640);
+		videoLabel->setMinimumHeight(480);
 		titleLabel = new QLabel("Intrinsic Calibration");
 		picProgressLabel = new QLabel("Picture 1 of 20");
 		messageLabel = new QLabel("Messages: ");
@@ -39,7 +40,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 	{
 		// create extrin calib stuff
 		videoLabel = new QLabel(this);
-		videoLabel->setFixedSize(300,300);
+		videoLabel->setMinimumWidth(640);
+		videoLabel->setMinimumHeight(480);
 		titleLabel = new QLabel("Extrinsic Calibration");
 		picProgressLabel = new QLabel("Picture 1 of 4");
 		messageLabel = new QLabel("Messages: ");
