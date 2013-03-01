@@ -2,12 +2,13 @@
 
 #include "calibrationModel.h"
 
-CalibrationModel::CalibrationModel(): successes(0) {
-	
+CalibrationModel::CalibrationModel(): successes(0), objectPoints(1) {
+
 }
 
 void CalibrationModel::saveFiles(string directory) {
 	//CHECK FOR CONTROLLER TYPE AND ONLY SAVE RELEVANT FILE, i.e. intrinsics or extrinsics
+	directory = "C:/Users/scanners/Desktop/";
 	FileStorage fs(directory + "intrinsics.xml", FileStorage::WRITE);
 	fs << "intrinsicMatrix" << intrinsicMatrix << "distortionCoefficients" << distortionCoefficients;
 	fs.release();
@@ -54,20 +55,36 @@ int CalibrationModel::findCorners(Mat image) {
 void CalibrationModel::calibrateIntrinsics() {
 	intrinsicMatrix = Mat::eye(3, 3, CV_64F);
 	distortionCoefficients = Mat::zeros(8, 1, CV_64F);
-
-	objectPoints.resize(imagePoints.size());
-	calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
+	float squareUnits = 1.0f;
+	for( int i = 0; i < innerCorners.height; i++ ) {
+            for( int j = 0; j < innerCorners.width; j++ ) {
+                objectPoints[0].push_back(Point3f(float(j*squareUnits),
+                                          float(i*squareUnits), 0));
+			}
+	}
+	objectPoints.resize(imagePoints.size(), objectPoints[0]);
+	double error = calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
+	saveFiles("");
 }
 
 void CalibrationModel::calibrateExtrinsics(int boardLocation) {
+	float squareUnits = 1.0f;
+	for( int i = 0; i < innerCorners.height; i++ ) {
+            for( int j = 0; j < innerCorners.width; j++ ) {
+                objectPoints[0].push_back(Point3f(float(j*squareUnits),
+                                          float(i*squareUnits), 0));
+			}
+	}
+	objectPoints.resize(imagePoints.size(), objectPoints[0]);
+	
 	CvMat objectPointsC = Mat(objectPoints, true);
 	CvMat imagePointsC = Mat(imagePoints, true);
 	CvMat intrinsicMatrixC = intrinsicMatrix;
 	CvMat distortionCoefficientsC = distortionCoefficients;
 	//--------------MAY NEED TO PUT SOME DATA IN THESE (e.g. aspect ratio)
-	CvMat * rotationVectorC = cvCreateMat(3, 3, CV_32FC1);
-	CvMat * translationVectorC = cvCreateMat(4, 1, CV_32FC1);
+	CvMat * rotationVectorC = cvCreateMat(3, 3, CV_64F);
+	CvMat * translationVectorC = cvCreateMat(4, 1, CV_64F);
 	cvFindExtrinsicCameraParams2(&objectPointsC, &imagePointsC, &intrinsicMatrixC, 
 		&distortionCoefficientsC, rotationVectorC, translationVectorC);
 	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
@@ -77,7 +94,7 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 		groundRotationVector = Mat(rotationVectorC, true);
 		groundTranslationVector = Mat(translationVectorC, true);
 	}
-	
+
 }
 
 void CalibrationModel::setNumCorners(int horizontal, int vertical) {

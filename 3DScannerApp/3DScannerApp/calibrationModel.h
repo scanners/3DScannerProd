@@ -2,7 +2,7 @@
 #define CALIBRATIONMODEL_H
 
 //////////////////  CHANGE THESE VALUES /////////////////////////////////////
-#define INTRINSIC_MAX_NUM_SUCCESSES 1
+#define INTRINSIC_MAX_NUM_SUCCESSES 10
 #define EXTRINSIC_MAX_NUM_SUCCESSES 5
 #define NUM_BOARDS_TO_FIND_CORNERS 20
 
