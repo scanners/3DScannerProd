@@ -16,6 +16,18 @@ void CalibrationController::saveFiles(string directory) {
 
 }
 
+bool CalibrationController::loadXML() {
+	return calibrationModel->loadXML();
+}
+
 void CalibrationController::setNumCorners(int horizontal, int vertical) {
 	calibrationModel->setNumCorners(horizontal, vertical);
+}
+
+void CalibrationController::setSaveDirectory(string directory) {
+	calibrationModel->setSaveDirectory(directory);
+}
+
+void CalibrationController::setLoadDirectory(string directory) {
+	calibrationModel->setLoadDirectory(directory);
 }

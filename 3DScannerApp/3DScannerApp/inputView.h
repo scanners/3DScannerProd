@@ -24,14 +24,16 @@ class InputView : public QWidget
 	Q_OBJECT
 
 private slots:
-	void createTakePicView();
-	void createFileDialog();
+	void startCalibration();
+	void createLoadFileDialog();
+	void createSaveFileDialog();
 private:
 	TakePicView * takePicView;
 	CalibrationController * calibrationController;
 	QLabel * message;
 	int calibrationType;
 	QString dir;
+	QLineEdit * saveDirText;
 	QLineEdit * loadDirText;
 	QGridLayout * mainLayout;
 	QLabel * horizontalLabel;
@@ -41,9 +43,11 @@ private:
 	QPushButton * exitButton;
 	QLineEdit * horizontalText;
 	QLineEdit * verticalText;
+	QLabel * saveLabel;
 	QLabel * loadLabel; // for extrinsic calib
-	QPushButton * browseButton;
-	void constructLayout(int calibType);
+	QPushButton * saveBrowseButton;
+	QPushButton * loadBrowseButton;
+	void constructLayout();
 public:
 	explicit InputView(int calibType, QWidget *parent = 0);
 	void showMessage(QString msg);

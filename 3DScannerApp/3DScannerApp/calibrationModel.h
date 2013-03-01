@@ -2,22 +2,20 @@
 #define CALIBRATIONMODEL_H
 
 //////////////////  CHANGE THESE VALUES /////////////////////////////////////
-#define INTRINSIC_MAX_NUM_SUCCESSES 10
-#define EXTRINSIC_MAX_NUM_SUCCESSES 5
-#define NUM_BOARDS_TO_FIND_CORNERS 20
+#define INTRINSIC_REQUIRED_NUM_SUCCESSES 10
+#define EXTRINSIC_REQUIRED_NUM_SUCCESSES 2
 
-#include <string>
+using std::string;
 using namespace::cv;
 
+const float squareUnits = 1.0f;
 
 class CalibrationModel {
 private:
 	Size innerCorners;
 	Size imageSize;
 	int corners;
-	vector<vector<Point3f>> objectPoints;
     vector<vector<Point2f>> imagePoints;
-	int maxSuccesses;
 	int successes;
 	Mat intrinsicMatrix;
 	Mat distortionCoefficients;
@@ -27,20 +25,20 @@ private:
 	Mat groundRotationVector;
 	Mat backTranslationVector;
 	Mat groundTranslationVector;
-	string intrinsicFileName;
-	string extBackRotFileName;
-	string extBackTransFileName;
-	string extGroundRotFileName;
-	string extGroundTransFileName;
+	string saveDirectory;
+	string loadDirectory;
 public:
 	CalibrationModel();
-	void saveFiles(string directory);
-	bool loadXML(string directory);
-	int getMaxNumSuccesses(int controllerType);
+	void saveIntrinsicFiles();
+	void saveExtrinsicFiles();
+	bool loadXML();
+	int getRequiredNumSuccesses(int controllerType);
 	int findCorners(Mat image);
 	void calibrateIntrinsics();
 	void calibrateExtrinsics(int boardLocation);
 	void setNumCorners(int horizontal, int vertical);
+	void setSaveDirectory(string directory);
+	void setLoadDirectory(string directory);
 };
 
 #endif // CALIBRATIONMODEL_H

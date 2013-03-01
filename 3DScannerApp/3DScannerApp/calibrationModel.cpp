@@ -2,20 +2,25 @@
 
 #include "calibrationModel.h"
 
-CalibrationModel::CalibrationModel(): successes(0), objectPoints(1) {
+CalibrationModel::CalibrationModel(): successes(0) {
 
 }
 
-void CalibrationModel::saveFiles(string directory) {
-	//CHECK FOR CONTROLLER TYPE AND ONLY SAVE RELEVANT FILE, i.e. intrinsics or extrinsics
-	directory = "C:/Users/scanners/Desktop/";
-	FileStorage fs(directory + "intrinsics.xml", FileStorage::WRITE);
+void CalibrationModel::saveIntrinsicFiles() {
+	FileStorage fs(saveDirectory + "\\intrinsics.xml", FileStorage::WRITE);
 	fs << "intrinsicMatrix" << intrinsicMatrix << "distortionCoefficients" << distortionCoefficients;
 	fs.release();
 }
 
-bool CalibrationModel::loadXML(string directory) {
-	FileStorage fs(directory + "intrinsics.xml", FileStorage::READ);
+void CalibrationModel::saveExtrinsicFiles() {
+	FileStorage fs(saveDirectory + "\\extrinsics.xml", FileStorage::WRITE);
+	fs << "backRotationVector" << backRotationVector << "backTranslationVector" << backTranslationVector;
+	fs << "groundRotationVector" << groundRotationVector << "groundTranslationVector" << groundTranslationVector;
+	fs.release();
+}
+
+bool CalibrationModel::loadXML() {
+	FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
 	fs["intrinsicMatrix"] >> intrinsicMatrix;
 	fs["distortionCoefficients"] >> distortionCoefficients;
 	fs.release();
@@ -23,12 +28,12 @@ bool CalibrationModel::loadXML(string directory) {
 	return false;
 }
 
-int CalibrationModel::getMaxNumSuccesses(int controllerType) {
+int CalibrationModel::getRequiredNumSuccesses(int controllerType) {
 	switch (controllerType) {
 	case Enums::controllerEnum::INTRINSIC:
-		return INTRINSIC_MAX_NUM_SUCCESSES;
+		return INTRINSIC_REQUIRED_NUM_SUCCESSES;
 	case Enums::controllerEnum::EXTRINSIC:
-		return EXTRINSIC_MAX_NUM_SUCCESSES;
+		return EXTRINSIC_REQUIRED_NUM_SUCCESSES;
 	default:
 		return -1;
 	}
@@ -53,9 +58,9 @@ int CalibrationModel::findCorners(Mat image) {
 }
 
 void CalibrationModel::calibrateIntrinsics() {
+	vector<vector<Point3f>> objectPoints(1);
 	intrinsicMatrix = Mat::eye(3, 3, CV_64F);
 	distortionCoefficients = Mat::zeros(8, 1, CV_64F);
-	float squareUnits = 1.0f;
 	for( int i = 0; i < innerCorners.height; i++ ) {
             for( int j = 0; j < innerCorners.width; j++ ) {
                 objectPoints[0].push_back(Point3f(float(j*squareUnits),
@@ -65,11 +70,11 @@ void CalibrationModel::calibrateIntrinsics() {
 	objectPoints.resize(imagePoints.size(), objectPoints[0]);
 	double error = calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
-	saveFiles("");
+	saveIntrinsicFiles();
 }
 
 void CalibrationModel::calibrateExtrinsics(int boardLocation) {
-	float squareUnits = 1.0f;
+	vector<vector<Point3f>> objectPoints(1);
 	for( int i = 0; i < innerCorners.height; i++ ) {
             for( int j = 0; j < innerCorners.width; j++ ) {
                 objectPoints[0].push_back(Point3f(float(j*squareUnits),
@@ -77,26 +82,30 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 			}
 	}
 	objectPoints.resize(imagePoints.size(), objectPoints[0]);
-	
-	CvMat objectPointsC = Mat(objectPoints, true);
-	CvMat imagePointsC = Mat(imagePoints, true);
-	CvMat intrinsicMatrixC = intrinsicMatrix;
-	CvMat distortionCoefficientsC = distortionCoefficients;
-	//--------------MAY NEED TO PUT SOME DATA IN THESE (e.g. aspect ratio)
-	CvMat * rotationVectorC = cvCreateMat(3, 3, CV_64F);
-	CvMat * translationVectorC = cvCreateMat(4, 1, CV_64F);
-	cvFindExtrinsicCameraParams2(&objectPointsC, &imagePointsC, &intrinsicMatrixC, 
-		&distortionCoefficientsC, rotationVectorC, translationVectorC);
-	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
-		backRotationVector = Mat(rotationVectorC, true);
-		backTranslationVector = Mat(translationVectorC, true);
-	} else if (boardLocation == Enums::extrinsicBoardLocation::GROUND_PLANE) {
-		groundRotationVector = Mat(rotationVectorC, true);
-		groundTranslationVector = Mat(translationVectorC, true);
-	}
 
+	Mat rotationVector;
+	Mat translationVector;
+
+	solvePnP(objectPoints[0], imagePoints[0], intrinsicMatrix, distortionCoefficients, rotationVector, translationVector);
+	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
+		backRotationVector = rotationVector;
+		backTranslationVector = translationVector;
+	} else if (boardLocation == Enums::extrinsicBoardLocation::GROUND_PLANE) {
+		groundRotationVector = rotationVector;
+		groundTranslationVector = translationVector;
+	}
+	//Reset for next extrinsic calibration
+	imagePoints.clear();
 }
 
 void CalibrationModel::setNumCorners(int horizontal, int vertical) {
 	innerCorners = Size((horizontal - 1), (vertical - 1));
+}
+
+void CalibrationModel::setSaveDirectory(string directory) {
+	saveDirectory = directory;
+}
+
+void CalibrationModel::setLoadDirectory(string directory) {
+	loadDirectory = directory;
 }
