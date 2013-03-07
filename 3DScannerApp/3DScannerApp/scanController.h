@@ -21,7 +21,7 @@ public:
 	void setLoadDirectory(string loadDir);
 	void createScanningView();
 	void saveScan();
-	void sendRegion(float pixel);
+	void setRegion(int yCoordinate);
 	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();

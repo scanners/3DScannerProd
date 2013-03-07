@@ -17,11 +17,11 @@ protected:
 	TakePicView * takePicView;
 public:
 	void setCalibrationModel(CalibrationModel& calibModel);
-	void saveFiles(string);
 	virtual void findCorners(Mat image) = 0;
 	bool loadXML();
 	void setInputView(InputView& inpView);
 	void setNumCorners(int horizontal, int vertical);
+	void resetSuccesses();
 	void setSaveDirectory(string directory);
 	void setLoadDirectory(string directory);
 	virtual void createTakePicView() = 0;

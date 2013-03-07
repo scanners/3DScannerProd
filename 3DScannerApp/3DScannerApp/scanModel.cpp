@@ -29,16 +29,18 @@ void ScanModel::setLoadDirectory(string loadDir) {
 	loadDirectory = loadDir;
 }
 
-int ScanModel::sendRegion(float yCoord) {
-	return 0;
+int ScanModel::setRegion(int yCoordinate) {
+	regionYCoordinates.push_back(yCoordinate);
+	return regionYCoordinates.size();
 }
 
 int ScanModel::getNumStoredCoords() {
 	return 0;
 }
 
-vector<float>* ScanModel::sortStoredCoords() {
-	return NULL;
+vector<int> ScanModel::sortedStoredYCoords() {
+	std::sort(regionYCoordinates.begin(), regionYCoordinates.end());
+	return regionYCoordinates;
 }
 
 bool ScanModel::savePicture(Image * image) {
@@ -96,4 +98,8 @@ void ScanModel::saveFile(string fileName) {
 
 void ScanModel::exit() {
 
+}
+
+int ScanModel::getRequiredNumStoredYCoords() {
+	return REQUIRED_NUM_STORED_Y_COORDS;
 }

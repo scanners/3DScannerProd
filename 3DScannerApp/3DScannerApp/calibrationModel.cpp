@@ -3,7 +3,7 @@
 
 #include "calibrationModel.h"
 
-CalibrationModel::CalibrationModel(): successes(0) {
+CalibrationModel::CalibrationModel() {
 
 }
 
@@ -105,6 +105,10 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 
 void CalibrationModel::setNumCorners(int horizontal, int vertical) {
 	innerCorners = Size((horizontal - 1), (vertical - 1));
+}
+
+void CalibrationModel::resetSuccesses() {
+	successes = 0;
 }
 
 void CalibrationModel::setSaveDirectory(string directory) {

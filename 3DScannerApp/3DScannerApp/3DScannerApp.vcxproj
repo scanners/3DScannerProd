@@ -121,6 +121,7 @@
     <ClCompile Include="line.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="objectPoint.cpp" />
+    <ClCompile Include="overlayView.cpp" />
     <ClCompile Include="plane.cpp" />
     <ClCompile Include="polygonalMesh.cpp" />
     <ClCompile Include="resultsView.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="intrinsicController.h" />
     <ClInclude Include="line.h" />
     <ClInclude Include="objectPoint.h" />
+    <ClInclude Include="overlayView.h" />
     <ClInclude Include="plane.h" />
     <ClInclude Include="polygonalMesh.h" />
     <CustomBuild Include="resultsView.h">

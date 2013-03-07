@@ -91,6 +91,7 @@ void InputView::startCalibration()
 		{
 			this->showMessage(""); // reset the message to a blank string, we could also just hide it
 			calibrationController->setNumCorners(horizontalText->text().toInt(), verticalText->text().toInt());
+			calibrationController->resetSuccesses();
 			calibrationController->setSaveDirectory(saveDirText->text().toStdString());
 			if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
 				calibrationController->setLoadDirectory(loadDirText->text().toStdString());

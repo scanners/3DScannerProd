@@ -37,6 +37,7 @@ public:
 	void calibrateIntrinsics();
 	void calibrateExtrinsics(int boardLocation);
 	void setNumCorners(int horizontal, int vertical);
+	void resetSuccesses();
 	void setSaveDirectory(string directory);
 	void setLoadDirectory(string directory);
 };

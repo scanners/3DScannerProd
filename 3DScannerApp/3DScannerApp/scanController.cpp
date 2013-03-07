@@ -37,8 +37,12 @@ void ScanController::saveScan() {
 
 }
 
-void ScanController::sendRegion(float region) {
-
+void ScanController::setRegion(int yCoordinate) {
+	int regions = scanModel->setRegion(yCoordinate);
+	if (regions == scanModel->getRequiredNumStoredYCoords()) {
+		scanModel->sortedStoredYCoords();
+		//DRAW OVERLAY--Should instead get 4 sets of pixels from model;
+	}
 }
 
 bool ScanController::savePicture(Image * image) {

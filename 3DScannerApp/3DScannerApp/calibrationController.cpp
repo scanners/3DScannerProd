@@ -12,16 +12,16 @@ void CalibrationController::setInputView(InputView& inpView) {
 	inputView = &inpView;
 }
 
-void CalibrationController::saveFiles(string directory) {
-
-}
-
 bool CalibrationController::loadXML() {
 	return calibrationModel->loadXML();
 }
 
 void CalibrationController::setNumCorners(int horizontal, int vertical) {
 	calibrationModel->setNumCorners(horizontal, vertical);
+}
+
+void CalibrationController::resetSuccesses() {
+	calibrationModel->resetSuccesses();
 }
 
 void CalibrationController::setSaveDirectory(string directory) {
