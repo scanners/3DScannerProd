@@ -2,22 +2,15 @@
 
 #include "extrinsic.h"
 
-Extrinsic::Extrinsic(Mat backRot, Mat backTrans, Mat groundRot, Mat groundTrans) {
-
+Extrinsic::Extrinsic(Mat rotation, Mat translation) {
+	rotationMatrix = rotation;
+	translationMatrix = translation;
 }
 
-Mat Extrinsic::getBackRotationMatrix() {
-	return backRot;
+Mat Extrinsic::getRotationMatrix() {
+	return rotationMatrix;
 }
 
-Mat Extrinsic::getBackTranslationMatrix() {
-	return backTrans;
-}
-
-Mat Extrinsic::getGroundRotationMatrix() {
-	return groundRot;
-}
-
-Mat Extrinsic::getGroundTranslationMatrix() {
-	return groundTrans;
+Mat Extrinsic::getTranslationMatrix() {
+	return translationMatrix;
 }

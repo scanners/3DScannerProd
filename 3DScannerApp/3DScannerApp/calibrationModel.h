@@ -21,10 +21,10 @@ private:
 	Mat distortionCoefficients;
 	vector<Mat> rotationVectors;
 	vector<Mat> translationVectors;
-	Mat backRotationVector;
-	Mat groundRotationVector;
-	Mat backTranslationVector;
-	Mat groundTranslationVector;
+	Mat backRotationMatrix;
+	Mat groundRotationMatrix;
+	Mat backTranslationMatrix;
+	Mat groundTranslationMatrix;
 	string saveDirectory;
 	string loadDirectory;
 public:

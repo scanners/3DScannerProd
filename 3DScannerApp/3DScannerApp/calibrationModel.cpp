@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <exception>
 
 #include "calibrationModel.h"
 
@@ -14,18 +15,23 @@ void CalibrationModel::saveIntrinsicFiles() {
 
 void CalibrationModel::saveExtrinsicFiles() {
 	FileStorage fs(saveDirectory + "\\extrinsics.xml", FileStorage::WRITE);
-	fs << "backRotationVector" << backRotationVector << "backTranslationVector" << backTranslationVector;
-	fs << "groundRotationVector" << groundRotationVector << "groundTranslationVector" << groundTranslationVector;
+	fs << "backRotationMatrix" << backRotationMatrix << "backTranslationMatrix" << backTranslationMatrix;
+	fs << "groundRotationMatrix" << groundRotationMatrix << "groundTranslationMatrix" << groundTranslationMatrix;
 	fs.release();
 }
 
 bool CalibrationModel::loadXML() {
-	FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
-	fs["intrinsicMatrix"] >> intrinsicMatrix;
-	fs["distortionCoefficients"] >> distortionCoefficients;
-	fs.release();
-
-	return false;
+	try {
+		FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
+		fs["intrinsicMatrix"] >> intrinsicMatrix;
+		fs["distortionCoefficients"] >> distortionCoefficients;
+		fs.release();
+		return true;
+	} catch (cv::Exception& e) {
+		return false;
+	} catch (std::exception& e) {
+		return false;
+	}
 }
 
 int CalibrationModel::getRequiredNumSuccesses(int controllerType) {
@@ -34,8 +40,6 @@ int CalibrationModel::getRequiredNumSuccesses(int controllerType) {
 		return INTRINSIC_REQUIRED_NUM_SUCCESSES;
 	case Enums::controllerEnum::EXTRINSIC:
 		return EXTRINSIC_REQUIRED_NUM_SUCCESSES;
-	default:
-		return -1;
 	}
 }
 
@@ -54,7 +58,6 @@ int CalibrationModel::findCorners(Mat image) {
 	} else {
 		return -1;
 	}
-
 }
 
 void CalibrationModel::calibrateIntrinsics() {
@@ -83,16 +86,18 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 	}
 	objectPoints.resize(imagePoints.size(), objectPoints[0]);
 
-	Mat rotationVector;
-	Mat translationVector;
+	Mat rotationMatrix3x1;
+	Mat rotationMatrix;
+	Mat translationMatrix;
 
-	solvePnP(objectPoints[0], imagePoints[0], intrinsicMatrix, distortionCoefficients, rotationVector, translationVector);
+	solvePnP(objectPoints[0], imagePoints[0], intrinsicMatrix, distortionCoefficients, rotationMatrix3x1, translationMatrix);
+	Rodrigues(rotationMatrix3x1, rotationMatrix);
 	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
-		backRotationVector = rotationVector;
-		backTranslationVector = translationVector;
+		backRotationMatrix = rotationMatrix;
+		backTranslationMatrix = translationMatrix;
 	} else if (boardLocation == Enums::extrinsicBoardLocation::GROUND_PLANE) {
-		groundRotationVector = rotationVector;
-		groundTranslationVector = translationVector;
+		groundRotationMatrix = rotationMatrix;
+		groundTranslationMatrix = translationMatrix;
 	}
 	//Reset for next extrinsic calibration
 	imagePoints.clear();

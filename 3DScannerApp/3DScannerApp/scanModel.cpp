@@ -1,6 +1,9 @@
 #include "stdafx.h"
-
+#include <exception>
 #include "scanModel.h"
+#include "intrinsic.h"
+#include "extrinsic.h"
+#include "image.h"
 
 ScanModel::ScanModel() {
 
@@ -18,6 +21,14 @@ void ScanModel::convertCoords() {
 
 }
 
+void ScanModel::setSaveDirectory(string saveDir) {
+	saveDirectory = saveDir;
+}
+
+void ScanModel::setLoadDirectory(string loadDir) {
+	loadDirectory = loadDir;
+}
+
 int ScanModel::sendRegion(float yCoord) {
 	return 0;
 }
@@ -30,8 +41,37 @@ vector<float>* ScanModel::sortStoredCoords() {
 	return NULL;
 }
 
-bool ScanModel::savePicture(Image image) {
+bool ScanModel::savePicture(Image * image) {
 	return false;
+}
+
+bool ScanModel::loadXML() {
+	Mat intrinsicMatrix;
+	Mat distortionCoefficients;
+	Mat backRotationMatrix;
+	Mat groundRotationMatrix;
+	Mat backTranslationMatrix;
+	Mat groundTranslationMatrix;
+	try {
+		FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
+		fs["intrinsicMatrix"] >> intrinsicMatrix;
+		fs["distortionCoefficients"] >> distortionCoefficients;
+		fs.release();
+		FileStorage fs2(loadDirectory + "\\extrinsics.xml", FileStorage::READ);
+		fs2["backRotationMatrix"] >> backRotationMatrix;
+		fs2["backTranslationMatrix"] >> backTranslationMatrix;
+		fs2["groundRotationMatrix"] >> groundRotationMatrix;
+		fs2["groundTranslationMatrix"] >> groundTranslationMatrix;
+		fs2.release();
+	} catch (cv::Exception& e) {
+		return false;
+	} catch (std::exception& e) {
+		return false;
+	}
+	intrinsics = new Intrinsic(intrinsicMatrix, distortionCoefficients);
+	backExtrinsics = new Extrinsic(backRotationMatrix, backTranslationMatrix);
+	groundExtrinsics = new Extrinsic(groundRotationMatrix, groundTranslationMatrix);
+	return true;
 }
 
 bool ScanModel::isDoneScanning() {
@@ -55,9 +95,5 @@ void ScanModel::saveFile(string fileName) {
 }
 
 void ScanModel::exit() {
-
-}
-
-void ScanModel::loadDirectory(string directory) {
 
 }

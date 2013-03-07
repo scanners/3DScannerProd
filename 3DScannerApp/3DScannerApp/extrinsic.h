@@ -5,16 +5,12 @@ using cv::Mat;
 
 class Extrinsic {
 private:
-	Mat backRot;
-	Mat backTrans;
-	Mat groundRot;
-	Mat groundTrans;
+	Mat rotationMatrix;
+	Mat translationMatrix;
 public:
-	Extrinsic(Mat, Mat, Mat, Mat);
-	Mat getBackRotationMatrix();
-	Mat getBackTranslationMatrix();
-	Mat getGroundRotationMatrix();
-	Mat getGroundTranslationMatrix();
+	Extrinsic(Mat RotationMatrix, Mat translationMatrix);
+	Mat getRotationMatrix();
+	Mat getTranslationMatrix();
 };
 
 #endif //EXTRINSIC_H

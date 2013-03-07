@@ -5,43 +5,41 @@
 using std::vector;
 #include <string>
 using std::string;
-#include "plane.h"
-#include "objectPoint.h"
-#include "image.h"
-using cv::Mat;
+using namespace::cv;
+
+class Plane;
+class ObjectPoint;
+class Image;
+class Intrinsic;
+class Extrinsic;
 
 class ScanModel {
 private:
-	Mat intrinsics;
+	Intrinsic * intrinsics;
+	Extrinsic * backExtrinsics;
+	Extrinsic * groundExtrinsics;
 	vector<float> groundRegion;
-	Mat groundExtrinsicTrans;
-	Mat groundExtrinsicRot;
-	Mat distortion;
 	vector<float> backRegion;
-	Mat backExtrinsicTrans;
-	Mat backExtrinsicRot;
-	string intrinsicFileName;
-	string distortionFileName;
-	string extBackRotFileName;
-	string extBackTransFileName;
-	string extGroundRotFileName;
-	string extGroundTransFileName;
+	string saveDirectory;
+	string loadDirectory;
 public:
 	ScanModel();
 	void scan();
 	Plane* getLaserPlane();
 	void convertCoords();
+	void setSaveDirectory(string saveDir);
+	void setLoadDirectory(string loadDir);
 	int sendRegion(float);
 	int getNumStoredCoords();
 	vector<float>* sortStoredCoords();
-	bool savePicture(Image);
+	bool savePicture(Image * image);
+	bool loadXML();
 	bool isDoneScanning();
 	int buildImageObjects();
 	void processImage(int);
 	vector<ObjectPoint>* getObjectPoints();
 	void saveFile(string);
 	void exit();
-	void loadDirectory(string);
 };
 
 #endif //SCANMODEL_H

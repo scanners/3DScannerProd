@@ -5,12 +5,12 @@ using cv::Mat;
 
 class Intrinsic {
 private:
-	Mat intrinsic;
-	Mat distortion;
+	Mat intrinsicMatrix;
+	Mat distortionCoefficients;
 public:
-	Intrinsic(Mat, Mat);
-	Mat getIntrinsic();
-	Mat getDistortion();
+	Intrinsic(Mat intrinsicMatrix, Mat distortionCoefficients);
+	Mat getIntrinsicMatrix();
+	Mat getDistortionCoefficients();
 };
 
 #endif INTRINSIC_H

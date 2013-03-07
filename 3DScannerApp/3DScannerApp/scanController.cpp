@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
+#include "scanModel.h"
 #include "scanController.h"
+#include "scanningView.h"
+#include "image.h"
 
 ScanController::ScanController() {
 
@@ -10,23 +13,34 @@ void ScanController::startScan() {
 
 }
 
-void ScanController::saveFile(string fileName) {
-
+void ScanController::setSaveDirectory(string saveDir) {
+	scanModel->setSaveDirectory(saveDir);
 }
 
-bool ScanController::loadDirectory(string directory) {
-	return false;
+void ScanController::setLoadDirectory(string loadDir) {
+	scanModel->setLoadDirectory(loadDir);
 }
 
-//void ScanController::setHomeView(HomeView hv) {
-//	homeView = hv;
-//}
+bool ScanController::loadXML() {
+	return scanModel->loadXML();
+}
+
+void ScanController::createScanningView() {
+	scanningView = new ScanningView();
+	scanningView->setScanController(*this);
+	scanningView->setModal(true);
+	scanningView->show();
+}
+
+void ScanController::saveScan() {
+
+}
 
 void ScanController::sendRegion(float region) {
 
 }
 
-bool ScanController::savePicture(Image image) {
+bool ScanController::savePicture(Image * image) {
 	return false;
 }
 
@@ -34,6 +48,6 @@ void ScanController::exit() {
 
 }
 
-void ScanController::setScanModel(ScanModel sm) {
-	scanModel = sm;
+void ScanController::setScanModel(ScanModel& scanMod) {
+	scanModel = &scanMod;
 }

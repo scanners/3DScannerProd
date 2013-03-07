@@ -3,27 +3,27 @@
 
 #include <string>
 using std::string;
-#include "image.h"
-#include "scanModel.h"
+
+class ScanModel;
+class ScanningView;
+class Image;
 
 class ScanController {
 private:
-	//HomeView homeView;
-	//ResultsView resultsView;
-	//OverlayView overlayView;
-	//ScanningView scanningView;
-	//ScanInputView scanInputView;
-	ScanModel scanModel;
+	ScanningView * scanningView;
+	ScanModel * scanModel;
 public:
 	ScanController();
 	void startScan();
-	void saveFile(string);
-	bool loadDirectory(string);
-	//void setHomeView(HomeView);
+	void setSaveDirectory(string saveDir);
+	void setLoadDirectory(string loadDir);
+	void createScanningView();
+	void saveScan();
 	void sendRegion(float);
-	bool savePicture(Image);
+	bool savePicture(Image * image);
+	bool loadXML();
 	void exit();
-	void setScanModel(ScanModel);
+	void setScanModel(ScanModel& scanMod);
 };
 
 #endif //SCANCONTROLLER_H
