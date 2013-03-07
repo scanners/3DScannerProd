@@ -33,6 +33,9 @@ private:
 	QLabel * message;
 	int calibrationType;
 	QString dir;
+	QDir * loadDir;
+	QDir * saveDir;
+	bool errors;
 	QLineEdit * saveDirText;
 	QLineEdit * loadDirText;
 	QGridLayout * mainLayout;

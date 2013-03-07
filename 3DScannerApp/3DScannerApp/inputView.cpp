@@ -15,9 +15,6 @@
 
 InputView::InputView(int calibType, QWidget *parent) : QWidget(parent)
 {
-	message = new QLabel(); // this is just used to set error messages
-	message->setVisible(false);
-
 	calibrationType = calibType;
 	constructLayout();
 
@@ -53,20 +50,63 @@ void InputView::showMessage(QString msg)
 
 void InputView::startCalibration()
 {
+	errors = false; // reset errors previously set
 	//--------------HANDLE ERRORS-----------------------
-	calibrationController->setNumCorners(horizontalText->text().toInt(), verticalText->text().toInt());
-	calibrationController->setSaveDirectory(saveDirText->text().toStdString());
-	if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
-		calibrationController->setLoadDirectory(loadDirText->text().toStdString());
-		calibrationController->loadXML();
+	// Input Errors --> No input given
+	if (this->horizontalText->text().toInt() == 0 || this->verticalText->text().toInt() == 0)
+	{
+		this->showMessage("Error, please input a valid integer.");
+		errors = true;
 	}
-	calibrationController->createTakePicView();
+	else
+	{
+		// check if there is any text at all
+		if (saveDirText->text().isEmpty())
+		{
+			this->showMessage("Please select a save directory.");
+			errors = true;
+		}
+		// check if the directory exists (it should, but just in case)
+		else if(!saveDir->exists())
+		{
+			this->showMessage("This directory does not exist. Please check the directory input!");
+			errors = true;
+		}
+		// check for extrinsic calibration-exclusive errors
+		if (calibrationType == Enums::controllerEnum::EXTRINSIC)
+		{
+			// check if the directory text is empty
+			if (loadDirText->text().isEmpty())
+			{
+				this->showMessage("Please select a load directory.");
+				errors = true;
+			}
+			// check if the directory exists
+			else if (!loadDir->exists())
+			{
+				this->showMessage("This directory does not exist. Please check the directory input(s)!");
+				errors = true;
+			}
+		}
+		if (errors == false)
+		{
+			this->showMessage(""); // reset the message to a blank string, we could also just hide it
+			calibrationController->setNumCorners(horizontalText->text().toInt(), verticalText->text().toInt());
+			calibrationController->setSaveDirectory(saveDirText->text().toStdString());
+			if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
+				calibrationController->setLoadDirectory(loadDirText->text().toStdString());
+				calibrationController->loadXML();
+			}
+			calibrationController->createTakePicView();
+		}
+	}
 }
 
 void InputView::createSaveFileDialog() {
 	dir = QFileDialog::getExistingDirectory(this, "Select Calibration Save Directory",
 		"C:/", QFileDialog::ShowDirsOnly);
 	saveDirText->setText(dir);
+	saveDir = new QDir(saveDirText->text());
 }
 
 void InputView::createLoadFileDialog()
@@ -74,10 +114,14 @@ void InputView::createLoadFileDialog()
 	dir = QFileDialog::getExistingDirectory(this, "Select Calibration Load Directory",
 		"C:/", QFileDialog::ShowDirsOnly);
 	loadDirText->setText(dir);
+	loadDir = new QDir(loadDirText->text());
 }
 
 void InputView::constructLayout()
 {
+	message = new QLabel("This is a test"); // this is just used to set error messages
+	message->setVisible(false);
+
 	if (calibrationType == Enums::controllerEnum::INTRINSIC)
 	{
 		mainLayout = new QGridLayout();
@@ -93,6 +137,7 @@ void InputView::constructLayout()
 		verticalText = new QLineEdit();
 		verticalText->setPlaceholderText("Number of Vertical Squares");
 		saveDirText = new QLineEdit();
+		saveDirText->setReadOnly(true);
 		saveDirText->setPlaceholderText("Directory to save intrinsic calibration data");
 
 		// Add widgets to layout
@@ -106,6 +151,7 @@ void InputView::constructLayout()
 		mainLayout->addWidget(startButton, 4, 1);
 		mainLayout->addWidget(exitButton, 4, 2);
 		mainLayout->addWidget(messagesLabel, 5, 0);
+		mainLayout->addWidget(message, 5, 1);
 		setLayout(mainLayout);
 	}
 	else if (calibrationType == Enums::controllerEnum::EXTRINSIC)
@@ -128,8 +174,10 @@ void InputView::constructLayout()
 		verticalText = new QLineEdit();
 		verticalText->setPlaceholderText("Number of Vertical Squares");
 		saveDirText = new QLineEdit();
+		saveDirText->setReadOnly(true);
 		saveDirText->setPlaceholderText("Directory to save extrinsic calibration data");
 		loadDirText = new QLineEdit();
+		loadDirText->setReadOnly(true);
 		loadDirText->setPlaceholderText("Directory to load intrinsic calibration data");
 
 		// Add widgets to layout
@@ -146,6 +194,7 @@ void InputView::constructLayout()
 		mainLayout->addWidget(startButton, 5, 1);
 		mainLayout->addWidget(exitButton, 5, 2);
 		mainLayout->addWidget(messagesLabel, 6, 0);
+		mainLayout->addWidget(message, 6, 1);
 		setLayout(mainLayout);
 	}
 }

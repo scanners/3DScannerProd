@@ -69,6 +69,10 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
 		timer->start(20);
 	}
+	else
+	{
+		videoLabel->setPixmap(QPixmap("noCamera.png"));
+	}
 }
 
 void TakePicView::displayVideoFrame()
@@ -102,14 +106,16 @@ void TakePicView::closeEvent(QCloseEvent * event)
 void TakePicView::takePicture()
 {
 	calibrationController->findCorners(image);
+	// **** will need to check if the picture was taken successfully **** \\ 
+	
 }
 
 void TakePicView::setCalibrationController(CalibrationController& calibControl){
 	calibrationController = &calibControl;
 }
 
-void TakePicView::incrementSuccesses(int successes, int maxNumSuccesses) {
-
+void TakePicView::incrementSuccesses(int successes, int requiredNumSuccesses) {
+	// todo
 }
 
 void TakePicView::showMessage(int messageEnum) {
