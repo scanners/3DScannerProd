@@ -5,12 +5,14 @@
 using std::string;
 
 class ScanModel;
+class ScanInputView;
 class ScanningView;
 class Image;
 
 class ScanController {
 private:
 	ScanningView * scanningView;
+	ScanInputView * scanInputView;
 	ScanModel * scanModel;
 public:
 	ScanController();
@@ -19,11 +21,12 @@ public:
 	void setLoadDirectory(string loadDir);
 	void createScanningView();
 	void saveScan();
-	void sendRegion(float);
+	void sendRegion(float pixel);
 	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();
 	void setScanModel(ScanModel& scanMod);
+	void setScanInputView(ScanInputView& scanInputView);
 };
 
 #endif //SCANCONTROLLER_H

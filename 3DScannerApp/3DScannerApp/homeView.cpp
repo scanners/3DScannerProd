@@ -1,12 +1,13 @@
 #include <qwidget.h>
 #include "homeView.h"
 #include "inputView.h"
-#include "scanningView.h"
 #include "scanInputView.h"
 #include "resultsView.h"
 #include "intrinsicController.h"
 #include "extrinsicController.h"
 #include "calibrationModel.h"
+#include "scanController.h"
+#include "scanModel.h"
 #include <qlabel.h>
 #include <qboxlayout.h>
 
@@ -28,6 +29,12 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	extrinsicInputView->setCalibrationController(*extrinsicController);
 	intrinsicController->setInputView(*intrinsicInputView);
 	extrinsicController->setInputView(*extrinsicInputView);
+
+	scanController = new ScanController();
+	scanModel = new ScanModel();
+	scanController->setScanModel(*scanModel);
+	scanInputView->setScanController(*scanController);
+	scanController->setScanInputView(*scanInputView);
 
 	tabWidget = new QTabWidget;
 	tabWidget->addTab(new TestTab(), "Home");

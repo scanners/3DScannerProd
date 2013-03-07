@@ -3,6 +3,7 @@
 #include "scanModel.h"
 #include "scanController.h"
 #include "scanningView.h"
+#include "scanInputView.h"
 #include "image.h"
 
 ScanController::ScanController() {
@@ -50,4 +51,8 @@ void ScanController::exit() {
 
 void ScanController::setScanModel(ScanModel& scanMod) {
 	scanModel = &scanMod;
+}
+
+void ScanController::setScanInputView(ScanInputView& scanInpView) {
+	scanInputView = &scanInpView;
 }

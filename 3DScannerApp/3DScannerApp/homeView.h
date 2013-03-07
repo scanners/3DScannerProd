@@ -28,6 +28,7 @@ private:
 	CalibrationController * extrinsicController;
 	CalibrationModel * intrinsicCalibrationModel;
 	CalibrationModel * extrinsicCalibrationModel;
+	ScanController * scanController;
 	ScanModel * scanModel;
 };
 

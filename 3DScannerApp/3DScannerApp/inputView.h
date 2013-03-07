@@ -2,19 +2,14 @@
 #define INPUTVIEW_H
 
 #include "stdafx.h"
-#include <qlabel.h>
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qfiledialog.h>
 #include <string>
-#include "takePicView.h"
+#include <qdialog.h>
 
 class QLabel;
-class QString;
 class QLineEdit;
 class QGridLayout;
 class QPushButton;
-
+class QDir;
 
 class TakePicView;
 class CalibrationController;
@@ -32,7 +27,6 @@ private:
 	CalibrationController * calibrationController;
 	QLabel * message;
 	int calibrationType;
-	QString dir;
 	QDir * loadDir;
 	QDir * saveDir;
 	bool errors;

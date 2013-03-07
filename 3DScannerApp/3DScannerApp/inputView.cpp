@@ -1,6 +1,5 @@
 // Other Includes
 #include "inputView.h"
-#include "takePicView.h"
 #include "intrinsicController.h"
 #include "extrinsicController.h"
 #include "calibrationController.h"
@@ -95,15 +94,21 @@ void InputView::startCalibration()
 			calibrationController->setSaveDirectory(saveDirText->text().toStdString());
 			if (calibrationType == Enums::controllerEnum::EXTRINSIC) {
 				calibrationController->setLoadDirectory(loadDirText->text().toStdString());
-				calibrationController->loadXML();
+				bool loadXMLSuccess = calibrationController->loadXML();
+				if (loadXMLSuccess) {
+					calibrationController->createTakePicView();
+				} else {
+					//Dialog box for error
+				}
+			} else {
+				calibrationController->createTakePicView();
 			}
-			calibrationController->createTakePicView();
 		}
 	}
 }
 
 void InputView::createSaveFileDialog() {
-	dir = QFileDialog::getExistingDirectory(this, "Select Calibration Save Directory",
+	QString dir = QFileDialog::getExistingDirectory(this, "Select Calibration Save Directory",
 		"C:/", QFileDialog::ShowDirsOnly);
 	saveDirText->setText(dir);
 	saveDir = new QDir(saveDirText->text());
@@ -111,7 +116,7 @@ void InputView::createSaveFileDialog() {
 
 void InputView::createLoadFileDialog()
 {
-	dir = QFileDialog::getExistingDirectory(this, "Select Calibration Load Directory",
+	QString dir = QFileDialog::getExistingDirectory(this, "Select Calibration Load Directory",
 		"C:/", QFileDialog::ShowDirsOnly);
 	loadDirText->setText(dir);
 	loadDir = new QDir(loadDirText->text());
