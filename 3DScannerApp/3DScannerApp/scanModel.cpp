@@ -47,14 +47,42 @@ void ScanModel::storeRedChannel(Mat image) {
 	vector<Mat> channels(image.channels());
 	//Split the image into its 3 channels: B, G, R
 	split(image, channels);
-	//Get the red channel, add to data
+	//Convert red component uchar matrix to float matrix
+	channels[2].convertTo(channels[2], CV_32F);
 	redChannels.push_back(channels[2]);
 
-	/*
-	To set/get negative values in the uchar Mat:
-	redChannels[0].at<char>(Point(200,200)) = -1;
-	int x = redChannels[0].at<char>(Point(200,200));
-	*/
+	//For testing
+	//findDifferenceImage();
+}
+
+void ScanModel::findDifferenceImage() {
+	//Set min to the maximum value so it gets set to a lower value
+	float minRedComponent = 255;
+	//Set max to the minimum value so it gets set to a higher value
+	float maxRedComponent = 0;
+	float midpointRedComponent;
+
+	for (int x = 0; x < redChannels.at(0).cols; x++) {
+		for (int y = 0; y < redChannels.at(0).rows; y++) {
+			for (int n = 0; n < redChannels.size(); n++) {
+				if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
+					minRedComponent = redChannels.at(n).at<float>(Point(x, y));
+				}
+				if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
+					maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+				}
+			}
+			midpointRedComponent = (minRedComponent + maxRedComponent) / 2.0;
+
+			//Compute difference image. 
+			for (int n = 0; n < redChannels.size(); n++) {
+				redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
+			}
+			//Reset variables
+			minRedComponent = 255;
+			maxRedComponent = 0;
+		}
+	}
 }
 
 bool ScanModel::savePicture(Image * image) {
@@ -69,16 +97,23 @@ bool ScanModel::loadXML() {
 	Mat backTranslationMatrix;
 	Mat groundTranslationMatrix;
 	try {
-		FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
-		fs["intrinsicMatrix"] >> intrinsicMatrix;
-		fs["distortionCoefficients"] >> distortionCoefficients;
-		fs.release();
-		FileStorage fs2(loadDirectory + "\\extrinsics.xml", FileStorage::READ);
-		fs2["backRotationMatrix"] >> backRotationMatrix;
-		fs2["backTranslationMatrix"] >> backTranslationMatrix;
-		fs2["groundRotationMatrix"] >> groundRotationMatrix;
-		fs2["groundTranslationMatrix"] >> groundTranslationMatrix;
-		fs2.release();
+		FileStorage * fs = new FileStorage();
+		bool loadOk = fs->open(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
+		if (!loadOk) {
+			return false;
+		}
+		(*fs)["intrinsicMatrix"] >> intrinsicMatrix;
+		(*fs)["distortionCoefficients"] >> distortionCoefficients;
+		fs->release();
+		loadOk = fs->open(loadDirectory + "\\extrinsics.xml", FileStorage::READ);
+		if (!loadOk) {
+			return false;
+		}
+		(*fs)["backRotationMatrix"] >> backRotationMatrix;
+		(*fs)["backTranslationMatrix"] >> backTranslationMatrix;
+		(*fs)["groundRotationMatrix"] >> groundRotationMatrix;
+		(*fs)["groundTranslationMatrix"] >> groundTranslationMatrix;
+		fs->release();
 	} catch (cv::Exception& e) {
 		return false;
 	} catch (std::exception& e) {

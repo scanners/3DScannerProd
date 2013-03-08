@@ -37,14 +37,16 @@ public:
 	int getNumStoredCoords();
 	vector<int> sortedStoredYCoords();
 	void storeRedChannel(Mat image);
+	void findDifferenceImage();
 	bool savePicture(Image * image);
 	bool loadXML();
 	bool isDoneScanning();
 	int buildImageObjects();
-	void processImage(int);
+	void processImage(int imageNum);
+	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
 	int getRequiredNumStoredYCoords();
-	void saveFile(string);
+	void saveFile(string fileName);
 	void exit();
 };
 

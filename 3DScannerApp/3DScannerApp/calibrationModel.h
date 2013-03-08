@@ -29,8 +29,8 @@ private:
 	string loadDirectory;
 public:
 	CalibrationModel();
-	void saveIntrinsicFiles();
-	void saveExtrinsicFiles();
+	bool saveIntrinsicFiles();
+	bool saveExtrinsicFiles();
 	bool loadXML();
 	int getRequiredNumSuccesses(int controllerType);
 	int findCorners(Mat image);

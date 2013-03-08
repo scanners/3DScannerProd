@@ -7,25 +7,40 @@ CalibrationModel::CalibrationModel() {
 
 }
 
-void CalibrationModel::saveIntrinsicFiles() {
-	FileStorage fs(saveDirectory + "\\intrinsics.xml", FileStorage::WRITE);
-	fs << "intrinsicMatrix" << intrinsicMatrix << "distortionCoefficients" << distortionCoefficients;
-	fs.release();
+bool CalibrationModel::saveIntrinsicFiles() {
+	FileStorage * fs = new FileStorage();
+	bool directoryOk = fs->open(saveDirectory + "\\intrinsics.xml", FileStorage::WRITE);
+	if (!directoryOk) {
+		return false;
+	}
+	*fs << "intrinsicMatrix" << intrinsicMatrix << "distortionCoefficients" << distortionCoefficients;
+	fs->release();
+	return true;
 }
 
-void CalibrationModel::saveExtrinsicFiles() {
-	FileStorage fs(saveDirectory + "\\extrinsics.xml", FileStorage::WRITE);
-	fs << "backRotationMatrix" << backRotationMatrix << "backTranslationMatrix" << backTranslationMatrix;
-	fs << "groundRotationMatrix" << groundRotationMatrix << "groundTranslationMatrix" << groundTranslationMatrix;
-	fs.release();
+bool CalibrationModel::saveExtrinsicFiles() {
+	FileStorage * fs = new FileStorage();
+	bool directoryOk = fs->open(saveDirectory + "\\extrinsics.xml", FileStorage::WRITE);
+	if (!directoryOk) {
+		//Message to run as admin or choose different directory
+		return false;
+	}
+	*fs << "backRotationMatrix" << backRotationMatrix << "backTranslationMatrix" << backTranslationMatrix;
+	*fs << "groundRotationMatrix" << groundRotationMatrix << "groundTranslationMatrix" << groundTranslationMatrix;
+	fs->release();
+	return true;
 }
 
 bool CalibrationModel::loadXML() {
 	try {
-		FileStorage fs(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
-		fs["intrinsicMatrix"] >> intrinsicMatrix;
-		fs["distortionCoefficients"] >> distortionCoefficients;
-		fs.release();
+		FileStorage * fs = new FileStorage();
+		bool loadOk = fs->open(loadDirectory + "\\intrinsics.xml", FileStorage::READ);
+		if(!loadOk) {
+			return false;
+		}
+		(*fs)["intrinsicMatrix"] >> intrinsicMatrix;
+		(*fs)["distortionCoefficients"] >> distortionCoefficients;
+		fs->release();
 		return true;
 	} catch (cv::Exception& e) {
 		return false;
