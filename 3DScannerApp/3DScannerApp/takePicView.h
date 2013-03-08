@@ -24,6 +24,7 @@ private:
 	QLabel * videoLabel;
 	QLabel * picProgressLabel;
 	QLabel * messageLabel;
+	QLabel * messages;
 	QTimer * timer;
 	QPushButton * takePicButton;
 	QPushButton * cancelButton;
