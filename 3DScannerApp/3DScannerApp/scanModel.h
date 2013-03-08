@@ -23,6 +23,7 @@ private:
 	vector<int> regionYCoordinates;
 	vector<int> groundRegion;
 	vector<int> backRegion;
+	vector<Mat> redChannels;
 	string saveDirectory;
 	string loadDirectory;
 public:
@@ -35,6 +36,7 @@ public:
 	int setRegion(int yCoordinate);
 	int getNumStoredCoords();
 	vector<int> sortedStoredYCoords();
+	void storeRedChannel(Mat image);
 	bool savePicture(Image * image);
 	bool loadXML();
 	bool isDoneScanning();

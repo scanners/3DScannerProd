@@ -43,6 +43,20 @@ vector<int> ScanModel::sortedStoredYCoords() {
 	return regionYCoordinates;
 }
 
+void ScanModel::storeRedChannel(Mat image) {
+	vector<Mat> channels(image.channels());
+	//Split the image into its 3 channels: B, G, R
+	split(image, channels);
+	//Get the red channel, add to data
+	redChannels.push_back(channels[2]);
+
+	/*
+	To set/get negative values in the uchar Mat:
+	redChannels[0].at<char>(Point(200,200)) = -1;
+	int x = redChannels[0].at<char>(Point(200,200));
+	*/
+}
+
 bool ScanModel::savePicture(Image * image) {
 	return false;
 }

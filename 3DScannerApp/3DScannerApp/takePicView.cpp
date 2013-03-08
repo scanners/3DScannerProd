@@ -96,8 +96,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 void TakePicView::displayVideoFrame()
 {
 	capture.read(image);
-	cvtColor(image, image, CV_BGR2RGB);
-	QImage qimg((uchar*)image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
+	cvtColor(image, displayImage, CV_BGR2RGB);
+	QImage qimg((uchar*)displayImage.data, displayImage.cols, displayImage.rows, displayImage.step, QImage::Format_RGB888);
 	videoLabel->setPixmap(QPixmap::fromImage(qimg));
 }
 

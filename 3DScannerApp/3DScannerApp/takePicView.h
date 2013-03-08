@@ -32,7 +32,7 @@ private:
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
 	Mat image;
-	//Mat displayImage;
+	Mat displayImage;
 	CalibrationController * calibrationController;
 	
 public:

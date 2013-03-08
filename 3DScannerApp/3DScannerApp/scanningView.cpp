@@ -1,4 +1,5 @@
 #include "scanningView.h"
+#include "scanController.h"
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
@@ -20,11 +21,17 @@ ScanningView::ScanningView(QWidget *parent) : QDialog(parent)
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
 		timer->start(20);
 	}
+	else
+	{
+		videoLabel->setPixmap(QPixmap("noCamera.png"));
+		/*messages->setStyleSheet("color: red; font-weight: bold;");
+		messages->setText("No camera is detected! Please check your connection!");*/
+	}
 }
 
-void ScanningView::setScanController(ScanController& sc)
+void ScanningView::setScanController(ScanController& scanControl)
 {
-
+	scanController = &scanControl;
 }
 
 void ScanningView::stopVideo()
@@ -88,9 +95,9 @@ void ScanningView::constructLayout()
 
 void ScanningView::displayVideoFrame()
 {
-	capture.read(image); // read the image from the videocapture input
-	cvtColor(image, image, CV_BGR2RGB); // convert from BGR to RGB
-	inRange(image, Scalar(139, 0, 0), Scalar(255, 255, 255), redFrame); // get the red component
-	QImage qimg((uchar*)redFrame.data, redFrame.cols, redFrame.rows, redFrame.step, QImage::Format_Indexed8);
+	capture.read(image);
+	scanController->sendImage(image);
+	cvtColor(image, displayImage, CV_BGR2RGB);
+	QImage qimg((uchar*)displayImage.data, displayImage.cols, displayImage.rows, displayImage.step, QImage::Format_RGB888);
 	videoLabel->setPixmap(QPixmap::fromImage(qimg));
 }

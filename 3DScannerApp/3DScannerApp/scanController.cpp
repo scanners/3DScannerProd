@@ -45,6 +45,10 @@ void ScanController::setRegion(int yCoordinate) {
 	}
 }
 
+void ScanController::sendImage(Mat image) {
+	scanModel->storeRedChannel(image);
+}
+
 bool ScanController::savePicture(Image * image) {
 	return false;
 }

@@ -1,8 +1,10 @@
 #ifndef SCANCONTROLLER_H
 #define SCANCONTROLLER_H
 
+#include "stdafx.h"
 #include <string>
 using std::string;
+using namespace::cv;
 
 class ScanModel;
 class ScanInputView;
@@ -22,6 +24,7 @@ public:
 	void createScanningView();
 	void saveScan();
 	void setRegion(int yCoordinate);
+	void sendImage(Mat image);
 	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();
