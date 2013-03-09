@@ -10,10 +10,12 @@ class ScanModel;
 class ScanInputView;
 class ScanningView;
 class Image;
+class OverlayView;
 
 class ScanController {
 private:
 	ScanningView * scanningView;
+	OverlayView * overlayView;
 	ScanInputView * scanInputView;
 	ScanModel * scanModel;
 public:
@@ -22,6 +24,7 @@ public:
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
 	void createScanningView();
+	void createOverlayView();
 	void saveScan();
 	void setRegion(int yCoordinate);
 	void sendImage(Mat image);
