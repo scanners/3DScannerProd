@@ -107,10 +107,10 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 
 	solvePnP(objectPoints[0], imagePoints[0], intrinsicMatrix, distortionCoefficients, rotationMatrix3x1, translationMatrix);
 	Rodrigues(rotationMatrix3x1, rotationMatrix);
-	if (boardLocation == Enums::extrinsicBoardLocation::BACK_PLANE) {
+	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
 		backRotationMatrix = rotationMatrix;
 		backTranslationMatrix = translationMatrix;
-	} else if (boardLocation == Enums::extrinsicBoardLocation::GROUND_PLANE) {
+	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
 		groundRotationMatrix = rotationMatrix;
 		groundTranslationMatrix = translationMatrix;
 	}

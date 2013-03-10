@@ -16,7 +16,7 @@ public:
 		SAVE_STATUS
 	};
 
-	enum extrinsicBoardLocation {
+	enum boardLocation {
 		GROUND_PLANE,
 		BACK_PLANE
 	};

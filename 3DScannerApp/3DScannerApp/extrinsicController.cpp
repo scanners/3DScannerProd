@@ -20,12 +20,13 @@ void ExtrinsicController::findCorners(Mat image) {
 	if (successes <= 0) {
 		takePicView->showMessage(Enums::calibrationEnum::CORNERS_FAILURE);
 	} else if (successes < calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC)) {
-		calibrationModel->calibrateExtrinsics(Enums::extrinsicBoardLocation::BACK_PLANE);
+		calibrationModel->calibrateExtrinsics(Enums::boardLocation::BACK_PLANE);
 		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
 		takePicView->showMessage(Enums::calibrationEnum::CORNERS_SUCCESS);
 	} else if (successes == calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC)) {
-		calibrationModel->calibrateExtrinsics(Enums::extrinsicBoardLocation::GROUND_PLANE);
+		calibrationModel->calibrateExtrinsics(Enums::boardLocation::GROUND_PLANE);
 		calibrationModel->saveExtrinsicFiles();
+		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
 		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
 	}
 }
