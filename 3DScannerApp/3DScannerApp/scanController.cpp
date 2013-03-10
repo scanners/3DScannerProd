@@ -5,6 +5,7 @@
 #include "scanningView.h"
 #include "scanInputView.h"
 #include "image.h"
+#include "overlayView.h"
 
 ScanController::ScanController() {
 
@@ -31,6 +32,14 @@ void ScanController::createScanningView() {
 	scanningView->setScanController(*this);
 	scanningView->setModal(true);
 	scanningView->show();
+}
+
+void ScanController::createOverlayView()
+{
+	overlayView = new OverlayView();
+	overlayView->setScanController(*this);
+	overlayView->setModal(true);
+	overlayView->show();
 }
 
 void ScanController::saveScan() {

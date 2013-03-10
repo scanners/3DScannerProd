@@ -28,8 +28,10 @@ void ScanInputView::startScan()
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
+	scanController->createOverlayView(); // testing --> delete when done
 	if (loadXMLSuccess) {
-		scanController->createScanningView();
+		//scanController->createScanningView();
+		scanController->createOverlayView();
 	} else {
 		//Dialog box for errors
 	}
