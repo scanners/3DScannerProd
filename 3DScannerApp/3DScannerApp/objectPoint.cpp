@@ -2,11 +2,11 @@
 
 #include "objectPoint.h"
 
-ObjectPoint::ObjectPoint(Point3f point, int frame) {
-	worldCoord = point;
-	frameNumber = frame;
+ObjectPoint::ObjectPoint(Point3f worldCoord, int imageNum) {
+	worldCoordinate = worldCoord;
+	imageNumber = imageNum;
 }
 
 Point3f ObjectPoint::getWorldCoords() {
-	return worldCoord;
+	return worldCoordinate;
 }

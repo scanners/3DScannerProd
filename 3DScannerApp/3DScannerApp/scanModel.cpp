@@ -92,6 +92,33 @@ Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f>
 	return Plane(approximateIntersection, normalVectorOfLaserPlane);
 }
 
+vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPtsOnObject) {
+	vector<Point3f> undistortedRedPointsOnObject;
+	vector<Point3f> redPointsOnObjectInCameraCoords;
+	vector<Point3f> redPointsOnObjectInBackWorldCoords;
+	Point3f cameraOriginInCameraCoords(0, 0, 0);
+
+	undistortPoints(redPointsOnObject, undistortedRedPointsOnObject, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
+	convertPointsToHomogeneous(undistortedRedPointsOnObject, redPointsOnObjectInCameraCoords);
+
+	float lambda;
+	
+	//Calculate the lambda value of each red point on the back plane and store the Camera coordinate of the red point on the object
+	for (int i = 0; i < redPointsOnObjectInCameraCoords.size(); i++) {
+		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
+		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
+		lambda = Mat(Mat(laserPlane.getNormalVector()).t() * (Mat(laserPlane.getPointOnPlane()) - Mat(cameraOriginInCameraCoords)) / 
+			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<float>(0, 0);
+		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
+		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().t()*Mat(redPointsOnObjectInCameraCoords.at(i))-
+			backExtrinsics->getRotationMatrix().t()*backExtrinsics->getTranslationMatrix());
+		redPointsOnObjectInBackWorldCoords.push_back(Point3f(redPointWorldCoordMatrix.at<float>(0,0), 
+			redPointWorldCoordMatrix.at<float>(1,0), redPointWorldCoordMatrix.at<float>(2,0)));
+	}
+
+	return redPointsOnObjectInBackWorldCoords;
+}
+
 void ScanModel::convertCoords() {
 
 }

@@ -12,8 +12,8 @@ private:
 	Vec3f normalVector;
 public:
 	Plane(Point3f pointOnPlane, Vec3f normalVector);
-	float findIntersection(Point3f, Vec3f);
-	void convertToCameraCoordinates(Extrinsic);	
+	Point3f getPointOnPlane();
+	Vec3f getNormalVector();
 };
 
 #endif //PLANE_H

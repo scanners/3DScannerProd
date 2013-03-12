@@ -40,8 +40,8 @@ private:
 public:
 	ScanModel();
 	void scan();
-	//Take out pointer when implementing
 	Plane findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints);
+	vector<Point3f> findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPointsOnObject);
 	void convertCoords();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);

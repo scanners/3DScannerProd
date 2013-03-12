@@ -7,10 +7,10 @@ Plane::Plane(Point3f ptOnPlane, Vec3f normal) {
 	normalVector = normal;
 }
 
-float Plane::findIntersection(Point3f cameraOrigin, Vec3f imageVec) {
-	return 0.0;
+Point3f Plane::getPointOnPlane() {
+	return pointOnPlane;
 }
 
-void Plane::convertToCameraCoordinates(Extrinsic extrinsic) {
-
+Vec3f Plane::getNormalVector() {
+	return normalVector;
 }
