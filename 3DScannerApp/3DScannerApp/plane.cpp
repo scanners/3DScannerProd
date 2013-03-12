@@ -2,8 +2,8 @@
 
 #include "plane.h"
 
-Plane::Plane(Point3f pointInStage, Vec3f normal) {
-	pointOnPlane = pointInStage;
+Plane::Plane(Point3f ptOnPlane, Vec3f normal) {
+	pointOnPlane = ptOnPlane;
 	normalVector = normal;
 }
 

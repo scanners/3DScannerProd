@@ -41,7 +41,7 @@ public:
 	ScanModel();
 	void scan();
 	//Take out pointer when implementing
-	Plane* getLaserPlane();
+	Plane findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints);
 	void convertCoords();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);

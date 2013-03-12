@@ -13,8 +13,83 @@ void ScanModel::scan() {
 
 }
 
-Plane* ScanModel::getLaserPlane() {
-	return NULL;
+Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints) {
+	vector<Point2f> undistortedBackPoints;
+	vector<Point3f> backPointsInCameraCoords;
+	vector<Point2f> undistortedGroundPoints;
+	vector<Point3f> groundPointsInCameraCoords;
+
+	Point3f cameraOriginInCameraCoords(0, 0, 0);
+	Point3f backOriginInBackWorldCoords(0, 0, 0);
+	Vec3f backNormalVectorInBackWorldCoords(0, 1, 0);
+	Point3f groundOriginInGroundWorldCoords(0, 0, 0);
+	Vec3f groundNormalVectorInGroundWorldCoords(0, 1, 0);
+
+	//3x1 Matrices representing Point3f. Convert world to camera
+	Mat backOriginInCameraCoords = backExtrinsics->getRotationMatrix() * Mat(backOriginInBackWorldCoords) + backExtrinsics->getTranslationMatrix();
+	Mat groundOriginInCameraCoords = groundExtrinsics->getRotationMatrix() * Mat(groundOriginInGroundWorldCoords) + groundExtrinsics->getTranslationMatrix();
+
+	//3x1 Matrices representing Vec3f. Convert world to camera
+	Mat backNormalVectorInCameraCoords = backExtrinsics->getRotationMatrix() * Mat(backNormalVectorInBackWorldCoords) + backExtrinsics->getTranslationMatrix();
+	Mat groundNormalVectorInCameraCoords = groundExtrinsics->getRotationMatrix() * Mat(groundNormalVectorInGroundWorldCoords) + groundExtrinsics->getTranslationMatrix();
+
+	//Undistort image points of red points using distortion coefficients and inverse of the intrinsic matrix. Then convert to homogeneous.
+	undistortPoints(backPlanePoints, undistortedBackPoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
+	convertPointsToHomogeneous(undistortedBackPoints, backPointsInCameraCoords);
+	undistortPoints(groundPlanePoints, undistortedGroundPoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
+	convertPointsToHomogeneous(undistortedGroundPoints, groundPointsInCameraCoords);
+	
+	float lambda;
+	
+	//Calculate the lambda value of each red point on the back plane and store the Camera coordinate of the red point on the back plane
+	for (int i = 0; i < backPointsInCameraCoords.size(); i++) {
+		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
+		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
+		lambda = Mat(backNormalVectorInCameraCoords.t() * (backOriginInCameraCoords - Mat(cameraOriginInCameraCoords)) / 
+			(backNormalVectorInCameraCoords.t() * Mat(backPointsInCameraCoords.at(i)))).at<float>(0, 0);
+		backPointsInCameraCoords.at(i) = lambda * backPointsInCameraCoords.at(i);
+	}
+
+	//Calculate the lambda value of each red point on the ground plane and store the Camera coordinate of the red point on the back plane
+	for (int i = 0; i < groundPointsInCameraCoords.size(); i++) {
+		//normal is 3x1 so convert to 1x3. groundOrigin is 3x1, Mat(cameraOrigin) is 3x1
+		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
+		lambda = Mat(groundNormalVectorInCameraCoords.t() * (groundOriginInCameraCoords - Mat(cameraOriginInCameraCoords)) / 
+			(groundNormalVectorInCameraCoords.t() * Mat(groundPointsInCameraCoords.at(i)))).at<float>(0, 0);
+		groundPointsInCameraCoords.at(i) = lambda * groundPointsInCameraCoords.at(i);
+	}
+
+	//Find best fit line (in camera coordinates) of laser on back plane.
+	//The best fit line is a 6f vector consisting of (vx, vy, vy), which is a vector of length one collinear to the line,
+	//and (x0, y0, z0), which is a point on the line
+	Vec6f backBestFitLine;
+	fitLine(backPointsInCameraCoords, backBestFitLine, CV_DIST_L2, 0, 0.01, 0.01);
+	Vec3f normalizedVectorOfBackLine(backBestFitLine[0], backBestFitLine[1], backBestFitLine[2]);
+	Vec3f pointOnBackLine(backBestFitLine[3], backBestFitLine[4], backBestFitLine[5]);
+	//Compute ||v||^2 = v_x^2 + v_y^2 + v_z^2
+	float squaredMagnitudeOfNormalizedVectorOfBackLine = normalizedVectorOfBackLine[0]*normalizedVectorOfBackLine[0] +
+		normalizedVectorOfBackLine[1]*normalizedVectorOfBackLine[1] + normalizedVectorOfBackLine[2]*normalizedVectorOfBackLine[2];
+
+	//Find best fit line (in camera coordinates) of laser on ground plane.
+	//The best fit line is a 6f vector consisting of (vx, vy, vy), which is a vector of length one collinear to the line,
+	//and (x0, y0, z0), which is a point on the line
+	Vec6f groundBestFitLine;
+	fitLine(groundPointsInCameraCoords, groundBestFitLine, CV_DIST_L2, 0, 0.01, 0.01);
+	Vec3f normalizedVectorOfGroundLine(groundBestFitLine[0], groundBestFitLine[1], groundBestFitLine[2]);
+	Vec3f pointOnGroundLine(groundBestFitLine[3], groundBestFitLine[4], groundBestFitLine[5]);
+	float squaredMagnitudeOfNormalizedVectorOfGroundLine = normalizedVectorOfGroundLine[0]*normalizedVectorOfGroundLine[0] +
+		normalizedVectorOfGroundLine[1]*normalizedVectorOfGroundLine[1] + normalizedVectorOfGroundLine[2]*normalizedVectorOfGroundLine[2];
+
+	//Perform least squares approximation for approximate intersection of back and ground lines
+	float m1[2][2] = {{squaredMagnitudeOfNormalizedVectorOfBackLine, -((normalizedVectorOfBackLine.t()*normalizedVectorOfGroundLine)[0])},
+		{-((normalizedVectorOfGroundLine.t()*normalizedVectorOfBackLine)[0]), squaredMagnitudeOfNormalizedVectorOfGroundLine}};
+	float m2[2][1] = {{(normalizedVectorOfBackLine.t()*(pointOnGroundLine-pointOnBackLine))[0]}, {(normalizedVectorOfGroundLine.t()*(pointOnBackLine-pointOnGroundLine))[0]}};
+	lambda = Mat(Mat(2,2,CV_32F,m1).inv()*Mat(2,1,CV_32F,m2)).at<float>(0, 0);
+
+	Point3f approximateIntersection = pointOnBackLine + lambda * normalizedVectorOfBackLine;
+	Vec3f normalVectorOfLaserPlane = normalizedVectorOfBackLine.cross(normalizedVectorOfGroundLine);
+	
+	return Plane(approximateIntersection, normalVectorOfLaserPlane);
 }
 
 void ScanModel::convertCoords() {
