@@ -55,6 +55,9 @@ int CalibrationModel::getRequiredNumSuccesses(int controllerType) {
 		return INTRINSIC_REQUIRED_NUM_SUCCESSES;
 	case Enums::controllerEnum::EXTRINSIC:
 		return EXTRINSIC_REQUIRED_NUM_SUCCESSES;
+	default:
+		return -1;
+
 	}
 }
 
@@ -77,6 +80,8 @@ int CalibrationModel::findCorners(Mat image) {
 
 void CalibrationModel::calibrateIntrinsics() {
 	vector<vector<Point3f>> objectPoints(1);
+	vector<Mat> rotationVectors;
+	vector<Mat> translationVectors;
 	intrinsicMatrix = Mat::eye(3, 3, CV_64F);
 	distortionCoefficients = Mat::zeros(8, 1, CV_64F);
 	for( int i = 0; i < innerCorners.height; i++ ) {
@@ -89,6 +94,17 @@ void CalibrationModel::calibrateIntrinsics() {
 	double error = calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
 	saveIntrinsicFiles();
+
+	//FOR TEST DEMO ONLY
+	Mat undistortedDemoImage;
+	drawChessboardCorners(demoImage, innerCorners, imagePoints.back(), true);
+	imshow("Distorted image corners", demoImage);
+	undistort(demoImage, undistortedDemoImage, intrinsicMatrix, distortionCoefficients);
+	drawChessboardCorners(undistortedDemoImage, innerCorners, imagePoints.back(), true);
+	imshow("Undistorted image corners", undistortedDemoImage);
+
+	//Deallocate vector
+	vector<vector<Point2f>>().swap(imagePoints);
 }
 
 void CalibrationModel::calibrateExtrinsics(int boardLocation) {
@@ -114,8 +130,8 @@ void CalibrationModel::calibrateExtrinsics(int boardLocation) {
 		groundRotationMatrix = rotationMatrix;
 		groundTranslationMatrix = translationMatrix;
 	}
-	//Reset for next extrinsic calibration
-	imagePoints.clear();
+	//Reset via reallocation for next extrinsic calibration
+	vector<vector<Point2f>>().swap(imagePoints);
 }
 
 void CalibrationModel::setNumCorners(int horizontal, int vertical) {
@@ -132,4 +148,9 @@ void CalibrationModel::setSaveDirectory(string directory) {
 
 void CalibrationModel::setLoadDirectory(string directory) {
 	loadDirectory = directory;
+}
+
+//FOR DEMO ONLY
+void CalibrationModel::setImageForCornerDisplay(Mat image) {
+	demoImage = image;
 }
