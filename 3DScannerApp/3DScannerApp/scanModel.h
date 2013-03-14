@@ -61,6 +61,7 @@ public:
 	int getRequiredNumStoredYCoords();
 	void saveFile(string fileName);
 	void exit();
+	void resetRegions();
 };
 
 #endif //SCANMODEL_H

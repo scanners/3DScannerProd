@@ -14,6 +14,7 @@ class QBoxLayout;
 class QGridLayout;
 class ScanController;
 class OverlayLabel;
+class QPainter;
 
 class OverlayView : public QDialog {
 
@@ -31,14 +32,17 @@ private:
 	OverlayLabel * displayImage;
 	QLabel * titleLabel;
 	QLabel * positionLabel;
+	QImage * videoFrame;
 	QPushButton * startButton;
 	QPushButton * resetButton;
 	QPushButton * exitButton;
+	// QPushButton * refreshButton; // used for getting the image initially and refreshing it
 	QBoxLayout * mainLayout;
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
 	int y; // y-position of click
 	int x; // x-position of click (for testing purposes)
+	int numClicks;
 	Mat image;
 	void constructLayout();
 	void updateCoords();
@@ -46,6 +50,7 @@ private:
 public:
 	OverlayView(QWidget * parent = 0);
 	void setScanController(ScanController& scanController);
+	void drawOverlayRegions(std::vector<int> yCoords);
 };
 
 #endif //OVERLAYVIEW_H

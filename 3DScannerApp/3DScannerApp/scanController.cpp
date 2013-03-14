@@ -51,7 +51,13 @@ void ScanController::setRegion(int yCoordinate) {
 	if (regions == scanModel->getRequiredNumStoredYCoords()) {
 		scanModel->sortedStoredYCoords();
 		//DRAW OVERLAY--Should instead get 4 sets of pixels from model;
+		overlayView->drawOverlayRegions(scanModel->sortedStoredYCoords());
 	}
+}
+
+void ScanController::resetRegions()
+{
+	scanModel->resetRegions();
 }
 
 void ScanController::sendImage(Mat image) {

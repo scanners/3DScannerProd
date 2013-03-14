@@ -136,6 +136,11 @@ int ScanModel::setRegion(int yCoordinate) {
 	return regionYCoordinates.size();
 }
 
+void ScanModel::resetRegions()
+{
+	regionYCoordinates.clear();
+}
+
 int ScanModel::getNumStoredCoords() {
 	return 0;
 }
