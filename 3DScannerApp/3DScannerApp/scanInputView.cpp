@@ -7,7 +7,7 @@
 #include <qfiledialog.h>
 #include <qgridlayout.h>
 #include <qpushbutton.h>
-
+#include <qmessagebox.h>
 
 ScanInputView::ScanInputView(QWidget *parent) : QWidget(parent)
 {
@@ -28,12 +28,19 @@ void ScanInputView::startScan()
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
-	scanController->createOverlayView(); // testing --> delete when done
 	if (loadXMLSuccess) {
 		//scanController->createScanningView();
 		scanController->createOverlayView();
 	} else {
 		//Dialog box for errors
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"Error loading XML file",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("The XML file could not be successfully loaded.");
+		error.setInformativeText("Please check the file and try again.");
+		error.setModal(false);
+		error.exec();
 	}
 }
 
