@@ -24,7 +24,6 @@ void IntrinsicController::findCorners(Mat image) {
 		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));
 		takePicView->showMessage(Enums::calibrationEnum::CORNERS_SUCCESS);
 	} else if (successes == calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC)) {
-		calibrationModel->setImageForCornerDisplay(image);
 		calibrationModel->calibrateIntrinsics();
 		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));
 		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);

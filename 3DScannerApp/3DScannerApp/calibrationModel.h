@@ -25,9 +25,6 @@ private:
 	Mat groundTranslationMatrix;
 	string saveDirectory;
 	string loadDirectory;
-
-	//FOR DEMO ONLY
-	Mat demoImage;
 public:
 	CalibrationModel();
 	bool saveIntrinsicFiles();
@@ -41,9 +38,6 @@ public:
 	void resetSuccesses();
 	void setSaveDirectory(string directory);
 	void setLoadDirectory(string directory);
-	
-	//FOR DEMO ONLY
-	void setImageForCornerDisplay(Mat image);
 };
 
 #endif // CALIBRATIONMODEL_H

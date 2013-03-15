@@ -185,7 +185,7 @@ void ScanModel::findDifferenceImages() {
 			midpointRedComponent = (minRedComponent + maxRedComponent) / 2.0;
 
 			//Compute difference image. 
-			for (int n = 0; n < redChannels.size(); n++) {
+			for (int n = 0; n < numImages; n++) {
 				redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
 			}
 			//Reset variables
