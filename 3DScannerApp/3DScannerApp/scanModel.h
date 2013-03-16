@@ -41,6 +41,8 @@ private:
 	Vec6f findBestFitRedLine(vector<Point3f> redPointsInCameraCoords);
 	Point3f findLineLineIntersection(Vec6f backLine, Vec6f groundLine);
 	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
+	float findMidpointRedComponentAtPixel(int x, int y, vector<Mat> redChannels);
+	void findDifferenceImageAtPixel(int x, int y, vector<Mat>& redChannels);
 public:
 	ScanModel();
 	void scan();

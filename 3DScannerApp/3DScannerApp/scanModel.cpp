@@ -111,7 +111,7 @@ Point3f ScanModel::findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine) 
 }
 
 vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPtsOnObject) {
-	vector<Point3f> undistortedRedPointsOnObject;
+	vector<Point2f> undistortedRedPointsOnObject;
 	vector<Point3f> redPointsOnObjectInCameraCoords;
 	vector<Point3f> redPointsOnObjectInBackWorldCoords;
 	Point3f cameraOriginInCameraCoords(0, 0, 0);
@@ -180,37 +180,43 @@ void ScanModel::storeRedChannel(Mat image) {
 }
 
 void ScanModel::findDifferenceImages() {
-	//Set min to the maximum value so it gets set to a lower value
-	float minRedComponent = 255;
-	//Set max to the minimum value so it gets set to a higher value
-	float maxRedComponent = 0;
-	float midpointRedComponent;
-
 	imageWidth = redChannels.at(0).cols;
 	imageHeight = redChannels.at(0).rows;
 	numImages = redChannels.size();
 
 	for (int x = 0; x < imageWidth; x++) {
 		for (int y = 0; y < imageHeight; y++) {
-			for (int n = 0; n < numImages; n++) {
-				if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
-					minRedComponent = redChannels.at(n).at<float>(Point(x, y));
-				}
-				if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
-					maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
-				}
-			}
-			midpointRedComponent = (minRedComponent + maxRedComponent) / 2.0;
-
-			//Compute difference image. 
-			for (int n = 0; n < numImages; n++) {
-				redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
-			}
-			//Reset variables
-			minRedComponent = 255;
-			maxRedComponent = 0;
+				this->findDifferenceImageAtPixel(x, y, redChannels);
 		}
 	}
+}
+
+void ScanModel::findDifferenceImageAtPixel(int x, int y, vector<Mat>& redChannels) {
+	float midpointRedComponent = this->findMidpointRedComponentAtPixel(x, y, redChannels);
+	//Compute difference image. 
+	for (int n = 0; n < numImages; n++) {
+		redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
+	}
+}
+
+float ScanModel::findMidpointRedComponentAtPixel(int x, int y, vector<Mat> redChannels) {
+	//Set min to the maximum value so it gets set to a lower value
+	float minRedComponent = 255;
+	//Set max to the minimum value so it gets set to a higher value
+	float maxRedComponent = 0;
+	float midpointRedComponent;
+
+	for (int n = 0; n < numImages; n++) {
+		if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
+			minRedComponent = redChannels.at(n).at<float>(Point(x, y));
+		}
+		if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
+			maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+		}
+	}
+
+	midpointRedComponent = (minRedComponent + maxRedComponent) / 2.0;
+	return midpointRedComponent;
 }
 
 /**
