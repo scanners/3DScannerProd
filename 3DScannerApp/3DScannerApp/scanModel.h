@@ -37,6 +37,10 @@ private:
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
 	vector<vector<Point2f>> redPointsOnObject;
+	vector<Point3f> findRayPlaneIntersections(int planeLocation, vector<Point2f> imagePoints);
+	Vec6f findBestFitRedLine(vector<Point3f> redPointsInCameraCoords);
+	Point3f findLineLineIntersection(Vec6f backLine, Vec6f groundLine);
+	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
 public:
 	ScanModel();
 	void scan();
