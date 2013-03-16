@@ -43,6 +43,8 @@ private:
 	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
 	float findMidpointRedComponentAtPixel(int x, int y, vector<Mat> redChannels);
 	void findDifferenceImageAtPixel(int x, int y, vector<Mat>& redChannels);
+	vector<Point2f> findRedPointsInRegion(int region, int imageNum);
+	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
 	void scan();

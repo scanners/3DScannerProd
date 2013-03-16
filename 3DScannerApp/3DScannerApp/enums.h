@@ -20,6 +20,12 @@ public:
 		GROUND_PLANE,
 		BACK_PLANE
 	};
+
+	enum scanRegion {
+		GROUND,
+		BACK,
+		OBJECT
+	};
 };
 
 #endif //ENUMS_H
