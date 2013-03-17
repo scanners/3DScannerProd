@@ -27,6 +27,7 @@ private slots:
 	void resetClicks();
 	void stopVideo();
 	void obtainCoordinates();
+	void takePicture();
 protected:
 	void closeEvent(QCloseEvent * event);
 private:
@@ -35,10 +36,11 @@ private:
 	QLabel * titleLabel;
 	QLabel * positionLabel;
 	QImage * videoFrame;
+	QTimer * timer;
 	QPushButton * startButton;
 	QPushButton * resetButton;
 	QPushButton * exitButton;
-	//QPushButton * refreshButton; // used for getting the image initially and refreshing it
+	QPushButton * takePicButton; // used for getting the image initially
 	QBoxLayout * mainLayout;
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
@@ -56,4 +58,3 @@ public:
 };
 
 #endif //OVERLAYVIEW_H
-

@@ -14,6 +14,7 @@ OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
 	// construct layout
 	constructLayout();
 	// add the signals/slots:
+	connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(resetClicks()));
 	connect(exitButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 	connect(exitButton, SIGNAL(clicked()), this, SLOT(reject()));
@@ -21,12 +22,12 @@ OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
 	capture.open(0);
 	if (capture.isOpened())
 	{
-		// display the initial frame
-		//this->displayCameraFrame();
-		// only want to connect this here, because otherwise users can click before frame is rendered
-		connect(displayImage, SIGNAL(mousePressed()), this, SLOT(obtainCoordinates()));
-		// when the start button is clicked, display the single frame for overlay
-		connect(resetButton, SIGNAL(clicked()), this, SLOT(displayCameraFrame()));
+		// if the Video Capture Stream is open, set button and create timer
+		takePicButton->setEnabled(true);
+		timer = new QTimer(this);
+		// slot for displaying video every 20ms
+		connect(timer, SIGNAL(timeout()), this, SLOT(displayCameraFrame()));
+		timer->start(20);
 	}
 	// othewise, just display an error message in the frame
 	else
@@ -64,8 +65,9 @@ void OverlayView::constructLayout()
 	startButton = new QPushButton("Start Scan");
 	startButton->setEnabled(false);
 	startButton->setMaximumWidth(80);
-	//refreshButton = new QPushButton("Refresh Image");
-	//refreshButton->setMaximumWidth(80);
+	takePicButton = new QPushButton("Take Picture");
+	takePicButton->setMaximumWidth(80);
+	takePicButton->setEnabled(false);
 	resetButton = new QPushButton("Reset");
 	resetButton->setMaximumWidth(80);
 	exitButton = new QPushButton("Exit");
@@ -77,22 +79,30 @@ void OverlayView::constructLayout()
 	mainLayout->addWidget(displayImage);
 	mainLayout->addWidget(positionLabel);
 	buttonLayout->addWidget(startButton, 0, 0);
-	//buttonLayout->addWidget(refreshButton, 0, 1);
-	buttonLayout->addWidget(resetButton, 0, 1);
-	buttonLayout->addWidget(exitButton, 0, 2);
+	buttonLayout->addWidget(takePicButton, 0, 1);
+	buttonLayout->addWidget(resetButton, 0, 2);
+	buttonLayout->addWidget(exitButton, 0, 3);
 	mainLayout->addLayout(buttonLayout);
 	setLayout(mainLayout);
+}
+
+void OverlayView::takePicture() {
+	timer->stop();
+	scanController->setImageWidth(image);
+	takePicButton->setEnabled(false);
+	resetButton->setToolTip("Retakes picture and resets clicks/regions");
+	// only want to connect this here, because otherwise users can click before frame is rendered
+	connect(displayImage, SIGNAL(mousePressed()), this, SLOT(obtainCoordinates()));
+	// when the start button is clicked, display the single frame for overlay
+	connect(resetButton, SIGNAL(clicked()), this, SLOT(displayCameraFrame()));
 }
 
 // this method will simply display a single frame to the overlayLabel
 void OverlayView::displayCameraFrame()
 {
 	capture.read(image);
-	scanController->setImageWidth(image);
 	cvtColor(image, display, CV_BGR2RGB);
-	//QImage qimg((uchar*)image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
 	videoFrame = new QImage((uchar*)display.data, display.cols, display.rows, display.step, QImage::Format_RGB888);
-	//displayImage->setPixmap(QPixmap::fromImage(qimg));
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
 }
 
@@ -101,9 +111,9 @@ void OverlayView::resetClicks()
 	numClicks = 0;
 	scanController->resetRegions();
 	this->displayCameraFrame();
-	// todo
-	this->y = 0;
-	this->x = 0;
+	//To be used to display ? instead of int
+	this->y = -1;
+	this->x = -1;
 	updateCoords();
 }
 
@@ -122,7 +132,12 @@ void OverlayView::obtainCoordinates()
 void OverlayView::updateCoords()
 {
 	std::stringstream stream;
-	stream << "X = " << this->x << " Y = " << this->y;
+	//Reset was clicked
+	if ((this->x == -1) && (this->y == -1)) {
+		stream << "X = ? Y = ?";
+	} else {
+		stream << "X = " << this->x << " Y = " << this->y;
+	}
 	positionLabel->setText(stream.str().c_str());
 }
 
