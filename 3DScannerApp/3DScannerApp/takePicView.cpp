@@ -95,6 +95,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 
 void TakePicView::displayVideoFrame()
 {
+	Mat displayImage;
 	capture.read(image);
 	cvtColor(image, displayImage, CV_BGR2RGB);
 	QImage qimg((uchar*)displayImage.data, displayImage.cols, displayImage.rows, displayImage.step, QImage::Format_RGB888);

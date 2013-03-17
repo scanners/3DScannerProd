@@ -32,9 +32,7 @@ private:
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
 	Mat image;
-	Mat displayImage;
 	CalibrationController * calibrationController;
-	
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
 	void setCalibrationController(CalibrationController& calibControl);

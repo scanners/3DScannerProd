@@ -4,7 +4,9 @@
 #include <qdialog.h>
 #include "stdafx.h"
 using cv::Mat;
+using cv::Point;
 using cv::VideoCapture;
+using std::vector;
 
 class ScanController;
 class QWidget;
@@ -36,7 +38,7 @@ private:
 	QPushButton * startButton;
 	QPushButton * resetButton;
 	QPushButton * exitButton;
-	// QPushButton * refreshButton; // used for getting the image initially and refreshing it
+	//QPushButton * refreshButton; // used for getting the image initially and refreshing it
 	QBoxLayout * mainLayout;
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
@@ -44,13 +46,13 @@ private:
 	int x; // x-position of click (for testing purposes)
 	int numClicks;
 	Mat image;
+	Mat display;
 	void constructLayout();
 	void updateCoords();
-
 public:
 	OverlayView(QWidget * parent = 0);
 	void setScanController(ScanController& scanController);
-	void drawOverlayRegions(std::vector<int> yCoords);
+	void drawOverlayRegions(vector<Point> coords, int imageWidth);
 };
 
 #endif //OVERLAYVIEW_H

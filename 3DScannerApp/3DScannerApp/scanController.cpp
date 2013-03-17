@@ -49,9 +49,9 @@ void ScanController::saveScan() {
 void ScanController::setRegion(int yCoordinate) {
 	int regions = scanModel->setRegion(yCoordinate);
 	if (regions == scanModel->getRequiredNumStoredYCoords()) {
-		scanModel->sortedStoredYCoords();
+		scanModel->sortStoredYCoords();
 		//DRAW OVERLAY--Should instead get 4 sets of pixels from model;
-		overlayView->drawOverlayRegions(scanModel->sortedStoredYCoords());
+		overlayView->drawOverlayRegions(scanModel->getRegionPixels(), scanModel->getImageWidth());
 	}
 }
 
@@ -62,6 +62,10 @@ void ScanController::resetRegions()
 
 void ScanController::sendImage(Mat image) {
 	scanModel->storeRedChannel(image);
+}
+
+void ScanController::setImageWidth(Mat image) {
+	scanModel->setImageWidth(image);
 }
 
 bool ScanController::savePicture(Image * image) {

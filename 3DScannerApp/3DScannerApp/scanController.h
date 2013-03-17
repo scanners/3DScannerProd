@@ -28,6 +28,7 @@ public:
 	void saveScan();
 	void setRegion(int yCoordinate);
 	void sendImage(Mat image);
+	void setImageWidth(Mat image);
 	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();

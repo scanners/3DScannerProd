@@ -22,7 +22,7 @@ OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
 	if (capture.isOpened())
 	{
 		// display the initial frame
-		this->displayCameraFrame();
+		//this->displayCameraFrame();
 		// only want to connect this here, because otherwise users can click before frame is rendered
 		connect(displayImage, SIGNAL(mousePressed()), this, SLOT(obtainCoordinates()));
 		// when the start button is clicked, display the single frame for overlay
@@ -88,13 +88,13 @@ void OverlayView::constructLayout()
 void OverlayView::displayCameraFrame()
 {
 	capture.read(image);
-	cvtColor(image, image, CV_BGR2RGB);
+	scanController->setImageWidth(image);
+	cvtColor(image, display, CV_BGR2RGB);
 	//QImage qimg((uchar*)image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
-	videoFrame = new QImage((uchar*)image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
+	videoFrame = new QImage((uchar*)display.data, display.cols, display.rows, display.step, QImage::Format_RGB888);
 	//displayImage->setPixmap(QPixmap::fromImage(qimg));
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
 }
-
 
 void OverlayView::resetClicks()
 {
@@ -126,18 +126,18 @@ void OverlayView::updateCoords()
 	positionLabel->setText(stream.str().c_str());
 }
 
-void OverlayView::drawOverlayRegions(std::vector<int> yCoords)
+void OverlayView::drawOverlayRegions(vector<Point> coords, int rectWidth)
 {
 	// create painter for displaying overlays:
 	QPainter painter;
 	painter.begin(videoFrame); // tell the painter where it is drawing
-	QLinearGradient linearGrad(QPointF(0,0), QPointF(640, 0));
+	QLinearGradient linearGrad(QPointF(0, 0), QPointF(rectWidth, 0));
 	linearGrad.setColorAt(0, Qt::darkGray);
 	linearGrad.setColorAt(1, Qt::black);
-	painter.fillRect(0, yCoords[0], 640, yCoords[1]-yCoords[0], linearGrad);
-	painter.drawText(QPointF(10, (yCoords[0]) + 10), "Back Plane");
-	painter.fillRect(0, yCoords[2], 640, yCoords[3]-yCoords[2], linearGrad);
-	painter.drawText(QPointF(10, yCoords[2] + 10), "Ground Plane");
+	painter.fillRect(coords.at(0).x, coords.at(0).y, rectWidth, coords.at(1).y-coords.at(0).y, linearGrad);
+	painter.drawText(QPointF(10, (coords.at(0).y) + 10), "Back Plane");
+	painter.fillRect(coords.at(2).x, coords.at(2).y, rectWidth, coords.at(3).y-coords.at(2).y, linearGrad);
+	painter.drawText(QPointF(10, (coords.at(2).y) + 10), "Ground Plane");
 	painter.end(); // free up resources
 	// refresh the image
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));

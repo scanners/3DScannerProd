@@ -55,8 +55,11 @@ public:
 	void setLoadDirectory(string loadDir);
 	int setRegion(int yCoordinate);
 	int getNumStoredCoords();
-	vector<int> sortedStoredYCoords();
+	void sortStoredYCoords();
+	vector<Point> getRegionPixels();
 	void storeRedChannel(Mat image);
+	void setImageWidth(Mat image);
+	int getImageWidth();
 	void findDifferenceImages();
 	void findRedPoints();
 	bool savePicture(Image * image);

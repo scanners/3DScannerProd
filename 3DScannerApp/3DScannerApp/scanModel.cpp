@@ -25,7 +25,6 @@ void ScanModel::storeRedChannel(Mat image) {
 }
 
 void ScanModel::findDifferenceImages() {
-	imageWidth = redChannels.at(0).cols;
 	numImages = redChannels.size();
 
 	//Find difference image for the whole section of the image we are using
@@ -262,6 +261,14 @@ vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 	return redPointsOnObjectInBackWorldCoords;
 }
 
+void ScanModel::setImageWidth(Mat image) {
+	imageWidth = image.cols;
+}
+
+int ScanModel::getImageWidth() {
+	return imageWidth;
+}
+
 void ScanModel::convertCoords() {
 
 }
@@ -288,9 +295,22 @@ int ScanModel::getNumStoredCoords() {
 	return 0;
 }
 
-vector<int> ScanModel::sortedStoredYCoords() {
+void ScanModel::sortStoredYCoords() {
 	std::sort(regionYCoordinates.begin(), regionYCoordinates.end());
-	return regionYCoordinates;
+	//After sorted, we know which clicks associate with which regions
+	topOfBackPlane = regionYCoordinates[0];
+	bottomOfBackPlane = regionYCoordinates[1];
+	topOfGroundPlane = regionYCoordinates[2];
+	bottomOfGroundPlane = regionYCoordinates[3];
+}
+
+vector<Point> ScanModel::getRegionPixels() {
+	vector<Point> regionPixels;
+	regionPixels.push_back(Point(0, topOfBackPlane));
+	regionPixels.push_back(Point(0, bottomOfBackPlane));
+	regionPixels.push_back(Point(0, topOfGroundPlane));
+	regionPixels.push_back(Point(0, bottomOfGroundPlane));
+	return regionPixels;
 }
 
 bool ScanModel::savePicture(Image * image) {
