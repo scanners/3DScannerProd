@@ -23,7 +23,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		messages = new QLabel("<b>Messages Go Here</b>");
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		takePicButton = new QPushButton("Take Picture");
-		takePicButton->setDisabled(true);
+		takePicButton->setEnabled(false);
 		cancelButton = new QPushButton("Cancel");
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
@@ -78,7 +78,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 	if (capture.isOpened())
 	{
 		// if the Video Capture Stream is open, set button and create timer
-		takePicButton->setDisabled(false);
+		takePicButton->setEnabled(true);
 		timer = new QTimer(this);
 		// slot for displaying video every 20ms
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
@@ -87,7 +87,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 	else
 	{
 		videoLabel->setPixmap(QPixmap("noCamera.png"));
-		takePicButton->setDisabled(true);
+		takePicButton->setEnabled(false);
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		messages->setText("No camera is detected! Please check your connection!");
 	}

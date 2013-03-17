@@ -13,6 +13,11 @@ void ScanModel::scan() {
 
 }
 
+void ScanModel::resetScan() {
+	//Free memory from redChannels vector 
+	vector<Mat>().swap(redChannels);
+}
+
 void ScanModel::storeRedChannel(Mat image) {
 	vector<Mat> channels(image.channels());
 	//Split the image into its 3 channels: B, G, R

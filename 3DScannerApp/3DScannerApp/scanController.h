@@ -21,6 +21,7 @@ private:
 public:
 	ScanController();
 	void startScan();
+	void resetScan();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
 	void createScanningView();

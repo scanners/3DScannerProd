@@ -48,6 +48,7 @@ private:
 public:
 	ScanModel();
 	void scan();
+	void resetScan();
 	Plane findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints);
 	vector<Point3f> findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPointsOnObject);
 	void convertCoords();

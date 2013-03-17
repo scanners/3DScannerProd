@@ -29,7 +29,7 @@ void ScanInputView::startScan()
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadXMLSuccess) {
-		//scanController->createScanningView();
+		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
 		//Dialog box for errors

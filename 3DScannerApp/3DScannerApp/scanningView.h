@@ -20,21 +20,21 @@ class ScanningView : public QDialog
 
 private slots:	
 	void displayVideoFrame();
-	void stopVideo();
+	void scanImage();
+	void cancelScan();
 private:
 	ScanController * scanController;
 	QWidget * scanFrame;
 	QLabel * titleLabel;
-	QPushButton * startButton;
-	QPushButton * exitButton;
+	QPushButton * cancelButton;
 	QBoxLayout * mainLayout;
 	QGridLayout * buttonLayout;
 	QTimer * timer;
 	VideoCapture capture;
 	Mat image;
-	Mat displayImage;
 	QLabel * videoLabel;
 	void constructLayout();
+	void stopVideo();
 protected:
 	void closeEvent(QCloseEvent * event);
 public:

@@ -28,6 +28,7 @@ private slots:
 	void stopVideo();
 	void obtainCoordinates();
 	void takePicture();
+	void startScan();
 protected:
 	void closeEvent(QCloseEvent * event);
 private:
@@ -45,7 +46,7 @@ private:
 	QGridLayout * buttonLayout;
 	VideoCapture capture;
 	int y; // y-position of click
-	int x; // x-position of click (for testing purposes)
+	int x; // x-position of click
 	int numClicks;
 	Mat image;
 	Mat display;

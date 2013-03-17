@@ -15,6 +15,10 @@ void ScanController::startScan() {
 
 }
 
+void ScanController::resetScan() {
+	scanModel->resetScan();
+}
+
 void ScanController::setSaveDirectory(string saveDir) {
 	scanModel->setSaveDirectory(saveDir);
 }
@@ -50,7 +54,6 @@ void ScanController::setRegion(int yCoordinate) {
 	int regions = scanModel->setRegion(yCoordinate);
 	if (regions == scanModel->getRequiredNumStoredYCoords()) {
 		scanModel->sortStoredYCoords();
-		//DRAW OVERLAY--Should instead get 4 sets of pixels from model;
 		overlayView->drawOverlayRegions(scanModel->getRegionPixels(), scanModel->getImageWidth());
 	}
 }

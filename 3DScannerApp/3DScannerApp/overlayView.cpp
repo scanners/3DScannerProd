@@ -7,6 +7,7 @@
 #include <qboxlayout.h>
 #include <qtimer.h>
 #include <qpainter.h>
+#include <qmessagebox.h>
 using cv::Scalar;
 
 OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
@@ -18,6 +19,7 @@ OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(resetClicks()));
 	connect(exitButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
 	connect(exitButton, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(startButton, SIGNAL(clicked()), this, SLOT(startScan()));
 	// open video capture stuff
 	capture.open(0);
 	if (capture.isOpened())
@@ -109,6 +111,7 @@ void OverlayView::displayCameraFrame()
 void OverlayView::resetClicks()
 {
 	numClicks = 0;
+	startButton->setEnabled(false);
 	scanController->resetRegions();
 	this->displayCameraFrame();
 	//To be used to display ? instead of int
@@ -156,4 +159,17 @@ void OverlayView::drawOverlayRegions(vector<Point> coords, int rectWidth)
 	painter.end(); // free up resources
 	// refresh the image
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
+	//set accept button so the scan can begin
+	startButton->setEnabled(true);
+}
+
+void OverlayView::startScan() {
+	this->stopVideo();
+	QMessageBox message;
+	message.setIcon(QMessageBox::Information);
+	message.setWindowTitle("Turn Off Lights");
+	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.");
+	message.exec();
+	this->reject();
+	scanController->createScanningView();
 }
