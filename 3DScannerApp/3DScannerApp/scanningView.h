@@ -34,7 +34,7 @@ private:
 	Mat image;
 	QLabel * videoLabel;
 	void constructLayout();
-	void stopVideo();
+	void releaseVideo();
 protected:
 	void closeEvent(QCloseEvent * event);
 public:
@@ -42,6 +42,7 @@ public:
 	void setScanController(ScanController& scanController);
 	void showMessage(QString message);
 	void updateProgressBar(int processed, int done);
+	void stopVideo();
 };
 
 #endif

@@ -21,10 +21,8 @@ private:
 	Extrinsic * backExtrinsics;
 	Extrinsic * groundExtrinsics;
 	vector<int> regionYCoordinates;
-	vector<int> groundRegion;
-	vector<int> backRegion;
 	vector<Mat> redChannels;
-	vector<Plane> laserPlanes;
+	vector<vector<Point3f>> objectPoints;
 	string saveDirectory;
 	string loadDirectory;
 	int imageWidth;
@@ -37,20 +35,23 @@ private:
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
 	vector<vector<Point2f>> redPointsOnObject;
+	Plane findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints);
+	vector<Point3f> findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPointsOnObject);
 	vector<Point3f> findRayPlaneIntersections(int planeLocation, vector<Point2f> imagePoints);
 	Vec6f findBestFitRedLine(vector<Point3f> redPointsInCameraCoords);
 	Point3f findLineLineIntersection(Vec6f backLine, Vec6f groundLine);
 	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
 	float findMidpointRedComponentAtPixel(int x, int y, vector<Mat> redChannels);
+	void findDifferenceImages();
 	void findDifferenceImageAtPixel(int x, int y, vector<Mat>& redChannels);
+	void findRedPoints();
 	vector<Point2f> findRedPointsInRegion(int region, int imageNum);
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
 	void scan();
+	void processScan();
 	void resetScan();
-	Plane findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints);
-	vector<Point3f> findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPointsOnObject);
 	void convertCoords();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
@@ -61,13 +62,10 @@ public:
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
 	int getImageWidth();
-	void findDifferenceImages();
-	void findRedPoints();
 	bool savePicture(Image * image);
 	bool loadXML();
 	bool isDoneScanning();
 	int buildImageObjects();
-	void processImage(int imageNum);
 	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
 	int getRequiredNumStoredYCoords();

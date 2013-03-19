@@ -13,9 +13,34 @@ void ScanModel::scan() {
 
 }
 
+void ScanModel::processScan() {
+	Plane * laserPlane;
+	this->findDifferenceImages();
+	this->findRedPoints();
+	for (int n = 0; n < numImages; n++) {
+		laserPlane = &(this->findLaserPlane(redPointsInBackPlaneLine.at(n), redPointsInGroundPlaneLine.at(n)));
+		objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(n)));
+	}
+
+	//FOR TESTING OF OUTPUT
+	vector<Point3f> pointCloudPoints;
+	for (int i = 0; i < objectPoints.size(); i++) {
+		for (int j = 0; j < objectPoints.at(i).size(); j++) {
+			pointCloudPoints.push_back(objectPoints.at(i).at(j));
+		}
+	}
+	Mesh3D pointCloud(pointCloudPoints);
+	pointCloud.writeAsVrml("C:/PointCloud.wrl");
+}
+
 void ScanModel::resetScan() {
-	//Free memory from redChannels vector 
+	//Free memory
+	vector<int>().swap(regionYCoordinates);
 	vector<Mat>().swap(redChannels);
+	vector<vector<Point3f>>().swap(objectPoints);
+	vector<vector<Point2f>>().swap(redPointsInBackPlaneLine);
+	vector<vector<Point2f>>().swap(redPointsInGroundPlaneLine);
+	vector<vector<Point2f>>().swap(redPointsOnObject);
 }
 
 void ScanModel::storeRedChannel(Mat image) {
@@ -25,8 +50,6 @@ void ScanModel::storeRedChannel(Mat image) {
 	//Convert red component uchar matrix to float matrix
 	channels[2].convertTo(channels[2], CV_32F);
 	redChannels.push_back(channels[2]);
-	//For testing
-	//findDifferenceImages();
 }
 
 void ScanModel::findDifferenceImages() {
@@ -161,9 +184,9 @@ Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f>
 }
 
 vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2f> imagePoints) {
-	Point3f cameraOriginInCameraCoords(0, 0, 0);
-	Point3f planeOriginInWorldCoords(0, 0, 0);
-	Vec3f planeNormalVectorInWorldCoords(0, 1, 0);
+	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
+	Mat planeOriginInWorldCoords(Point3d(0, 0, 0));
+	Mat planeNormalVectorInWorldCoords(Vec3d(0, 1, 0));
 	
 	vector<Point2f> undistortedImagePoints;
 	vector<Point3f> pointsInCameraCoords;
@@ -173,27 +196,29 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 
 	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
 		//3x1 Matrices representing Point3f. Convert world to camera
-		planeOriginInCameraCoords = backExtrinsics->getRotationMatrix() * Mat(planeOriginInWorldCoords) + backExtrinsics->getTranslationMatrix();
+		planeOriginInCameraCoords = backExtrinsics->getRotationMatrix() * planeOriginInWorldCoords + backExtrinsics->getTranslationMatrix();
 		//3x1 Matrices representing Vec3f. Convert world to camera
-		planeNormalVectorInCameraCoords = backExtrinsics->getRotationMatrix() * Mat(planeNormalVectorInWorldCoords) + backExtrinsics->getTranslationMatrix();
+		planeNormalVectorInCameraCoords = backExtrinsics->getRotationMatrix() * planeNormalVectorInWorldCoords + backExtrinsics->getTranslationMatrix();
 	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
 		//3x1 Matrices representing Point3f. Convert world to camera
-		planeOriginInCameraCoords = groundExtrinsics->getRotationMatrix() * Mat(planeOriginInWorldCoords) + groundExtrinsics->getTranslationMatrix();
+		planeOriginInCameraCoords = groundExtrinsics->getRotationMatrix() * planeOriginInWorldCoords + groundExtrinsics->getTranslationMatrix();
 		//3x1 Matrices representing Vec3f. Convert world to camera
-		planeNormalVectorInCameraCoords = groundExtrinsics->getRotationMatrix() * Mat(planeNormalVectorInWorldCoords) + groundExtrinsics->getTranslationMatrix();
+		planeNormalVectorInCameraCoords = groundExtrinsics->getRotationMatrix() * planeNormalVectorInWorldCoords + groundExtrinsics->getTranslationMatrix();
 	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
 	convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoords);
 	
-	float lambda;
-	
+	double lambda;
+	Mat pointInCameraCoords;
+
 	//Calculate the lambda value of each red point on the plane and store the Camera coordinate of the red point on the back plane
 	for (int i = 0; i < pointsInCameraCoords.size(); i++) {
+		Mat(pointsInCameraCoords.at(i)).convertTo(pointInCameraCoords, CV_64F);
 		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
 		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
-		lambda = Mat(planeNormalVectorInCameraCoords.t() * (planeOriginInCameraCoords - Mat(cameraOriginInCameraCoords)) / 
-			(planeNormalVectorInCameraCoords.t() * Mat(pointsInCameraCoords.at(i)))).at<float>(0, 0);
+		lambda = Mat(planeNormalVectorInCameraCoords.t() * (planeOriginInCameraCoords - cameraOriginInCameraCoords) / 
+			(planeNormalVectorInCameraCoords.t() * pointInCameraCoords)).at<double>(0, 0);
 		pointsInCameraCoords.at(i) = lambda * pointsInCameraCoords.at(i);
 	}
 
@@ -245,11 +270,11 @@ vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 	vector<Point3f> redPointsOnObjectInBackWorldCoords;
 	Point3f cameraOriginInCameraCoords(0, 0, 0);
 
-	undistortPoints(redPointsOnObject, undistortedRedPointsOnObject, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
+	undistortPoints(redPtsOnObject, undistortedRedPointsOnObject, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
 	convertPointsToHomogeneous(undistortedRedPointsOnObject, redPointsOnObjectInCameraCoords);
 
 	float lambda;
-	
+	Mat redPointOnObjectInCameraCoords;
 	//Calculate the lambda value of each red point on the back plane and store the Camera coordinate of the red point on the object
 	for (int i = 0; i < redPointsOnObjectInCameraCoords.size(); i++) {
 		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
@@ -257,10 +282,11 @@ vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 		lambda = Mat(Mat(laserPlane.getNormalVector()).t() * (Mat(laserPlane.getPointOnPlane()) - Mat(cameraOriginInCameraCoords)) / 
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<float>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
-		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().t()*Mat(redPointsOnObjectInCameraCoords.at(i))-
+		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
+		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().t()*redPointOnObjectInCameraCoords-
 			backExtrinsics->getRotationMatrix().t()*backExtrinsics->getTranslationMatrix());
-		redPointsOnObjectInBackWorldCoords.push_back(Point3f(redPointWorldCoordMatrix.at<float>(0,0), 
-			redPointWorldCoordMatrix.at<float>(1,0), redPointWorldCoordMatrix.at<float>(2,0)));
+		redPointsOnObjectInBackWorldCoords.push_back(Point3f(redPointWorldCoordMatrix.at<double>(0,0), 
+			redPointWorldCoordMatrix.at<double>(1,0), redPointWorldCoordMatrix.at<double>(2,0)));
 	}
 
 	return redPointsOnObjectInBackWorldCoords;
@@ -293,7 +319,7 @@ int ScanModel::setRegion(int yCoordinate) {
 
 void ScanModel::resetRegions()
 {
-	regionYCoordinates.clear();
+	vector<int>().swap(regionYCoordinates);
 }
 
 int ScanModel::getNumStoredCoords() {
@@ -364,10 +390,6 @@ bool ScanModel::isDoneScanning() {
 
 int ScanModel::buildImageObjects() {
 	return 0;
-}
-
-void ScanModel::processImage(int imageNum) {
-
 }
 
 vector<ObjectPoint>* ScanModel::getObjectPoints() {

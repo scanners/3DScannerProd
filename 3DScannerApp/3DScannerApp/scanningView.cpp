@@ -34,7 +34,7 @@ void ScanningView::setScanController(ScanController& scanControl)
 }
 
 void ScanningView::cancelScan() {
-	this->stopVideo();
+	this->releaseVideo();
 	scanController->resetScan();
 }
 
@@ -42,6 +42,12 @@ void ScanningView::stopVideo()
 {
 	if (capture.isOpened())
 	{
+		timer->stop();
+	}
+}
+
+void ScanningView::releaseVideo() {
+	if (capture.isOpened()) {
 		capture.release();
 		timer->stop();
 	}
@@ -91,5 +97,16 @@ void ScanningView::displayVideoFrame()
 }
 
 void ScanningView::scanImage() {
+	//For testing
+	static int numImages = 0;
+	if (numImages >= 10) {
+		this->stopVideo();
+		scanController->startScan();
+		numImages = 0;
+	} else {
+		numImages++;
+	} //End test section
+	
 	scanController->sendImage(image);
+	
 }

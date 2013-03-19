@@ -12,7 +12,9 @@ ScanController::ScanController() {
 }
 
 void ScanController::startScan() {
-
+	/*scanModel->scan();
+	scanningView->stopVideo();*/
+	scanModel->processScan();
 }
 
 void ScanController::resetScan() {
