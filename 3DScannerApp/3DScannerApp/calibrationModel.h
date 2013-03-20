@@ -2,7 +2,7 @@
 #define CALIBRATIONMODEL_H
 
 //////////////////  CHANGE THESE VALUES /////////////////////////////////////
-#define INTRINSIC_REQUIRED_NUM_SUCCESSES 10
+#define INTRINSIC_REQUIRED_NUM_SUCCESSES 20
 #define EXTRINSIC_REQUIRED_NUM_SUCCESSES 2
 
 using std::string;

@@ -96,7 +96,7 @@ void CalibrationModel::calibrateIntrinsics() {
 	saveIntrinsicFiles();
 
 	//FOR TEST DEMO ONLY
-	Mat undistortedDemoImage;
+	Mat undistortedDemoImage = demoImage.clone();
 	drawChessboardCorners(demoImage, innerCorners, imagePoints.back(), true);
 	imshow("Distorted image corners", demoImage);
 	undistort(demoImage, undistortedDemoImage, intrinsicMatrix, distortionCoefficients);
