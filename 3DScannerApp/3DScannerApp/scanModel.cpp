@@ -328,11 +328,60 @@ int ScanModel::getNumStoredCoords() {
 
 void ScanModel::sortStoredYCoords() {
 	std::sort(regionYCoordinates.begin(), regionYCoordinates.end());
+<<<<<<< HEAD
 	//After sorted, we know which clicks associate with which regions
 	topOfBackPlane = regionYCoordinates[0];
 	bottomOfBackPlane = regionYCoordinates[1];
 	topOfGroundPlane = regionYCoordinates[2];
 	bottomOfGroundPlane = regionYCoordinates[3];
+=======
+	return regionYCoordinates;
+}
+
+void ScanModel::storeRedChannel(Mat image) {
+	vector<Mat> channels(image.channels());
+	//Split the image into its 3 channels: B, G, R
+	split(image, channels);
+	//Convert red component uchar matrix to float matrix
+	channels[2].convertTo(channels[2], CV_32F);
+	redChannels.push_back(channels[2]);
+	//For testing
+	//findDifferenceImages();
+}
+
+void ScanModel::findDifferenceImages() {
+	//Set min to the maximum value so it gets set to a lower value
+	float minRedComponent = 255;
+	//Set max to the minimum value so it gets set to a higher value
+	float maxRedComponent = 0;
+	float midpointRedComponent;
+
+	imageWidth = redChannels.at(0).cols;
+	imageHeight = redChannels.at(0).rows;
+	numImages = redChannels.size();
+
+	for (int x = 0; x < imageWidth; x++) {
+		for (int y = 0; y < imageHeight; y++) {
+			for (int n = 0; n < numImages; n++) {
+				if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
+					minRedComponent = redChannels.at(n).at<float>(Point(x, y));
+				}
+				if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
+					maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+				}
+			}
+			midpointRedComponent = (minRedComponent + maxRedComponent) / 2.0;
+
+			//Compute difference image. 
+			for (int n = 0; n < redChannels.size(); n++) {
+				redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
+			}
+			//Reset variables
+			minRedComponent = 255;
+			maxRedComponent = 0;
+		}
+	}
+>>>>>>> parent of 58049f0... Brief work after demo
 }
 
 vector<Point> ScanModel::getRegionPixels() {

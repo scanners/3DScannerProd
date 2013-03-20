@@ -95,6 +95,14 @@ void CalibrationModel::calibrateIntrinsics() {
 		distortionCoefficients, rotationVectors, translationVectors);
 	saveIntrinsicFiles();
 
+	//FOR TEST DEMO ONLY
+	Mat undistortedDemoImage;
+	drawChessboardCorners(demoImage, innerCorners, imagePoints.back(), true);
+	imshow("Distorted image corners", demoImage);
+	undistort(demoImage, undistortedDemoImage, intrinsicMatrix, distortionCoefficients);
+	drawChessboardCorners(undistortedDemoImage, innerCorners, imagePoints.back(), true);
+	imshow("Undistorted image corners", undistortedDemoImage);
+
 	//Deallocate vector
 	vector<vector<Point2f>>().swap(imagePoints);
 }
@@ -140,4 +148,9 @@ void CalibrationModel::setSaveDirectory(string directory) {
 
 void CalibrationModel::setLoadDirectory(string directory) {
 	loadDirectory = directory;
+}
+
+//FOR DEMO ONLY
+void CalibrationModel::setImageForCornerDisplay(Mat image) {
+	demoImage = image;
 }
