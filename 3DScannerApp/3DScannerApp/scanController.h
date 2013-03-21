@@ -36,6 +36,7 @@ public:
 	void setScanModel(ScanModel& scanMod);
 	void setScanInputView(ScanInputView& scanInputView);
 	void resetRegions();
+
 };
 
 #endif //SCANCONTROLLER_H

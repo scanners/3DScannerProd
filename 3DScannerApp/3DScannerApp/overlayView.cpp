@@ -45,6 +45,8 @@ void OverlayView::setScanController(ScanController& scanControl) {
 
 void OverlayView::stopVideo()
 {
+	// reset clicks and state when exit button is clicked
+	this->resetClicks();
 	if (capture.isOpened())
 	{
 		capture.release();
@@ -53,7 +55,9 @@ void OverlayView::stopVideo()
 
 void OverlayView::closeEvent(QCloseEvent * event)
 {
+	this->resetClicks();
 	this->stopVideo();
+	
 }
 
 void OverlayView::constructLayout()
@@ -67,11 +71,12 @@ void OverlayView::constructLayout()
 	startButton = new QPushButton("Start Scan");
 	startButton->setEnabled(false);
 	startButton->setMaximumWidth(80);
-	takePicButton = new QPushButton("Take Picture");
-	takePicButton->setMaximumWidth(80);
+	takePicButton = new QPushButton("Being Region Clicking");
+	takePicButton->setMaximumWidth(120);
 	takePicButton->setEnabled(false);
 	resetButton = new QPushButton("Reset");
 	resetButton->setMaximumWidth(80);
+	resetButton->setEnabled(false);
 	exitButton = new QPushButton("Exit");
 	exitButton->setMaximumWidth(80);
 	// create layouts and add the widgets
@@ -89,6 +94,7 @@ void OverlayView::constructLayout()
 }
 
 void OverlayView::takePicture() {
+	resetButton->setEnabled(true);
 	timer->stop();
 	scanController->setImageWidth(image);
 	takePicButton->setEnabled(false);

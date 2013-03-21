@@ -32,6 +32,7 @@ private:
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
 	int bottomOfGroundPlane;
+	bool scanComplete;
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
 	vector<vector<Point2f>> redPointsOnObject;
@@ -72,6 +73,7 @@ public:
 	void saveFile(string fileName);
 	void exit();
 	void resetRegions();
+	bool isDone(int done, int total);
 };
 
 #endif //SCANMODEL_H

@@ -6,13 +6,17 @@
 #include "image.h"
 #include "plane.h"
 
-ScanModel::ScanModel() {
+ScanModel::ScanModel() : scanComplete(false) {
 }
 
 void ScanModel::scan() {
 
 }
 
+// this method needs to be broken up and return an integer
+// so the controller can properly update the progress bar
+// ScanController will call scanView.updateProgressBar()
+// but it needs the number of finished images to do so
 void ScanModel::processScan() {
 	Plane * laserPlane;
 	this->findDifferenceImages();
@@ -407,4 +411,12 @@ void ScanModel::exit() {
 
 int ScanModel::getRequiredNumStoredYCoords() {
 	return REQUIRED_NUM_STORED_Y_COORDS;
+}
+
+bool ScanModel::isDone(int done, int total)
+{
+	if (done == total)
+		return true;
+	else
+		return false;
 }

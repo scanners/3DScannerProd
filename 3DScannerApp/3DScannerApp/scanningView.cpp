@@ -5,6 +5,7 @@
 #include <qlabel.h>
 #include <qboxlayout.h>
 #include <qtimer.h>
+#include <qprogressbar.h>
 using cv::Scalar;
 
 
@@ -77,6 +78,10 @@ void ScanningView::constructLayout()
 	titleLabel = new QLabel("<h1>Scanning Process</h1>");
 	cancelButton = new QPushButton("Cancel");
 	cancelButton->setMaximumWidth(80);
+	progressBar = new QProgressBar();
+	progressBar->setRange(0, 100); // these are artifical and mean nothing
+	progressLabel = new QLabel("Scan Progress:");
+	
 	// create layouts and add the widgets
 	mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	buttonLayout = new QGridLayout();
@@ -84,6 +89,8 @@ void ScanningView::constructLayout()
 	mainLayout->addWidget(videoLabel);
 	buttonLayout->addWidget(cancelButton, 0, 0);
 	mainLayout->addLayout(buttonLayout);
+	mainLayout->addWidget(progressLabel);
+	mainLayout->addWidget(progressBar);
 	setLayout(mainLayout);
 }
 

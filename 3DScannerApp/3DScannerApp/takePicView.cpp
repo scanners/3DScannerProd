@@ -20,7 +20,7 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		titleLabel = new QLabel("Intrinsic Calibration");
 		picProgressLabel = new QLabel("Picture 1 of 20");
 		messageLabel = new QLabel("Messages: ");
-		messages = new QLabel("<b>Messages Go Here</b>");
+		messages = new QLabel("");
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		takePicButton = new QPushButton("Take Picture");
 		takePicButton->setEnabled(false);

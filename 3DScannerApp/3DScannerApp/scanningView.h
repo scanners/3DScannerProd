@@ -13,6 +13,7 @@ class QLabel;
 class QPushButton;
 class QBoxLayout;
 class QGridLayout;
+class QProgressBar;
 
 class ScanningView : public QDialog
 {
@@ -33,6 +34,8 @@ private:
 	VideoCapture capture;
 	Mat image;
 	QLabel * videoLabel;
+	QProgressBar * progressBar;
+	QLabel * progressLabel;
 	void constructLayout();
 	void releaseVideo();
 protected:
