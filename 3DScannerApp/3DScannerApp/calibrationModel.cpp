@@ -96,12 +96,14 @@ void CalibrationModel::calibrateIntrinsics() {
 	saveIntrinsicFiles();
 
 	//FOR TEST DEMO ONLY
-	Mat undistortedDemoImage = demoImage.clone();
+	Mat copyImage = demoImage.clone();
+	Mat undistortedImage;
 	drawChessboardCorners(demoImage, innerCorners, imagePoints.back(), true);
 	imshow("Distorted image corners", demoImage);
-	undistort(demoImage, undistortedDemoImage, intrinsicMatrix, distortionCoefficients);
-	drawChessboardCorners(undistortedDemoImage, innerCorners, imagePoints.back(), true);
-	imshow("Undistorted image corners", undistortedDemoImage);
+	undistort(copyImage, undistortedImage, intrinsicMatrix, distortionCoefficients);
+	drawChessboardCorners(undistortedImage, innerCorners, imagePoints.back(), true);
+	imshow("Undistorted image corners", undistortedImage);
+	//demoImage.deallocate();
 
 	//Deallocate vector
 	vector<vector<Point2f>>().swap(imagePoints);
