@@ -10,7 +10,7 @@ IntrinsicController::IntrinsicController() {
 }
 
 void IntrinsicController::createTakePicView() {
-	takePicView = new TakePicView(Enums::controllerEnum::INTRINSIC);
+	takePicView = new TakePicView(Enums::controllerEnum::INTRINSIC, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));
 	takePicView->setCalibrationController(*this);
 	takePicView->setModal(true);
 	takePicView->show();

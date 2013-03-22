@@ -27,7 +27,6 @@ void ScanInputView::startScan()
 {
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
-	scanController->createOverlayView();
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadXMLSuccess) {
 		scanController->resetRegions();
