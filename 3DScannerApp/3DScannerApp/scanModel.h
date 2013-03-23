@@ -6,6 +6,11 @@
 #include <vector>
 using std::vector;
 #include <string>
+#include <tchar.h>
+#include <windows.h>
+#include <stdio.h>
+#include "Serial.h"
+
 using std::string;
 using namespace::cv;
 
@@ -50,7 +55,7 @@ private:
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
-	void scan();
+	int __cdecl scan();
 	void processScan();
 	void resetScan();
 	void convertCoords();
@@ -65,7 +70,8 @@ public:
 	int getImageWidth();
 	bool savePicture(Image * image);
 	bool loadXML();
-	bool isDoneScanning();
+	int ShowError (LONG lError, LPCTSTR lptszMessage);
+	bool isDoneScanning(CSerial &serial, LONG &lLastError);
 	int buildImageObjects();
 	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
