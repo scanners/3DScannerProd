@@ -53,7 +53,9 @@ private:
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
-	int __cdecl scan();
+	int ShowError (LONG lError, LPCTSTR lptszMessage);
+	int scan();
+	bool isDoneScanning(CSerial &serial, LONG &lLastError);
 	void processScan();
 	void resetScan();
 	void convertCoords();
@@ -68,8 +70,6 @@ public:
 	int getImageWidth();
 	bool savePicture(Image * image);
 	bool loadXML();
-	int ShowError (LONG lError, LPCTSTR lptszMessage);
-	bool isDoneScanning(CSerial &serial, LONG &lLastError);
 	int buildImageObjects();
 	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
