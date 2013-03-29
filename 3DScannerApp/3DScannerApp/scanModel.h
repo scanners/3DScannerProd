@@ -6,8 +6,6 @@
 #include <vector>
 using std::vector;
 #include <string>
-#include <tchar.h>
-#include <windows.h>
 #include <stdio.h>
 #include "Serial.h"
 

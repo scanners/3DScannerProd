@@ -5,6 +5,8 @@
 #include "extrinsic.h"
 #include "image.h"
 #include "plane.h"
+#include "Serial.h"
+#include <Windows.h>
 
 ScanModel::ScanModel() : scanComplete(false) {
 }
@@ -14,7 +16,8 @@ int __cdecl ScanModel::scan() {
 	LONG lLastError = ERROR_SUCCESS;
 
 	// Attempt to open the serial port (COM1)
-	lLastError = serial.Open(_T("COM1"),0,0,false);
+	lLastError = serial.Open("COM1",0,0,false);
+
 	if (lLastError != ERROR_SUCCESS)
 		return ShowError(serial.GetLastError(), _T("Unable to open COM-port"));
 	
@@ -425,7 +428,7 @@ bool ScanModel::loadXML() {
 	return true;
 }
 
-int ShowError (LONG lError, LPCTSTR lptszMessage)
+int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
 {
 	// Generate a message text
 	TCHAR tszMessage[256];
