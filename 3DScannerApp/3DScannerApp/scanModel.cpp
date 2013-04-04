@@ -8,7 +8,7 @@
 #include "Serial.h"
 #include <Windows.h>
 
-ScanModel::ScanModel() : scanComplete(false) {
+ScanModel::ScanModel() : scanComplete(false), processedImages(0) {
 }
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
@@ -173,6 +173,25 @@ bool ScanModel::isDoneScanning(CSerial &serial, LONG &lLastError) {
     return !fContinue;
 }
 
+int ScanModel::getNumImages()
+{
+	return numImages;
+}
+
+int ScanModel::getProcessedImages()
+{
+	return processedImages;
+}
+
+// i is the index of the image we are processing
+void ScanModel::processNextFrame(int i)
+{
+	Plane * laserPlane = new Plane(this->findLaserPlane(redPointsInBackPlaneLine.at(i), redPointsInGroundPlaneLine.at(i)));
+	objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(i)));
+	processedImages++;
+	delete laserPlane; // deallocate the memory, so we don't have a memory leak
+}
+
 // this method needs to be broken up and return an integer
 // so the controller can properly update the progress bar
 // ScanController will call scanView.updateProgressBar()
@@ -181,11 +200,26 @@ void ScanModel::processScan() {
 	Plane * laserPlane;
 	this->findDifferenceImages();
 	this->findRedPoints();
+	/*
 	for (int n = 0; n < numImages; n++) {
 		laserPlane = &(this->findLaserPlane(redPointsInBackPlaneLine.at(n), redPointsInGroundPlaneLine.at(n)));
 		objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(n)));
 	}
 
+	//FOR TESTING OF OUTPUT
+	vector<Point3f> pointCloudPoints;
+	for (int i = 0; i < objectPoints.size(); i++) {
+		for (int j = 0; j < objectPoints.at(i).size(); j++) {
+			pointCloudPoints.push_back(objectPoints.at(i).at(j));
+		}
+	}
+	Mesh3D pointCloud(pointCloudPoints);
+	pointCloud.writeAsVrml("C:/PointCloud.wrl");
+	*/
+}
+
+void ScanModel::createPointCloud()
+{
 	//FOR TESTING OF OUTPUT
 	vector<Point3f> pointCloudPoints;
 	for (int i = 0; i < objectPoints.size(); i++) {
@@ -569,10 +603,7 @@ int ScanModel::getRequiredNumStoredYCoords() {
 	return REQUIRED_NUM_STORED_Y_COORDS;
 }
 
-bool ScanModel::isDone(int done, int total)
+bool ScanModel::isDoneProcessingFrames()
 {
-	if (done == total)
-		return true;
-	else
-		return false;
+	return numImages == processedImages;
 }

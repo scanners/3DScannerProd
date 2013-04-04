@@ -218,3 +218,39 @@ void InputView::constructLayout()
 		setLayout(mainLayout);
 	}
 }
+
+InputView::~InputView()
+{
+	if (calibrationType == Enums::controllerEnum::INTRINSIC)
+	{
+		delete mainLayout;
+		delete horizontalLabel;
+		delete verticalLabel;
+		delete messagesLabel;
+		delete saveLabel;
+		delete startButton;
+		delete exitButton;
+		delete saveBrowseButton;
+		delete horizontalText;
+		delete verticalText;
+		delete saveDirText;
+	}
+	else if (calibrationType == Enums::controllerEnum::EXTRINSIC)
+	{
+		delete mainLayout;
+		delete horizontalLabel;
+		delete verticalLabel;
+		delete messagesLabel;
+		delete loadLabel;
+		delete saveLabel;
+		delete startButton;
+		delete exitButton;
+		delete loadBrowseButton;
+		delete saveBrowseButton;
+		delete horizontalText;
+		delete verticalText;
+		delete saveDirText;
+		delete loadDirText;
+	}
+	delete message;
+}

@@ -158,3 +158,16 @@ void TakePicView::showMessage(int messageEnum) {
 	}
 	
 }
+
+TakePicView::~TakePicView()
+{
+		delete videoLabel;
+		delete titleLabel;
+		delete picProgressLabel;
+		delete messageLabel;
+		delete messages;
+		delete takePicButton;
+		delete cancelButton;
+		delete mainLayout;
+		delete buttonLayout;
+}

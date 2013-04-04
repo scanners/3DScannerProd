@@ -35,6 +35,7 @@ private:
 	CalibrationController * calibrationController;
 public:
     explicit TakePicView(int calibType, QWidget *parent = 0);
+	~TakePicView();
 	void setCalibrationController(CalibrationController& calibControl);
 	void incrementSuccesses(int successes, int requiredNumSuccesses);
 	void showMessage(int messageEnum);

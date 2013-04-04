@@ -12,9 +12,25 @@ ScanController::ScanController() {
 }
 
 void ScanController::startScan() {
-	/*scanModel->scan();
-	scanningView->stopVideo();*/
+	/*
+	While not done processing frames:
+		update progress bar
+		process next frame
+	*/
+	// the above pseudocode will require refactoring!
+
 	scanModel->processScan();
+	int currentFrame = 0;
+	int totalFrames = scanModel->getNumImages();
+	while(!scanModel->isDoneProcessingFrames())
+	{
+		scanningView->updateProgressBar(currentFrame, totalFrames);
+		scanModel->processNextFrame(currentFrame);
+		currentFrame++;
+	}
+
+	// scanning processing is complete, create point cloud:
+	scanModel->createPointCloud();
 }
 
 void ScanController::resetScan() {

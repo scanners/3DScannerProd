@@ -31,6 +31,7 @@ private:
 	int imageWidth;
 	int imageHeight;
 	int numImages;
+	int processedImages;
 	int topOfBackPlane;
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
@@ -77,7 +78,11 @@ public:
 	void saveFile(string fileName);
 	void exit();
 	void resetRegions();
-	bool isDone(int done, int total);
+	bool isDoneProcessingFrames();
+	void processNextFrame(int i);
+	int getNumImages(); // returns how many images there are to process
+	int getProcessedImages(); // returns the number of processed images
+	void createPointCloud();
 };
 
 #endif //SCANMODEL_H

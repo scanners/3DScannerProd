@@ -6,6 +6,7 @@
 class ExtrinsicController : public CalibrationController {
 public:
 	ExtrinsicController();
+	~ExtrinsicController();
 	void createTakePicView();
 	void findCorners(Mat image);
 };
