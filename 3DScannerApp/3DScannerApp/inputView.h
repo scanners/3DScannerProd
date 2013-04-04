@@ -49,6 +49,7 @@ private:
 	void constructLayout();
 public:
 	explicit InputView(int calibType, QWidget *parent = 0);
+	~InputView(); // dtor!
 	void showMessage(QString msg);
 	void setCalibrationController(CalibrationController& calibControl);
 };

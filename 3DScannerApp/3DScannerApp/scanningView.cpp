@@ -64,9 +64,9 @@ void ScanningView::showMessage(QString message)
 
 }
 
-void ScanningView::updateProgressBar(int processed, int done)
+void ScanningView::updateProgressBar(int done, int total)
 {
-
+	this->progressBar->setValue(done);
 }
 
 void ScanningView::constructLayout()
@@ -116,4 +116,16 @@ void ScanningView::scanImage() {
 	
 	scanController->sendImage(image);
 	
+}
+
+ScanningView::~ScanningView()
+{
+	delete videoLabel;
+	delete titleLabel;
+	delete cancelButton;
+	delete progressBar;
+	delete progressLabel;
+	delete mainLayout;
+	delete buttonLayout;
+	delete timer;
 }

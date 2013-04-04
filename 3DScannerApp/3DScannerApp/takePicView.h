@@ -34,7 +34,8 @@ private:
 	Mat image;
 	CalibrationController * calibrationController;
 public:
-    explicit TakePicView(int calibType, int numPictures, QWidget *parent = 0);
+    explicit TakePicView(int calibType, QWidget *parent = 0);
+	~TakePicView();
 	void setCalibrationController(CalibrationController& calibControl);
 	void incrementSuccesses(int successes, int requiredNumSuccesses);
 	void showMessage(int messageEnum);

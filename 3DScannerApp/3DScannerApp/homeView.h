@@ -18,6 +18,7 @@ class HomeView : public QDialog
 
 public:
 	explicit HomeView(QWidget *parent = 0);
+	~HomeView();
 	void setScanController(const ScanController& scanControl);
 
 private:
@@ -32,12 +33,12 @@ private:
 	ScanModel * scanModel;
 };
 
-class TestTab : public QWidget
+class HomeTab : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit TestTab(QWidget *parent = 0);
+	explicit HomeTab(QWidget *parent = 0);
 };
 
 #endif

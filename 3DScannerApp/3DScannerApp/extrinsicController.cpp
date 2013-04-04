@@ -30,3 +30,8 @@ void ExtrinsicController::findCorners(Mat image) {
 		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
 	}
 }
+
+ExtrinsicController::~ExtrinsicController()
+{
+	delete takePicView;
+}

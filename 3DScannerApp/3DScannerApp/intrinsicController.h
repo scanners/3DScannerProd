@@ -6,6 +6,7 @@
 class IntrinsicController : public CalibrationController {
 public:
 	IntrinsicController();
+	~IntrinsicController();
 	void createTakePicView();
 	void findCorners(Mat image);
 };
