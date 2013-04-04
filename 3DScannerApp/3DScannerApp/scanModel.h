@@ -54,6 +54,7 @@ private:
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
+	~ScanModel();
 	int ShowError (LONG lError, LPCTSTR lptszMessage);
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);

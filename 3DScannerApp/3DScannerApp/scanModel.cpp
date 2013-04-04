@@ -607,3 +607,10 @@ bool ScanModel::isDoneProcessingFrames()
 {
 	return numImages == processedImages;
 }
+
+ScanModel::~ScanModel()
+{
+	delete intrinsics;
+	delete backExtrinsics;
+	delete groundExtrinsics;
+}
