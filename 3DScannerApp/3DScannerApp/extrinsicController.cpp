@@ -9,7 +9,7 @@ ExtrinsicController::ExtrinsicController() {
 }
 
 void ExtrinsicController::createTakePicView() {
-	takePicView = new TakePicView(Enums::controllerEnum::EXTRINSIC);
+	takePicView = new TakePicView(Enums::controllerEnum::EXTRINSIC, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
 	takePicView->setCalibrationController(*this);
 	takePicView->setModal(true);
 	takePicView->show();
@@ -29,4 +29,9 @@ void ExtrinsicController::findCorners(Mat image) {
 		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
 		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
 	}
+}
+
+ExtrinsicController::~ExtrinsicController()
+{
+	delete takePicView;
 }

@@ -10,6 +10,7 @@ class QLineEdit;
 class QGridLayout;
 class QPushButton;
 class QDir;
+class QTextEdit;
 
 class TakePicView;
 class CalibrationController;
@@ -25,7 +26,8 @@ private slots:
 private:
 	TakePicView * takePicView;
 	CalibrationController * calibrationController;
-	QLabel * message;
+	//QLabel * message;
+	QTextEdit * message;
 	int calibrationType;
 	QDir * loadDir;
 	QDir * saveDir;
@@ -47,6 +49,7 @@ private:
 	void constructLayout();
 public:
 	explicit InputView(int calibType, QWidget *parent = 0);
+	~InputView(); // dtor!
 	void showMessage(QString msg);
 	void setCalibrationController(CalibrationController& calibControl);
 };

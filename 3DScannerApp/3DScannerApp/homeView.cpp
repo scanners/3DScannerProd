@@ -37,7 +37,7 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	scanController->setScanInputView(*scanInputView);
 
 	tabWidget = new QTabWidget;
-	tabWidget->addTab(new TestTab(), "Home");
+	tabWidget->addTab(new HomeTab(), "Home");
 	tabWidget->addTab(intrinsicInputView, "Intrinsic Calibration");
 	tabWidget->addTab(extrinsicInputView, "Extrinsic Calibration");
 	tabWidget->addTab(scanInputView, "Scan Object");
@@ -54,7 +54,18 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	
 }
 
-TestTab::TestTab(QWidget *parent) : QWidget(parent)
+HomeView::~HomeView()
+{
+	delete intrinsicController;
+	delete extrinsicController;
+	delete intrinsicCalibrationModel;
+	delete extrinsicCalibrationModel;
+	delete scanController;
+	delete scanModel;
+	delete tabWidget;
+}
+
+HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
 {
 	QLabel *title = new QLabel("<h1>Welcome to 3D Scanner</h1>");
 	QLabel *title2 = new QLabel("To get started, please click on the tabs above.");

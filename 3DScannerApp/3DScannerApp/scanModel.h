@@ -6,6 +6,9 @@
 #include <vector>
 using std::vector;
 #include <string>
+#include <stdio.h>
+#include "Serial.h"
+
 using std::string;
 using namespace::cv;
 
@@ -28,10 +31,12 @@ private:
 	int imageWidth;
 	int imageHeight;
 	int numImages;
+	int processedImages;
 	int topOfBackPlane;
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
 	int bottomOfGroundPlane;
+	bool scanComplete;
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
 	vector<vector<Point2f>> redPointsOnObject;
@@ -49,7 +54,10 @@ private:
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
 	ScanModel();
-	void scan();
+	~ScanModel();
+	int ShowError (LONG lError, LPCTSTR lptszMessage);
+	int scan();
+	bool isDoneScanning(CSerial &serial, LONG &lLastError);
 	void processScan();
 	void resetScan();
 	void convertCoords();
@@ -64,7 +72,6 @@ public:
 	int getImageWidth();
 	bool savePicture(Image * image);
 	bool loadXML();
-	bool isDoneScanning();
 	int buildImageObjects();
 	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
@@ -72,6 +79,11 @@ public:
 	void saveFile(string fileName);
 	void exit();
 	void resetRegions();
+	bool isDoneProcessingFrames();
+	void processNextFrame(int i);
+	int getNumImages(); // returns how many images there are to process
+	int getProcessedImages(); // returns the number of processed images
+	void createPointCloud();
 };
 
 #endif //SCANMODEL_H

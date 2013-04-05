@@ -13,6 +13,7 @@ class QLabel;
 class QPushButton;
 class QBoxLayout;
 class QGridLayout;
+class QProgressBar;
 
 class ScanningView : public QDialog
 {
@@ -33,15 +34,18 @@ private:
 	VideoCapture capture;
 	Mat image;
 	QLabel * videoLabel;
+	QProgressBar * progressBar;
+	QLabel * progressLabel;
 	void constructLayout();
 	void releaseVideo();
 protected:
 	void closeEvent(QCloseEvent * event);
 public:
     explicit ScanningView(QWidget *parent = 0);
+	~ScanningView();
 	void setScanController(ScanController& scanController);
 	void showMessage(QString message);
-	void updateProgressBar(int processed, int done);
+	void updateProgressBar(int done, int total);
 	void stopVideo();
 };
 

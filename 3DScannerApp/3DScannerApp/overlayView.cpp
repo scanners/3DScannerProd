@@ -45,6 +45,8 @@ void OverlayView::setScanController(ScanController& scanControl) {
 
 void OverlayView::stopVideo()
 {
+	// reset clicks and state when exit button is clicked
+	this->resetClicks();
 	if (capture.isOpened())
 	{
 		capture.release();
@@ -53,7 +55,9 @@ void OverlayView::stopVideo()
 
 void OverlayView::closeEvent(QCloseEvent * event)
 {
+	this->resetClicks();
 	this->stopVideo();
+	
 }
 
 void OverlayView::constructLayout()
@@ -67,11 +71,12 @@ void OverlayView::constructLayout()
 	startButton = new QPushButton("Start Scan");
 	startButton->setEnabled(false);
 	startButton->setMaximumWidth(80);
-	takePicButton = new QPushButton("Take Picture");
-	takePicButton->setMaximumWidth(80);
+	takePicButton = new QPushButton("Being Region Clicking");
+	takePicButton->setMaximumWidth(120);
 	takePicButton->setEnabled(false);
 	resetButton = new QPushButton("Reset");
 	resetButton->setMaximumWidth(80);
+	resetButton->setEnabled(false);
 	exitButton = new QPushButton("Exit");
 	exitButton->setMaximumWidth(80);
 	// create layouts and add the widgets
@@ -89,6 +94,7 @@ void OverlayView::constructLayout()
 }
 
 void OverlayView::takePicture() {
+	resetButton->setEnabled(true);
 	timer->stop();
 	scanController->setImageWidth(image);
 	takePicButton->setEnabled(false);
@@ -102,10 +108,13 @@ void OverlayView::takePicture() {
 // this method will simply display a single frame to the overlayLabel
 void OverlayView::displayCameraFrame()
 {
-	capture.read(image);
-	cvtColor(image, display, CV_BGR2RGB);
-	videoFrame = new QImage((uchar*)display.data, display.cols, display.rows, display.step, QImage::Format_RGB888);
-	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
+	if (capture.isOpened())
+	{
+		capture.read(image);
+		cvtColor(image, display, CV_BGR2RGB);
+		videoFrame = new QImage((uchar*)display.data, display.cols, display.rows, display.step, QImage::Format_RGB888);
+		displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
+	}
 }
 
 void OverlayView::resetClicks()
@@ -150,13 +159,15 @@ void OverlayView::drawOverlayRegions(vector<Point> coords, int rectWidth)
 	QPainter painter;
 	painter.begin(videoFrame); // tell the painter where it is drawing
 	QLinearGradient linearGrad(QPointF(0, 0), QPointF(rectWidth, 0));
-	linearGrad.setColorAt(0, Qt::darkGray);
-	linearGrad.setColorAt(1, Qt::black);
+	linearGrad.setColorAt(0, QColor(255,255,255, 180));
+	linearGrad.setColorAt(1, QColor(255,255,255, 180));
 	painter.fillRect(coords.at(0).x, coords.at(0).y, rectWidth, coords.at(1).y-coords.at(0).y, linearGrad);
-	painter.drawText(QPointF(10, (coords.at(0).y) + 10), "Back Plane");
+	painter.setFont(QFont("Verdana", 24, 10, false));
+	painter.drawText(QPointF((rectWidth/2)-100, coords.at(0).y + 30), "Back Plane");
 	painter.fillRect(coords.at(2).x, coords.at(2).y, rectWidth, coords.at(3).y-coords.at(2).y, linearGrad);
-	painter.drawText(QPointF(10, (coords.at(2).y) + 10), "Ground Plane");
+	painter.drawText(QPointF((rectWidth/2)-100, (coords.at(2).y) + 30), "Ground Plane");
 	painter.end(); // free up resources
+
 	// refresh the image
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
 	//set accept button so the scan can begin

@@ -4,6 +4,7 @@
 #include "extrinsicController.h"
 #include "calibrationController.h"
 
+#include "qtextedit.h"
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qstring.h>
@@ -49,6 +50,7 @@ void InputView::showMessage(QString msg)
 
 void InputView::startCalibration()
 {
+	message->setStyleSheet("color: red; font-weight: bold;");
 	errors = false; // reset errors previously set
 	//--------------HANDLE ERRORS-----------------------
 	// Input Errors --> No input given
@@ -56,6 +58,10 @@ void InputView::startCalibration()
 	{
 		this->showMessage("Error, please input a valid integer.");
 		errors = true;
+	}
+	else if(this->horizontalText->text().toInt() < 4 || this->verticalText->text().toInt() < 4)
+	{
+		this->showMessage("Horizontal and vertical squares must both be at least 4");
 	}
 	else
 	{
@@ -100,6 +106,8 @@ void InputView::startCalibration()
 					calibrationController->createTakePicView();
 				} else {
 					//Dialog box for error
+					this->showMessage("Unable to load XML! Did you run intrinsic calibration prior to extrinsic?");
+					errors = true;
 				}
 			} else {
 				calibrationController->createTakePicView();
@@ -125,7 +133,9 @@ void InputView::createLoadFileDialog()
 
 void InputView::constructLayout()
 {
-	message = new QLabel("This is a test"); // this is just used to set error messages
+	//message = new QLabel(""); // this is just used to set error messages
+	message = new QTextEdit();
+	message->setReadOnly(true);
 	message->setVisible(false);
 
 	if (calibrationType == Enums::controllerEnum::INTRINSIC)
@@ -139,8 +149,10 @@ void InputView::constructLayout()
 		exitButton = new QPushButton("Exit");
 		saveBrowseButton = new QPushButton("Browse...");
 		horizontalText = new QLineEdit();
+		horizontalText->setMaxLength(4);
 		horizontalText->setPlaceholderText("Number of Horizontal Squares");
 		verticalText = new QLineEdit();
+		verticalText->setMaxLength(4);
 		verticalText->setPlaceholderText("Number of Vertical Squares");
 		saveDirText = new QLineEdit();
 		saveDirText->setReadOnly(true);
@@ -157,7 +169,7 @@ void InputView::constructLayout()
 		mainLayout->addWidget(startButton, 4, 1);
 		mainLayout->addWidget(exitButton, 4, 2);
 		mainLayout->addWidget(messagesLabel, 5, 0);
-		mainLayout->addWidget(message, 5, 1);
+		mainLayout->addWidget(message, 5, 1, 1, 2);
 		setLayout(mainLayout);
 	}
 	else if (calibrationType == Enums::controllerEnum::EXTRINSIC)
@@ -169,15 +181,17 @@ void InputView::constructLayout()
 		messagesLabel = new QLabel("Messages:" ); 
 		loadLabel = new QLabel("Load Directory:");
 		saveLabel = new QLabel("Save Directory:");
-		message = new QLabel(); 
+		//message = new QLabel(); 
 		message->setVisible(false);
 		startButton = new QPushButton("Start");
 		exitButton = new QPushButton("Exit");
 		loadBrowseButton = new QPushButton("Browse...");
 		saveBrowseButton = new QPushButton("Browse...");
 		horizontalText = new QLineEdit();
+		horizontalText->setMaxLength(4);
 		horizontalText->setPlaceholderText("Number of Horizontal Squares");
 		verticalText = new QLineEdit();
+		verticalText->setMaxLength(4);
 		verticalText->setPlaceholderText("Number of Vertical Squares");
 		saveDirText = new QLineEdit();
 		saveDirText->setReadOnly(true);
@@ -200,7 +214,43 @@ void InputView::constructLayout()
 		mainLayout->addWidget(startButton, 5, 1);
 		mainLayout->addWidget(exitButton, 5, 2);
 		mainLayout->addWidget(messagesLabel, 6, 0);
-		mainLayout->addWidget(message, 6, 1);
+		mainLayout->addWidget(message, 6, 1, 1, 2);
 		setLayout(mainLayout);
 	}
+}
+
+InputView::~InputView()
+{
+	if (calibrationType == Enums::controllerEnum::INTRINSIC)
+	{
+		delete mainLayout;
+		delete horizontalLabel;
+		delete verticalLabel;
+		delete messagesLabel;
+		delete saveLabel;
+		delete startButton;
+		delete exitButton;
+		delete saveBrowseButton;
+		delete horizontalText;
+		delete verticalText;
+		delete saveDirText;
+	}
+	else if (calibrationType == Enums::controllerEnum::EXTRINSIC)
+	{
+		delete mainLayout;
+		delete horizontalLabel;
+		delete verticalLabel;
+		delete messagesLabel;
+		delete loadLabel;
+		delete saveLabel;
+		delete startButton;
+		delete exitButton;
+		delete loadBrowseButton;
+		delete saveBrowseButton;
+		delete horizontalText;
+		delete verticalText;
+		delete saveDirText;
+		delete loadDirText;
+	}
+	delete message;
 }

@@ -12,6 +12,7 @@ private:
 	Vec3f normalVector;
 public:
 	Plane(Point3f pointOnPlane, Vec3f normalVector);
+	~Plane();
 	Point3f getPointOnPlane();
 	Vec3f getNormalVector();
 };

@@ -8,7 +8,7 @@
 #include <qlabel.h>
 #include <qtimer.h>
 
-TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
+TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDialog(parent)
 {
 	
 	if (calibType == Enums::controllerEnum::INTRINSIC)
@@ -18,9 +18,10 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		videoLabel->setMinimumWidth(640);
 		videoLabel->setMinimumHeight(480);
 		titleLabel = new QLabel("Intrinsic Calibration");
-		picProgressLabel = new QLabel("Picture 1 of 20");
+		picProgressLabel = new QLabel("");
+		this->incrementSuccesses(1, numPictures);
 		messageLabel = new QLabel("Messages: ");
-		messages = new QLabel("<b>Messages Go Here</b>");
+		messages = new QLabel("");
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		takePicButton = new QPushButton("Take Picture");
 		takePicButton->setEnabled(false);
@@ -50,7 +51,8 @@ TakePicView::TakePicView(int calibType, QWidget *parent) : QDialog(parent)
 		videoLabel->setMinimumWidth(640);
 		videoLabel->setMinimumHeight(480);
 		titleLabel = new QLabel("Extrinsic Calibration");
-		picProgressLabel = new QLabel("Picture 1 of 4");
+		picProgressLabel = new QLabel("");
+		this->incrementSuccesses(1, numPictures);
 		messageLabel = new QLabel("Messages: ");
 		messages = new QLabel("<b>Messages Go Here</b>");
 		messages->setStyleSheet("color: red; font-weight: bold;");
@@ -157,4 +159,17 @@ void TakePicView::showMessage(int messageEnum) {
 		messages->setText("Calibration was successful!");
 	}
 	
+}
+
+TakePicView::~TakePicView()
+{
+		delete videoLabel;
+		delete titleLabel;
+		delete picProgressLabel;
+		delete messageLabel;
+		delete messages;
+		delete takePicButton;
+		delete cancelButton;
+		delete mainLayout;
+		delete buttonLayout;
 }
