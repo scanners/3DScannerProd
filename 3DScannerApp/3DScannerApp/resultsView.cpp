@@ -57,3 +57,16 @@ void ResultsView::constructLayout()
 	mainLayout->addWidget(exitButton);
 	setLayout(mainLayout);
 }
+
+ResultsView::~ResultsView()
+{
+	delete title;
+	delete directoryLabel;
+	delete exitButton;
+	delete browseButton;
+	delete mainLayout;
+	delete dirLayout;
+	delete outputDirTextField;
+	delete outputDirLabel;
+	delete pointCloudLabel;
+}

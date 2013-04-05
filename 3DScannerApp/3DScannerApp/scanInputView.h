@@ -31,6 +31,7 @@ private:
 	void constructLayout();
 public:
     explicit ScanInputView(QWidget *parent = 0);
+	~ScanInputView();
 	void setScanController(ScanController& scanControl);
 };
 

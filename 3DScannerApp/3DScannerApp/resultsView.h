@@ -17,6 +17,7 @@ class ResultsView : public QWidget
 
 public:
 	explicit ResultsView(QWidget *parent = 0);
+	~ResultsView();
 private:
 	QLabel * title;
 	QLabel * directoryLabel;

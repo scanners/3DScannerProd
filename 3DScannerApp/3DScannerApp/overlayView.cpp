@@ -185,3 +185,22 @@ void OverlayView::startScan() {
 	scanController->resetScan();
 	scanController->createScanningView();
 }
+
+OverlayView::~OverlayView()
+{
+	if (scanController)
+		delete scanController;
+	if (displayImage)
+		delete displayImage;
+	delete titleLabel;
+	delete positionLabel;
+	if (videoFrame)
+		delete videoFrame;
+	delete timer;
+	delete startButton;
+	delete resetButton;
+	delete exitButton;
+	delete takePicButton;
+	delete mainLayout;
+	delete buttonLayout;
+}

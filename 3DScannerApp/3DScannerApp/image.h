@@ -21,6 +21,7 @@ private:
 	Line *bestFit;
 public:
 	Image(Mat, int);
+	~Image();
 	void getRedComponent(Image, int);
 	void process(Intrinsic, Extrinsic, Extrinsic);
 };

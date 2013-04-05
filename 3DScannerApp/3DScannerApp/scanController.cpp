@@ -104,3 +104,12 @@ void ScanController::setScanModel(ScanModel& scanMod) {
 void ScanController::setScanInputView(ScanInputView& scanInpView) {
 	scanInputView = &scanInpView;
 }
+
+ScanController::~ScanController()
+{
+	// checking objects existence before deallocation
+	if (scanningView) delete scanningView;
+	if (overlayView) delete overlayView;
+	if (scanInputView) delete scanInputView;
+	if (scanModel) delete scanModel;
+}

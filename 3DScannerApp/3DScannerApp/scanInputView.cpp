@@ -82,5 +82,17 @@ void ScanInputView::constructLayout()
 	setLayout(mainLayout);
 }
 
-
+ScanInputView::~ScanInputView()
+{
+	if (scanController) delete scanController;
+	delete saveDirText;
+	delete loadDirText;
+	delete saveLabel;
+	delete loadLabel;
+	delete startButton;
+	delete exitButton;
+	delete saveBrowseButton;
+	delete loadBrowseButton;
+	delete mainLayout;
+}
 

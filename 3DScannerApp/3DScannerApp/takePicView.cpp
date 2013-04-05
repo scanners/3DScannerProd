@@ -10,7 +10,7 @@
 
 TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDialog(parent)
 {
-	
+
 	if (calibType == Enums::controllerEnum::INTRINSIC)
 	{
 		// create intrinsic calib stuff

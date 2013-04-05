@@ -20,6 +20,7 @@ private:
 	ScanModel * scanModel;
 public:
 	ScanController();
+	~ScanController();
 	void startScan();
 	void resetScan();
 	void setSaveDirectory(string saveDir);

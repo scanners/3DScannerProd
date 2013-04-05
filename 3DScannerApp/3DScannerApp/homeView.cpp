@@ -61,7 +61,7 @@ HomeView::~HomeView()
 	delete intrinsicCalibrationModel;
 	delete extrinsicCalibrationModel;
 	delete scanController;
-	delete scanModel;
+	delete scanModel; // this is causing a memory exception.
 	delete tabWidget;
 }
 
