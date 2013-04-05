@@ -60,7 +60,7 @@ void ResultsView::constructLayout()
 
 ResultsView::~ResultsView()
 {
-	delete title;
+	/*delete title;
 	delete directoryLabel;
 	delete exitButton;
 	delete browseButton;
@@ -68,5 +68,5 @@ ResultsView::~ResultsView()
 	delete dirLayout;
 	delete outputDirTextField;
 	delete outputDirLabel;
-	delete pointCloudLabel;
+	delete pointCloudLabel;*/
 }

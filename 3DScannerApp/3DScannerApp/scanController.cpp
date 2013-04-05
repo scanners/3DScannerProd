@@ -107,9 +107,9 @@ void ScanController::setScanInputView(ScanInputView& scanInpView) {
 
 ScanController::~ScanController()
 {
-	// checking objects existence before deallocation
-	if (scanningView) delete scanningView;
-	if (overlayView) delete overlayView;
-	if (scanInputView) delete scanInputView;
-	if (scanModel) delete scanModel;
+	//// checking objects existence before deallocation
+	////if (scanningView) delete scanningView;
+	//if (overlayView) delete overlayView;
+	//if (scanInputView) delete scanInputView;
+	//if (scanModel) delete scanModel;
 }
