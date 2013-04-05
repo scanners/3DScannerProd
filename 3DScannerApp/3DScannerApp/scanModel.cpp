@@ -18,8 +18,10 @@ void ScanModel::processScan() {
 	this->findDifferenceImages();
 	this->findRedPoints();
 	for (int n = 0; n < numImages; n++) {
-		laserPlane = &(this->findLaserPlane(redPointsInBackPlaneLine.at(n), redPointsInGroundPlaneLine.at(n)));
-		objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(n)));
+		if ((redPointsInBackPlaneLine.at(n).size() > 0) && (redPointsInGroundPlaneLine.at(n).size() > 0)) {
+			laserPlane = &(this->findLaserPlane(redPointsInBackPlaneLine.at(n), redPointsInGroundPlaneLine.at(n)));
+			objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(n)));
+		}
 	}
 
 	//FOR TESTING OF OUTPUT
@@ -55,35 +57,39 @@ void ScanModel::storeRedChannel(Mat image) {
 void ScanModel::findDifferenceImages() {
 	numImages = redChannels.size();
 
+	float midpointRedComponent;
+
 	//Find difference image for the whole section of the image we are using
-	for (int x = 0; x < imageWidth; x++) {
-		for (int y = topOfBackPlane; y < bottomOfGroundPlane; y++) {
-				this->findDifferenceImageAtPixel(x, y, redChannels);
+	for (int y = topOfBackPlane; y < bottomOfGroundPlane; y++) {
+		midpointRedComponent = this->findMidpointRedComponentInRow(y);
+		for (int x = 0; x < imageWidth; x++) {
+			this->findDifferenceImageAtPixel(x, y, midpointRedComponent);
 		}
 	}
 }
 
-void ScanModel::findDifferenceImageAtPixel(int x, int y, vector<Mat>& redChannels) {
-	float midpointRedComponent = this->findMidpointRedComponentAtPixel(x, y, redChannels);
+void ScanModel::findDifferenceImageAtPixel(int x, int y, float midpointRedComponent) {
 	//Compute difference image. 
 	for (int n = 0; n < numImages; n++) {
 		redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
 	}
 }
 
-float ScanModel::findMidpointRedComponentAtPixel(int x, int y, vector<Mat> redChannels) {
+float ScanModel::findMidpointRedComponentInRow(int y) {
 	//Set min to the maximum value so it gets set to a lower value
 	float minRedComponent = 255;
 	//Set max to the minimum value so it gets set to a higher value
 	float maxRedComponent = 0;
 	float midpointRedComponent;
 
-	for (int n = 0; n < numImages; n++) {
-		if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
-			minRedComponent = redChannels.at(n).at<float>(Point(x, y));
-		}
-		if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
-			maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+	for (int x = 0; x < imageWidth; x++) {
+		for (int n = 0; n < numImages; n++) {
+			if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
+				minRedComponent = redChannels.at(n).at<float>(Point(x, y));
+			}
+			if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
+				maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+			}
 		}
 	}
 
@@ -150,9 +156,8 @@ Point2f ScanModel::findZeroCrossingInRow(int y, int imageNum) {
 	float interpolatedX;
 
 	for (int x = 0; x < imageWidth - 1; x++) {
-		if (redChannels.at(imageNum).at<float>(Point(x, y)) == 0.0) {
-			return Point2f((float)x, (float)y);
-		} else if ((redChannels.at(imageNum).at<float>(Point(x, y)) < 0.0) && (redChannels.at(imageNum).at<float>(Point(x + 1, y)) > 0.0)) {
+		float test = redChannels.at(imageNum).at<float>(Point(x, y));
+		if ((redChannels.at(imageNum).at<float>(Point(x, y)) < 0.0) && (redChannels.at(imageNum).at<float>(Point(x + 1, y)) > 0.0)) {
 			//Interpolate between x and x + 1 to find the x-value that crosses deltaRed = 0
 			//Formula is: x_0 = x + (0 - deltaRed(x))/(deltaRed(x+1) - deltaRed(x))
 			interpolatedX = (float)x + (0 - redChannels.at(imageNum).at<float>(Point(x, y))) / 
@@ -186,40 +191,49 @@ Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f>
 vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2f> imagePoints) {
 	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
 	Mat planeOriginInWorldCoords(Point3d(0, 0, 0));
-	Mat planeNormalVectorInWorldCoords(Vec3d(0, 1, 0));
+	Mat planeNormalVectorInWorldCoords(Vec3d(0, 0, 1));
 	
 	vector<Point2f> undistortedImagePoints;
 	vector<Point3f> pointsInCameraCoords;
 	
+	Mat cameraOriginInWorldCoords;
 	Mat planeOriginInCameraCoords;
 	Mat planeNormalVectorInCameraCoords;
-
+	
+	Point3f test2;
 	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
-		//3x1 Matrices representing Point3f. Convert world to camera
-		planeOriginInCameraCoords = backExtrinsics->getRotationMatrix() * planeOriginInWorldCoords + backExtrinsics->getTranslationMatrix();
-		//3x1 Matrices representing Vec3f. Convert world to camera
-		planeNormalVectorInCameraCoords = backExtrinsics->getRotationMatrix() * planeNormalVectorInWorldCoords + backExtrinsics->getTranslationMatrix();
+		//3x1 Matrices representing Point3f. Convert camera origin to world coords
+		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * cameraOriginInCameraCoords-
+			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
 	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
-		//3x1 Matrices representing Point3f. Convert world to camera
-		planeOriginInCameraCoords = groundExtrinsics->getRotationMatrix() * planeOriginInWorldCoords + groundExtrinsics->getTranslationMatrix();
-		//3x1 Matrices representing Vec3f. Convert world to camera
-		planeNormalVectorInCameraCoords = groundExtrinsics->getRotationMatrix() * planeNormalVectorInWorldCoords + groundExtrinsics->getTranslationMatrix();
+		//3x1 Matrices representing Point3f. Convert camera origin to world coords
+		cameraOriginInWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * cameraOriginInCameraCoords-
+			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
 	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
 	convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoords);
-	
+
 	double lambda;
 	Mat pointInCameraCoords;
+	Mat convertedImagePoint;
+	Mat pointOnPlaneInWorldCoords;
 
 	//Calculate the lambda value of each red point on the plane and store the Camera coordinate of the red point on the back plane
 	for (int i = 0; i < pointsInCameraCoords.size(); i++) {
 		Mat(pointsInCameraCoords.at(i)).convertTo(pointInCameraCoords, CV_64F);
-		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
+		if (boardLocation == Enums::boardLocation::BACK_PLANE) {
+			convertedImagePoint = Mat(backExtrinsics->getRotationMatrix().inv() * pointInCameraCoords);
+		} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
+			convertedImagePoint = Mat(groundExtrinsics->getRotationMatrix().inv() * pointInCameraCoords);
+		}
+
 		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
-		lambda = Mat(planeNormalVectorInCameraCoords.t() * (planeOriginInCameraCoords - cameraOriginInCameraCoords) / 
-			(planeNormalVectorInCameraCoords.t() * pointInCameraCoords)).at<double>(0, 0);
-		pointsInCameraCoords.at(i) = lambda * pointsInCameraCoords.at(i);
+		lambda = Mat(planeNormalVectorInWorldCoords.t() * (planeOriginInWorldCoords - cameraOriginInWorldCoords) / 
+			(planeNormalVectorInWorldCoords.t() * convertedImagePoint)).at<double>(0, 0);
+		pointInCameraCoords = lambda * pointInCameraCoords;
+
+		pointsInCameraCoords.at(i) = Point3f(pointInCameraCoords.at<double>(0,0), pointInCameraCoords.at<double>(1,0), pointInCameraCoords.at<double>(2,0));
 	}
 
 	return pointsInCameraCoords;
@@ -283,8 +297,8 @@ vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<float>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
-		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().t()*redPointOnObjectInCameraCoords-
-			backExtrinsics->getRotationMatrix().t()*backExtrinsics->getTranslationMatrix());
+		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords-
+			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
 		redPointsOnObjectInBackWorldCoords.push_back(Point3f(redPointWorldCoordMatrix.at<double>(0,0), 
 			redPointWorldCoordMatrix.at<double>(1,0), redPointWorldCoordMatrix.at<double>(2,0)));
 	}
