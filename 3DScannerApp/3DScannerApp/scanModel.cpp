@@ -186,10 +186,12 @@ int ScanModel::getProcessedImages()
 // i is the index of the image we are processing
 void ScanModel::processNextFrame(int i)
 {
-	Plane * laserPlane = new Plane(this->findLaserPlane(redPointsInBackPlaneLine.at(i), redPointsInGroundPlaneLine.at(i)));
-	objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(i)));
-	processedImages++;
-	delete laserPlane; // deallocate the memory, so we don't have a memory leak
+	if ((redPointsInBackPlaneLine.at(i).size() > 0) && (redPointsInGroundPlaneLine.at(i).size() > 0)) {
+		Plane * laserPlane = new Plane(this->findLaserPlane(redPointsInBackPlaneLine.at(i), redPointsInGroundPlaneLine.at(i)));
+		objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(i)));
+		processedImages++;
+		delete laserPlane; // deallocate the memory, so we don't have a memory leak
+	}
 }
 
 // this method needs to be broken up and return an integer
