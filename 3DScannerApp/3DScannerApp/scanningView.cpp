@@ -64,7 +64,12 @@ void ScanningView::showMessage(QString message)
 	this->messageLabel->setText(message);
 }
 
-void ScanningView::updateProgressBar(int done, int total)
+void ScanningView::setProgressBarRange(int range) {
+	//Subtract 1 from range because it starts at 0
+	this->progressBar->setRange(0, range - 1);
+}
+
+void ScanningView::updateProgressBar(int done)
 {
 	this->progressBar->setValue(done);
 }
@@ -80,7 +85,6 @@ void ScanningView::constructLayout()
 	doneButton->setEnabled(false);
 	doneButton->setMaximumWidth(80);
 	progressBar = new QProgressBar();
-	progressBar->setRange(0, 100); // these are artifical and mean nothing
 	progressLabel = new QLabel("Scan Progress:");
 	messageLabel = new QLabel();
 	
@@ -109,7 +113,7 @@ void ScanningView::displayVideoFrame()
 void ScanningView::scanImage() {
 	//For testing
 	static int numImages = 0;
-	if (numImages >= 10) {
+	if (numImages >= 100) {
 		this->stopVideo();
 		scanController->startScan();
 		numImages = 0;

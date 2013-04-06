@@ -8,7 +8,7 @@
 #include "Serial.h"
 #include <Windows.h>
 
-ScanModel::ScanModel() : scanComplete(false), processedImages(0) {
+ScanModel::ScanModel() : scanComplete(false), processedImages(0), processedRows(0) {
 }
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
@@ -183,25 +183,24 @@ int ScanModel::getProcessedImages()
 	return processedImages;
 }
 
-// i is the index of the image we are processing
-void ScanModel::processNextFrame(int i)
-{
-	if ((redPointsInBackPlaneLine.at(i).size() > 0) && (redPointsInGroundPlaneLine.at(i).size() > 0)) {
-		Plane * laserPlane = new Plane(this->findLaserPlane(redPointsInBackPlaneLine.at(i), redPointsInGroundPlaneLine.at(i)));
-		objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(i)));
-		processedImages++;
-		delete laserPlane; // deallocate the memory, so we don't have a memory leak
-	}
+void ScanModel::processRedComponent() {
+	numImages = redChannels.size();
+	//this->findDifferenceImages();
+	//this->findRedPoints();
 }
 
-void ScanModel::processScan() {
-	this->findDifferenceImages();
-	this->findRedPoints();
+// i is the index of the image we are processing
+void ScanModel::processNextFrame(int imageNum)
+{
+	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
+		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
+		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
+	}
+	processedImages++;
 }
 
 void ScanModel::createPointCloud()
 {
-	//FOR TESTING OF OUTPUT
 	vector<Point3f> pointCloudPoints;
 	for (int i = 0; i < objectPoints.size(); i++) {
 		for (int j = 0; j < objectPoints.at(i).size(); j++) {
@@ -221,6 +220,8 @@ void ScanModel::resetScan() {
 	vector<vector<Point2f>>().swap(redPointsInBackPlaneLine);
 	vector<vector<Point2f>>().swap(redPointsInGroundPlaneLine);
 	vector<vector<Point2f>>().swap(redPointsOnObject);
+	processedImages = 0;
+	processedRows = 0;
 }
 
 void ScanModel::storeRedChannel(Mat image) {
@@ -232,25 +233,15 @@ void ScanModel::storeRedChannel(Mat image) {
 	redChannels.push_back(channels[2]);
 }
 
-void ScanModel::findDifferenceImages() {
-	numImages = redChannels.size();
-
+void ScanModel::findNextDifferenceImage(int y) {
 	float midpointRedComponent;
 
-	//Find difference image for the whole section of the image we are using
-	for (int y = topOfBackPlane; y < bottomOfGroundPlane; y++) {
-		midpointRedComponent = this->findMidpointRedComponentInRow(y);
-		for (int x = 0; x < imageWidth; x++) {
-			this->findDifferenceImageAtPixel(x, y, midpointRedComponent);
-		}
+	midpointRedComponent = this->findMidpointRedComponentInRow(y);
+	for (int x = 0; x < imageWidth; x++) {
+		this->findDifferenceImageAtPixel(x, y, midpointRedComponent);
 	}
-}
-
-void ScanModel::findDifferenceImageAtPixel(int x, int y, float midpointRedComponent) {
-	//Compute difference image. 
-	for (int n = 0; n < numImages; n++) {
-		redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
-	}
+	
+	processedRows++;
 }
 
 float ScanModel::findMidpointRedComponentInRow(int y) {
@@ -275,6 +266,13 @@ float ScanModel::findMidpointRedComponentInRow(int y) {
 	return midpointRedComponent;
 }
 
+void ScanModel::findDifferenceImageAtPixel(int x, int y, float midpointRedComponent) {
+	//Compute difference image. 
+	for (int n = 0; n < numImages; n++) {
+		redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
+	}
+}
+
 /**
 This method will find the subpixel location of the red line at every row of every image.
 The subpixels in the back plane region will be used to calculate the best fit line of the laser
@@ -294,6 +292,13 @@ void ScanModel::findRedPoints() {
 	}
 	//Free memory from redChannels vector 
 	vector<Mat>().swap(redChannels);
+}
+
+void ScanModel::findNextRedPoints(int imageNum) {
+	redPointsInBackPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::BACK, imageNum));
+	redPointsInGroundPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::GROUND, imageNum));
+	redPointsOnObject.push_back(this->findRedPointsInRegion(Enums::scanRegion::OBJECT, imageNum));
+	processedImages++;
 }
 
 vector<Point2f> ScanModel::findRedPointsInRegion(int region, int imageNum) {
@@ -537,6 +542,14 @@ vector<Point> ScanModel::getRegionPixels() {
 	return regionPixels;
 }
 
+int ScanModel::getTopRowToProcess() {
+	return topOfBackPlane;
+}
+
+int ScanModel::getBottomRowToProcess() {
+	return bottomOfGroundPlane;
+}
+
 bool ScanModel::savePicture(Image * image) {
 	return false;
 }
@@ -595,6 +608,23 @@ void ScanModel::exit() {
 
 int ScanModel::getRequiredNumStoredYCoords() {
 	return REQUIRED_NUM_STORED_Y_COORDS;
+}
+
+bool ScanModel::isDoneFindingFindingDifferenceImages() {
+	return (bottomOfGroundPlane - topOfBackPlane) == processedRows;
+}
+
+bool ScanModel::isDoneFindingRedPoints() {
+	
+	if (numImages == processedImages) {
+		//Free memory from redChannels vector 
+		vector<Mat>().swap(redChannels);	
+		
+		processedImages = 0;
+		return true;
+	}
+
+	return false;
 }
 
 bool ScanModel::isDoneProcessingFrames()

@@ -19,13 +19,41 @@ void ScanController::startScan() {
 	*/
 	// the above pseudocode will require refactoring!
 
-	scanModel->processScan();
+	scanModel->processRedComponent();
+
+	int currentRow = scanModel->getTopRowToProcess();
+	int totalRows = scanModel->getBottomRowToProcess() - currentRow;
+
 	int currentFrame = 0;
 	int totalFrames = scanModel->getNumImages();
+
+	//Range includes total rows to find difference images, total images to find
+	//red points, and total images to process the results
+	scanningView->setProgressBarRange(totalRows + totalFrames + totalFrames);
+
+	int progressBarCounter = 0;
+
+	while(!scanModel->isDoneFindingFindingDifferenceImages()) {
+		scanningView->updateProgressBar(progressBarCounter);
+		scanModel->findNextDifferenceImage(currentRow);
+		progressBarCounter++;
+		currentRow++;
+	}
+
+	while(!scanModel->isDoneFindingRedPoints()) {
+		scanningView->updateProgressBar(progressBarCounter);
+		scanModel->findNextRedPoints(currentFrame);
+		progressBarCounter++;
+		currentFrame++;
+	}
+
+	currentFrame = 0;
+
 	while(!scanModel->isDoneProcessingFrames())
 	{
-		scanningView->updateProgressBar(currentFrame, totalFrames);
+		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->processNextFrame(currentFrame);
+		progressBarCounter++;
 		currentFrame++;
 	}
 

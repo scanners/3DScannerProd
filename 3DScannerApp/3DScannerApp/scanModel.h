@@ -32,6 +32,7 @@ private:
 	int imageHeight;
 	int numImages;
 	int processedImages;
+	int processedRows;
 	int topOfBackPlane;
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
@@ -47,7 +48,6 @@ private:
 	Point3f findLineLineIntersection(Vec6f backLine, Vec6f groundLine);
 	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
 	float findMidpointRedComponentInRow(int y);
-	void findDifferenceImages();
 	void findDifferenceImageAtPixel(int x, int y, float midpointRedComponent);
 	void findRedPoints();
 	vector<Point2f> findRedPointsInRegion(int region, int imageNum);
@@ -58,7 +58,7 @@ public:
 	int ShowError (LONG lError, LPCTSTR lptszMessage);
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);
-	void processScan();
+	void processRedComponent();
 	void resetScan();
 	void convertCoords();
 	void setSaveDirectory(string saveDir);
@@ -72,15 +72,21 @@ public:
 	int getImageWidth();
 	bool savePicture(Image * image);
 	bool loadXML();
+	void findNextDifferenceImage(int y);
+	void findNextRedPoints(int imageNum);
 	int buildImageObjects();
 	//Take out pointer when implementing
 	vector<ObjectPoint>* getObjectPoints();
 	int getRequiredNumStoredYCoords();
+	int getTopRowToProcess();
+	int getBottomRowToProcess();
 	void saveFile(string fileName);
 	void exit();
 	void resetRegions();
+	bool isDoneFindingFindingDifferenceImages();
+	bool isDoneFindingRedPoints();
 	bool isDoneProcessingFrames();
-	void processNextFrame(int i);
+	void processNextFrame(int imageNum);
 	int getNumImages(); // returns how many images there are to process
 	int getProcessedImages(); // returns the number of processed images
 	void createPointCloud();

@@ -47,7 +47,8 @@ public:
 	~ScanningView();
 	void setScanController(ScanController& scanController);
 	void showMessage(QString message);
-	void updateProgressBar(int done, int total);
+	void setProgressBarRange(int range);
+	void updateProgressBar(int done);
 	void stopVideo();
 	void enableDoneButton(bool enable);
 };
