@@ -28,6 +28,7 @@ private:
 	QWidget * scanFrame;
 	QLabel * titleLabel;
 	QPushButton * cancelButton;
+	QPushButton * doneButton;
 	QBoxLayout * mainLayout;
 	QGridLayout * buttonLayout;
 	QTimer * timer;
@@ -36,6 +37,7 @@ private:
 	QLabel * videoLabel;
 	QProgressBar * progressBar;
 	QLabel * progressLabel;
+	QLabel * messageLabel;
 	void constructLayout();
 	void releaseVideo();
 protected:
@@ -47,6 +49,7 @@ public:
 	void showMessage(QString message);
 	void updateProgressBar(int done, int total);
 	void stopVideo();
+	void enableDoneButton(bool enable);
 };
 
 #endif

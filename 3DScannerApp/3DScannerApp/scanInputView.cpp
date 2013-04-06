@@ -28,7 +28,29 @@ void ScanInputView::startScan()
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
-	if (loadXMLSuccess) {
+	if (loadDirText->text().toStdString() == "")
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"No load directory was given!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Please select the directory containing the calibration XML files.");
+		error.setInformativeText("Check the directory and try again.");
+		error.setModal(false);
+		error.exec();
+	}
+	else if (saveDirText->text().toStdString() == "")
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"No output directory was given!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Please select an output directory for the scan.");
+		error.setInformativeText("Check the directory and try again.");
+		error.setModal(false);
+		error.exec();
+	}
+	else if (loadXMLSuccess) {
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
@@ -45,7 +67,7 @@ void ScanInputView::startScan()
 }
 
 void ScanInputView::createSaveFileDialog() {
-	QString dir = QFileDialog::getExistingDirectory(this, "Select Calibration Save Directory",
+	QString dir = QFileDialog::getExistingDirectory(this, "Scan output directory",
 		"C:/", QFileDialog::ShowDirsOnly);
 	saveDirText->setText(dir);
 }

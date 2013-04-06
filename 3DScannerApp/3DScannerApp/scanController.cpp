@@ -31,6 +31,8 @@ void ScanController::startScan() {
 
 	// scanning processing is complete, create point cloud:
 	scanModel->createPointCloud();
+	scanningView->enableDoneButton(true);
+	scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
 }
 
 void ScanController::resetScan() {

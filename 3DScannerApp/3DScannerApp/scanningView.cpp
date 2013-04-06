@@ -13,8 +13,8 @@ ScanningView::ScanningView(QWidget *parent) : QDialog(parent)
 {
 	constructLayout();
 	// connections
-	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-	connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelScan()));
+	connect(doneButton, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(doneButton, SIGNAL(clicked()), this, SLOT(cancelScan()));
 	capture.open(0);
 	if (capture.isOpened())
 	{
@@ -61,7 +61,7 @@ void ScanningView::closeEvent(QCloseEvent * event)
 
 void ScanningView::showMessage(QString message)
 {
-
+	this->messageLabel->setText(message);
 }
 
 void ScanningView::updateProgressBar(int done, int total)
@@ -76,19 +76,22 @@ void ScanningView::constructLayout()
 	videoLabel->setMinimumHeight(480);
 	// create widgets:
 	titleLabel = new QLabel("<h1>Scanning Process</h1>");
-	cancelButton = new QPushButton("Cancel");
-	cancelButton->setMaximumWidth(80);
+	doneButton = new QPushButton("Done");
+	doneButton->setEnabled(false);
+	doneButton->setMaximumWidth(80);
 	progressBar = new QProgressBar();
 	progressBar->setRange(0, 100); // these are artifical and mean nothing
 	progressLabel = new QLabel("Scan Progress:");
+	messageLabel = new QLabel();
 	
 	// create layouts and add the widgets
 	mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	buttonLayout = new QGridLayout();
 	mainLayout->addWidget(titleLabel);
 	mainLayout->addWidget(videoLabel);
-	buttonLayout->addWidget(cancelButton, 0, 0);
+	buttonLayout->addWidget(doneButton, 0, 0);
 	mainLayout->addLayout(buttonLayout);
+	mainLayout->addWidget(messageLabel);
 	mainLayout->addWidget(progressLabel);
 	mainLayout->addWidget(progressBar);
 	setLayout(mainLayout);
@@ -128,4 +131,9 @@ ScanningView::~ScanningView()
 	delete mainLayout;
 	delete buttonLayout;
 	delete timer;
+}
+
+void ScanningView::enableDoneButton(bool enable)
+{
+	this->doneButton->setEnabled(enable);
 }

@@ -194,32 +194,9 @@ void ScanModel::processNextFrame(int i)
 	}
 }
 
-// this method needs to be broken up and return an integer
-// so the controller can properly update the progress bar
-// ScanController will call scanView.updateProgressBar()
-// but it needs the number of finished images to do so
 void ScanModel::processScan() {
-	Plane * laserPlane;
 	this->findDifferenceImages();
 	this->findRedPoints();
-	/*
-	for (int n = 0; n < numImages; n++) {
-		if ((redPointsInBackPlaneLine.at(n).size() > 0) && (redPointsInGroundPlaneLine.at(n).size() > 0)) {
-			laserPlane = &(this->findLaserPlane(redPointsInBackPlaneLine.at(n), redPointsInGroundPlaneLine.at(n)));
-			objectPoints.push_back(this->findObjectLaserIntersections(*laserPlane, redPointsOnObject.at(n)));
-		}
-	}
-
-	//FOR TESTING OF OUTPUT
-	vector<Point3f> pointCloudPoints;
-	for (int i = 0; i < objectPoints.size(); i++) {
-		for (int j = 0; j < objectPoints.at(i).size(); j++) {
-			pointCloudPoints.push_back(objectPoints.at(i).at(j));
-		}
-	}
-	Mesh3D pointCloud(pointCloudPoints);
-	pointCloud.writeAsVrml("C:/PointCloud.wrl");
-	*/
 }
 
 void ScanModel::createPointCloud()
@@ -233,6 +210,7 @@ void ScanModel::createPointCloud()
 	}
 	Mesh3D pointCloud(pointCloudPoints);
 	pointCloud.writeAsVrml("C:/PointCloud.wrl");
+	// ^^ THIS SHOULD BE USING THE OUTPUT DIRECTORY ^^
 }
 
 void ScanModel::resetScan() {
@@ -626,17 +604,6 @@ bool ScanModel::isDoneProcessingFrames()
 
 ScanModel::~ScanModel()
 {
-	// if the instrinsic object is not null:
 	if (intrinsics)
-	{
 		delete intrinsics;
-	}
-	if (backExtrinsics)
-	{
-		delete backExtrinsics;
-	}
-	if (groundExtrinsics)
-	{
-		delete groundExtrinsics;
-	}
 }
