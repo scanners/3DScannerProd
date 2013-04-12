@@ -49,7 +49,6 @@ private:
 	Point3f findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine);
 	float findMidpointRedComponentInRow(int y);
 	void findDifferenceImageAtPixel(int x, int y, float midpointRedComponent);
-	void findRedPoints();
 	vector<Point2f> findRedPointsInRegion(int region, int imageNum);
 	Point2f findZeroCrossingInRow(int y, int imageNum);
 public:
@@ -58,7 +57,6 @@ public:
 	int ShowError (LONG lError, LPCTSTR lptszMessage);
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);
-	void processRedComponent();
 	void resetScan();
 	void convertCoords();
 	void setSaveDirectory(string saveDir);

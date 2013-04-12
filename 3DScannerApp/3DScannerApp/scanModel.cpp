@@ -8,7 +8,7 @@
 #include "Serial.h"
 #include <Windows.h>
 
-ScanModel::ScanModel() : scanComplete(false), processedImages(0), processedRows(0) {
+ScanModel::ScanModel() : scanComplete(false), numImages(0), processedImages(0), processedRows(0) {
 }
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
@@ -183,12 +183,6 @@ int ScanModel::getProcessedImages()
 	return processedImages;
 }
 
-void ScanModel::processRedComponent() {
-	numImages = redChannels.size();
-	//this->findDifferenceImages();
-	//this->findRedPoints();
-}
-
 // i is the index of the image we are processing
 void ScanModel::processNextFrame(int imageNum)
 {
@@ -220,6 +214,7 @@ void ScanModel::resetScan() {
 	vector<vector<Point2f>>().swap(redPointsInBackPlaneLine);
 	vector<vector<Point2f>>().swap(redPointsInGroundPlaneLine);
 	vector<vector<Point2f>>().swap(redPointsOnObject);
+	numImages = 0;
 	processedImages = 0;
 	processedRows = 0;
 }
@@ -231,6 +226,7 @@ void ScanModel::storeRedChannel(Mat image) {
 	//Convert red component uchar matrix to float matrix
 	channels[2].convertTo(channels[2], CV_32F);
 	redChannels.push_back(channels[2]);
+	numImages++;
 }
 
 void ScanModel::findNextDifferenceImage(int y) {
@@ -284,16 +280,6 @@ particular image intersects the object (e.g. if a laser plane was calculated for
 the subpixel locations of the red line on the object at image #6 define where plane #6 intersected the object).
 From this information, we know where and when the laser plane intersects the object.
 */
-void ScanModel::findRedPoints() {
-	for (int n = 0; n < numImages; n++) {
-		redPointsInBackPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::BACK, n));
-		redPointsInGroundPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::GROUND, n));
-		redPointsOnObject.push_back(this->findRedPointsInRegion(Enums::scanRegion::OBJECT, n));
-	}
-	//Free memory from redChannels vector 
-	vector<Mat>().swap(redChannels);
-}
-
 void ScanModel::findNextRedPoints(int imageNum) {
 	redPointsInBackPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::BACK, imageNum));
 	redPointsInGroundPlaneLine.push_back(this->findRedPointsInRegion(Enums::scanRegion::GROUND, imageNum));
