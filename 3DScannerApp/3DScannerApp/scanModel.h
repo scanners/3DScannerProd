@@ -8,6 +8,7 @@ using std::vector;
 #include <string>
 #include <stdio.h>
 #include "Serial.h"
+#include <boost/thread/thread.hpp>
 
 using std::string;
 using namespace::cv;
@@ -23,6 +24,8 @@ private:
 	Intrinsic * intrinsics;
 	Extrinsic * backExtrinsics;
 	Extrinsic * groundExtrinsics;
+	CSerial serial;
+	LONG lLastError;
 	vector<int> regionYCoordinates;
 	vector<Mat> redChannels;
 	vector<vector<Point3f>> objectPoints;
@@ -55,9 +58,10 @@ private:
 public:
 	ScanModel();
 	~ScanModel();
-	int ShowError (LONG lError, LPCTSTR lptszMessage);
-	int scan();
-	bool isDoneScanning(CSerial &serial, LONG &lLastError);
+	int showError (LONG lError, char * errorMessage);
+	int initializeSerialPort();
+	int startStepperMotor();
+	int isHardwareDoneScanning();
 	void processRedComponent();
 	void resetScan();
 	void convertCoords();
