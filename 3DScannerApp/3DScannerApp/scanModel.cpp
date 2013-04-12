@@ -8,8 +8,8 @@
 #include "Serial.h"
 #include <Windows.h>
 
-ScanModel::ScanModel() : scanComplete(false), numImages(0), processedImages(0), processedRows(0) {
-}
+ScanModel::ScanModel() : scanComplete(false), processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
+groundExtrinsics(0){}
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
 {
@@ -620,6 +620,28 @@ bool ScanModel::isDoneProcessingFrames()
 
 ScanModel::~ScanModel()
 {
-	if (intrinsics)
-		delete intrinsics;
+	if(intrinsics)
+	{
+		if (!intrinsics->getIntrinsicMatrix().empty() &&
+			!intrinsics->getDistortionCoefficients().empty())
+		{
+			delete intrinsics;
+		}
+	}
+	if (backExtrinsics)
+	{
+		if (!backExtrinsics->getRotationMatrix().empty() &&
+			!backExtrinsics->getTranslationMatrix().empty())
+		{
+			delete backExtrinsics;
+		}
+	}
+	if (groundExtrinsics)
+	{
+		if (!groundExtrinsics->getRotationMatrix().empty() &&
+			!groundExtrinsics->getTranslationMatrix().empty())
+		{
+			delete groundExtrinsics;
+		}
+	}
 }
