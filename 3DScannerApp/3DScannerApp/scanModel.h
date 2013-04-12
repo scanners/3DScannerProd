@@ -27,6 +27,7 @@ private:
 	vector<Mat> redChannels;
 	vector<vector<Point3f>> objectPoints;
 	string saveDirectory;
+	string saveFileName;
 	string loadDirectory;
 	int imageWidth;
 	int imageHeight;
@@ -60,6 +61,7 @@ public:
 	void resetScan();
 	void convertCoords();
 	void setSaveDirectory(string saveDir);
+	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);
 	int setRegion(int yCoordinate);
 	int getNumStoredCoords();
@@ -72,14 +74,9 @@ public:
 	bool loadXML();
 	void findNextDifferenceImage(int y);
 	void findNextRedPoints(int imageNum);
-	int buildImageObjects();
-	//Take out pointer when implementing
-	vector<ObjectPoint>* getObjectPoints();
 	int getRequiredNumStoredYCoords();
 	int getTopRowToProcess();
 	int getBottomRowToProcess();
-	void saveFile(string fileName);
-	void exit();
 	void resetRegions();
 	bool isDoneFindingFindingDifferenceImages();
 	bool isDoneFindingRedPoints();
@@ -87,7 +84,7 @@ public:
 	void processNextFrame(int imageNum);
 	int getNumImages(); // returns how many images there are to process
 	int getProcessedImages(); // returns the number of processed images
-	void createPointCloud();
+	bool createPointCloud();
 };
 
 #endif //SCANMODEL_H

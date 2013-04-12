@@ -11,7 +11,7 @@ ScanController::ScanController() {
 
 }
 
-void ScanController::startScan() {
+void ScanController::processScan() {
 	/*
 	While not done processing frames:
 		update progress bar
@@ -111,7 +111,11 @@ void ScanController::resetRegions()
 	scanModel->resetRegions();
 }
 
-void ScanController::sendImage(Mat image) {
+bool ScanController::isDoneScanning() {
+	return false;
+}
+
+void ScanController::storeRedChannel(Mat image) {
 	scanModel->storeRedChannel(image);
 }
 
