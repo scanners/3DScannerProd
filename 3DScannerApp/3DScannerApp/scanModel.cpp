@@ -613,6 +613,17 @@ bool ScanModel::isDoneProcessingFrames()
 
 ScanModel::~ScanModel()
 {
+	// if the instrinsic object is not null:
 	if (intrinsics)
+	{
 		delete intrinsics;
+	}
+	if (backExtrinsics)
+	{
+		delete backExtrinsics;
+	}
+	if (groundExtrinsics)
+	{
+		delete groundExtrinsics;
+	}
 }

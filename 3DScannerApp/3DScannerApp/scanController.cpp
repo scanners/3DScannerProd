@@ -112,8 +112,6 @@ void ScanController::resetRegions()
 }
 
 void ScanController::sendImage(Mat image) {
-
-
 	scanModel->storeRedChannel(image);
 }
 
