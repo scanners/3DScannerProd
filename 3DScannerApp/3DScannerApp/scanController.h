@@ -21,7 +21,7 @@ private:
 public:
 	ScanController();
 	~ScanController();
-	void startScan();
+	void processScan();
 	void resetScan();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
@@ -29,7 +29,8 @@ public:
 	void createOverlayView();
 	void saveScan();
 	void setRegion(int yCoordinate);
-	void sendImage(Mat image);
+	bool isDoneScanning();
+	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
 	bool savePicture(Image * image);
 	bool loadXML();

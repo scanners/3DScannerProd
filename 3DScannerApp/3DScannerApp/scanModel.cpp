@@ -8,6 +8,8 @@
 #include "Serial.h"
 #include <Windows.h>
 #include <qmessagebox.h>
+#include <fstream>
+using std::ofstream;
 
 ScanModel::ScanModel() : scanComplete(false), processedImages(0), processedRows(0) {
 }
@@ -178,17 +180,45 @@ void ScanModel::processNextFrame(int imageNum)
 	processedImages++;
 }
 
-void ScanModel::createPointCloud()
+/*
+Method adapted from opencv code, obtained from:
+https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
+*/
+bool ScanModel::createPointCloud()
 {
-	vector<Point3f> pointCloudPoints;
-	for (int i = 0; i < objectPoints.size(); i++) {
-		for (int j = 0; j < objectPoints.at(i).size(); j++) {
-			pointCloudPoints.push_back(objectPoints.at(i).at(j));
+	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
+	fileName = "D:\\PointCloud.wrl";
+	ofstream outputStream;
+	try {
+		outputStream.open(fileName);
+
+		if (!outputStream.is_open()) {
+			return false;
 		}
+
+		outputStream << "#VRML V2.0 utf8" << std::endl;
+		outputStream << "Shape" << std::endl << "{" << std::endl;
+		outputStream << "geometry PointSet" << std::endl << "{" << std::endl;
+		outputStream << "coord Coordinate" << std::endl << "{" << std::endl;
+		outputStream << "point[" << std::endl;
+
+		for(int i = 0; i < objectPoints.size(); i++) {
+			for (int j = 0; j < objectPoints.at(i).size(); j++) {
+				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
+			}
+		}
+
+		outputStream << "]" << std::endl; //point[
+		outputStream << "}" << std::endl; //Coordinate{
+
+		outputStream << "}" << std::endl; //PointSet{
+		outputStream << "}" << std::endl; //Shape{
+
+		outputStream.close();
+		return true;
+	} catch (std::exception& e) {
+		return false;
 	}
-	Mesh3D pointCloud(pointCloudPoints);
-	pointCloud.writeAsVrml("C:/PointCloud.wrl");
-	// ^^ THIS SHOULD BE USING THE OUTPUT DIRECTORY ^^
 }
 
 void ScanModel::resetScan() {
@@ -488,6 +518,10 @@ void ScanModel::setLoadDirectory(string loadDir) {
 	loadDirectory = loadDir;
 }
 
+void ScanModel::setSaveFileName(string fileName) {
+	saveFileName = fileName;
+}
+
 int ScanModel::setRegion(int yCoordinate) {
 	regionYCoordinates.push_back(yCoordinate);
 	return regionYCoordinates.size();
@@ -567,22 +601,6 @@ bool ScanModel::loadXML() {
 	backExtrinsics = new Extrinsic(backRotationMatrix, backTranslationMatrix);
 	groundExtrinsics = new Extrinsic(groundRotationMatrix, groundTranslationMatrix);
 	return true;
-}
-
-int ScanModel::buildImageObjects() {
-	return 0;
-}
-
-vector<ObjectPoint>* ScanModel::getObjectPoints() {
-	return NULL;
-}
-
-void ScanModel::saveFile(string fileName) {
-
-}
-
-void ScanModel::exit() {
-
 }
 
 int ScanModel::getRequiredNumStoredYCoords() {
