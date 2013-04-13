@@ -185,57 +185,6 @@ int ScanModel::getProcessedImages()
 	return processedImages;
 }
 
-// i is the index of the image we are processing
-void ScanModel::processNextFrame(int imageNum)
-{
-	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
-		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
-		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
-	}
-	processedImages++;
-}
-
-/*
-Method adapted from opencv code, obtained from:
-https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
-*/
-bool ScanModel::createPointCloud()
-{
-	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
-	fileName = "D:\\PointCloud.wrl";
-	ofstream outputStream;
-	try {
-		outputStream.open(fileName);
-
-		if (!outputStream.is_open()) {
-			return false;
-		}
-
-		outputStream << "#VRML V2.0 utf8" << std::endl;
-		outputStream << "Shape" << std::endl << "{" << std::endl;
-		outputStream << "geometry PointSet" << std::endl << "{" << std::endl;
-		outputStream << "coord Coordinate" << std::endl << "{" << std::endl;
-		outputStream << "point[" << std::endl;
-
-		for(int i = 0; i < objectPoints.size(); i++) {
-			for (int j = 0; j < objectPoints.at(i).size(); j++) {
-				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
-			}
-		}
-
-		outputStream << "]" << std::endl; //point[
-		outputStream << "}" << std::endl; //Coordinate{
-
-		outputStream << "}" << std::endl; //PointSet{
-		outputStream << "}" << std::endl; //Shape{
-
-		outputStream.close();
-		return true;
-	} catch (std::exception& e) {
-		return false;
-	}
-}
-
 void ScanModel::resetScan() {
 	//Free memory
 	vector<int>().swap(regionYCoordinates);
@@ -263,7 +212,8 @@ void ScanModel::findNextDifferenceImage(int y) {
 	float midpointRedComponent;
 
 	midpointRedComponent = this->findMidpointRedComponentInRow(y);
-	for (int x = 0; x < imageWidth; x++) {
+	//Only need difference image for the object region
+	for (int x = leftSideOfObject; x < rightSideOfObject; x++) {
 		this->findDifferenceImageAtPixel(x, y, midpointRedComponent);
 	}
 	
@@ -277,6 +227,7 @@ float ScanModel::findMidpointRedComponentInRow(int y) {
 	float maxRedComponent = 0;
 	float midpointRedComponent;
 
+	//Find midpoint across an entire row, rather than just the object region
 	for (int x = 0; x < imageWidth; x++) {
 		for (int n = 0; n < numImages; n++) {
 			if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
@@ -339,6 +290,7 @@ vector<Point2f> ScanModel::findRedPointsInRegion(int region, int imageNum) {
 	}
 
 	Point2f zeroCrossing;
+	//Only need zero crossings between the top of the back plane and the bottom of the ground plane
 	for (int y = startIndex; y < upperBound; y++) {
 		//Find zero crossing from image left to image right
 		zeroCrossing = this->findZeroCrossingInRow(y, imageNum);
@@ -354,7 +306,8 @@ vector<Point2f> ScanModel::findRedPointsInRegion(int region, int imageNum) {
 Point2f ScanModel::findZeroCrossingInRow(int y, int imageNum) {
 	float interpolatedX;
 
-	for (int x = 0; x < imageWidth - 1; x++) {
+	//Only need to find zero crossing in object region cols
+	for (int x = leftSideOfObject; x < rightSideOfObject - 1; x++) {
 		float test = redChannels.at(imageNum).at<float>(Point(x, y));
 		if ((redChannels.at(imageNum).at<float>(Point(x, y)) < 0.0) && (redChannels.at(imageNum).at<float>(Point(x + 1, y)) > 0.0)) {
 			//Interpolate between x and x + 1 to find the x-value that crosses deltaRed = 0
@@ -367,6 +320,16 @@ Point2f ScanModel::findZeroCrossingInRow(int y, int imageNum) {
 	
 	//Zero crossing not found
 	return Point2f(-1.0, -1.0);
+}
+
+// imageNum is the index of the image we are processing
+void ScanModel::processNextFrame(int imageNum)
+{
+	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
+		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
+		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
+	}
+	processedImages++;
 }
 
 Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints) {
@@ -399,7 +362,6 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	Mat planeOriginInCameraCoords;
 	Mat planeNormalVectorInCameraCoords;
 	
-	Point3f test2;
 	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
 		//3x1 Matrices representing Point3f. Convert camera origin to world coords
 		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * cameraOriginInCameraCoords-
@@ -505,16 +467,52 @@ vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 	return redPointsOnObjectInBackWorldCoords;
 }
 
+/*
+Method adapted from opencv code, obtained from:
+https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
+*/
+bool ScanModel::createPointCloud()
+{
+	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
+	ofstream outputStream;
+	try {
+		outputStream.open(fileName);
+
+		if (!outputStream.is_open()) {
+			return false;
+		}
+
+		outputStream << "#VRML V2.0 utf8" << std::endl;
+		outputStream << "Shape" << std::endl << "{" << std::endl;
+		outputStream << "geometry PointSet" << std::endl << "{" << std::endl;
+		outputStream << "coord Coordinate" << std::endl << "{" << std::endl;
+		outputStream << "point[" << std::endl;
+
+		for(int i = 0; i < objectPoints.size(); i++) {
+			for (int j = 0; j < objectPoints.at(i).size(); j++) {
+				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
+			}
+		}
+
+		outputStream << "]" << std::endl; //point[
+		outputStream << "}" << std::endl; //Coordinate{
+
+		outputStream << "}" << std::endl; //PointSet{
+		outputStream << "}" << std::endl; //Shape{
+
+		outputStream.close();
+		return true;
+	} catch (std::exception& e) {
+		return false;
+	}
+}
+
 void ScanModel::setImageWidth(Mat image) {
 	imageWidth = image.cols;
 }
 
 int ScanModel::getImageWidth() {
 	return imageWidth;
-}
-
-void ScanModel::convertCoords() {
-
 }
 
 void ScanModel::setSaveDirectory(string saveDir) {
@@ -529,18 +527,20 @@ void ScanModel::setSaveFileName(string fileName) {
 	saveFileName = fileName;
 }
 
-int ScanModel::setRegion(int yCoordinate) {
+int ScanModel::setYRegion(int yCoordinate) {
 	regionYCoordinates.push_back(yCoordinate);
 	return regionYCoordinates.size();
+}
+
+int ScanModel::setXRegion(int xCoordinate) {
+	regionXCoordinates.push_back(xCoordinate);
+	return regionXCoordinates.size();
 }
 
 void ScanModel::resetRegions()
 {
 	vector<int>().swap(regionYCoordinates);
-}
-
-int ScanModel::getNumStoredCoords() {
-	return 0;
+	vector<int>().swap(regionXCoordinates);
 }
 
 void ScanModel::sortStoredYCoords() {
@@ -553,13 +553,30 @@ void ScanModel::sortStoredYCoords() {
 	bottomOfGroundPlane = regionYCoordinates[3];
 }
 
-vector<Point> ScanModel::getRegionPixels() {
-	vector<Point> regionPixels;
-	regionPixels.push_back(Point(0, topOfBackPlane));
-	regionPixels.push_back(Point(0, bottomOfBackPlane));
-	regionPixels.push_back(Point(0, topOfGroundPlane));
-	regionPixels.push_back(Point(0, bottomOfGroundPlane));
-	return regionPixels;
+void ScanModel::sortStoredXCoords() {
+	std::sort(regionXCoordinates.begin(), regionXCoordinates.end());
+
+	//After sorted, we know which click is on which side of the object
+	leftSideOfObject = regionXCoordinates[0];
+	rightSideOfObject = regionXCoordinates[1];
+}
+
+vector<Point> ScanModel::getRegionYPixels() {
+	vector<Point> regionYPixels;
+	regionYPixels.push_back(Point(0, topOfBackPlane));
+	regionYPixels.push_back(Point(0, bottomOfBackPlane));
+	regionYPixels.push_back(Point(0, topOfGroundPlane));
+	regionYPixels.push_back(Point(0, bottomOfGroundPlane));
+	return regionYPixels;
+}
+
+vector<Point> ScanModel::getRegionXPixels() {
+	vector<Point> regionXPixels;
+	regionXPixels.push_back(Point(0, bottomOfBackPlane));
+	regionXPixels.push_back(Point(leftSideOfObject, topOfGroundPlane));
+	regionXPixels.push_back(Point(rightSideOfObject, bottomOfBackPlane));
+	regionXPixels.push_back(Point(imageWidth, topOfGroundPlane));
+	return regionXPixels;
 }
 
 int ScanModel::getTopRowToProcess() {
@@ -568,10 +585,6 @@ int ScanModel::getTopRowToProcess() {
 
 int ScanModel::getBottomRowToProcess() {
 	return bottomOfGroundPlane;
-}
-
-bool ScanModel::savePicture(Image * image) {
-	return false;
 }
 
 bool ScanModel::loadXML() {
@@ -612,6 +625,10 @@ bool ScanModel::loadXML() {
 
 int ScanModel::getRequiredNumStoredYCoords() {
 	return REQUIRED_NUM_STORED_Y_COORDS;
+}
+
+int ScanModel::getRequiredNumStoredXCoords() {
+	return REQUIRED_NUM_STORED_X_COORDS;
 }
 
 bool ScanModel::isDoneFindingFindingDifferenceImages() {

@@ -2,6 +2,7 @@
 #define SCANMODEL_H
 
 #define REQUIRED_NUM_STORED_Y_COORDS 4
+#define REQUIRED_NUM_STORED_X_COORDS 2
 
 #include <vector>
 using std::vector;
@@ -24,13 +25,13 @@ private:
 	Extrinsic * backExtrinsics;
 	Extrinsic * groundExtrinsics;
 	vector<int> regionYCoordinates;
+	vector<int> regionXCoordinates;
 	vector<Mat> redChannels;
 	vector<vector<Point3f>> objectPoints;
 	string saveDirectory;
 	string saveFileName;
 	string loadDirectory;
 	int imageWidth;
-	int imageHeight;
 	int numImages;
 	int processedImages;
 	int processedRows;
@@ -38,6 +39,8 @@ private:
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
 	int bottomOfGroundPlane;
+	int leftSideOfObject;
+	int rightSideOfObject;
 	bool scanComplete;
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
@@ -59,22 +62,23 @@ public:
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);
 	void resetScan();
-	void convertCoords();
 	void setSaveDirectory(string saveDir);
 	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);
-	int setRegion(int yCoordinate);
-	int getNumStoredCoords();
+	int setYRegion(int yCoordinate);
+	int setXRegion(int xCoordinate);
 	void sortStoredYCoords();
-	vector<Point> getRegionPixels();
+	void sortStoredXCoords();
+	vector<Point> getRegionYPixels();
+	vector<Point> getRegionXPixels();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
 	int getImageWidth();
-	bool savePicture(Image * image);
 	bool loadXML();
 	void findNextDifferenceImage(int y);
 	void findNextRedPoints(int imageNum);
 	int getRequiredNumStoredYCoords();
+	int getRequiredNumStoredXCoords();
 	int getTopRowToProcess();
 	int getBottomRowToProcess();
 	void resetRegions();

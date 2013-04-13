@@ -27,18 +27,18 @@ public:
 	void setLoadDirectory(string loadDir);
 	void createScanningView();
 	void createOverlayView();
-	void saveScan();
-	void setRegion(int yCoordinate);
+	void setYRegion(int yCoordinate);
+	void setXRegion(int xCoordinate);
 	bool isDoneScanning();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
-	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();
 	void setScanModel(ScanModel& scanMod);
 	void setScanInputView(ScanInputView& scanInputView);
 	void resetRegions();
-
+	int getRequiredNumStoredYCoords();
+	int getRequiredNumStoredXCoords();
 };
 
 #endif //SCANCONTROLLER_H
