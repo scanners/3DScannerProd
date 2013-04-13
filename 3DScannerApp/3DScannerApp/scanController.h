@@ -39,6 +39,8 @@ public:
 	void resetRegions();
 	int getRequiredNumStoredYCoords();
 	int getRequiredNumStoredXCoords();
+	void setSaveFileName(string name);
+
 };
 
 #endif //SCANCONTROLLER_H

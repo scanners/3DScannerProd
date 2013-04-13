@@ -19,17 +19,16 @@ void ScanController::processScan() {
 	*/
 	// the above pseudocode will require refactoring!
 
-	scanModel->processRedComponent();
-
 	int currentRow = scanModel->getTopRowToProcess();
 	int totalRows = scanModel->getBottomRowToProcess() - currentRow;
 
 	int currentFrame = 0;
 	int totalFrames = scanModel->getNumImages();
+	int totalOutputFiles = 1;
 
 	//Range includes total rows to find difference images, total images to find
 	//red points, and total images to process the results
-	scanningView->setProgressBarRange(totalRows + totalFrames + totalFrames);
+	scanningView->setProgressBarRange(totalRows + totalFrames + totalFrames + totalOutputFiles);
 
 	int progressBarCounter = 0;
 
@@ -49,8 +48,7 @@ void ScanController::processScan() {
 
 	currentFrame = 0;
 
-	while(!scanModel->isDoneProcessingFrames())
-	{
+	while(!scanModel->isDoneProcessingFrames())	{
 		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->processNextFrame(currentFrame);
 		progressBarCounter++;
@@ -59,6 +57,8 @@ void ScanController::processScan() {
 
 	// scanning processing is complete, create point cloud:
 	scanModel->createPointCloud();
+	//ProgressBarCounter was incremented in above while loop after updating the progress bar
+	scanningView->updateProgressBar(progressBarCounter);
 	scanningView->enableDoneButton(true);
 	scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
 }
@@ -131,6 +131,10 @@ void ScanController::setImageWidth(Mat image) {
 	scanModel->setImageWidth(image);
 }
 
+bool ScanController::savePicture(Image * image) {
+	return false;
+}
+
 void ScanController::exit() {
 
 }
@@ -149,6 +153,11 @@ int ScanController::getRequiredNumStoredYCoords() {
 
 int ScanController::getRequiredNumStoredXCoords() {
 	return scanModel->getRequiredNumStoredXCoords();
+}
+
+void ScanController::setSaveFileName(string name)
+{
+	scanModel->setSaveFileName(name);
 }
 
 ScanController::~ScanController()
