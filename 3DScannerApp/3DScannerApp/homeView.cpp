@@ -60,9 +60,10 @@ HomeView::~HomeView()
 	delete extrinsicController;
 	delete intrinsicCalibrationModel;
 	delete extrinsicCalibrationModel;
-	//if (scanController) delete scanController;
 	delete scanModel; // this is causing a memory exception.
+	
 	delete tabWidget;
+	delete scanController;
 }
 
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent)

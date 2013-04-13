@@ -106,7 +106,6 @@ void ScanInputView::constructLayout()
 
 ScanInputView::~ScanInputView()
 {
-	if (scanController) delete scanController;
 	delete saveDirText;
 	delete loadDirText;
 	delete saveLabel;

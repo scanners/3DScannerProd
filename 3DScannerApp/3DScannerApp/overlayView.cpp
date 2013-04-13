@@ -188,8 +188,6 @@ void OverlayView::startScan() {
 
 OverlayView::~OverlayView()
 {
-	if (scanController)
-		delete scanController;
 	if (displayImage)
 		delete displayImage;
 	delete titleLabel;
