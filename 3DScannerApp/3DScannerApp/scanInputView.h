@@ -2,6 +2,7 @@
 #define SCANINPUTVIEW_H
 
 #include <qwidget.h>
+#include <string>
 
 class ScanController;
 class QLabel;
@@ -23,12 +24,15 @@ private:
 	QLineEdit * loadDirText;
 	QLabel * saveLabel;
 	QLabel * loadLabel;
+	QLabel * saveFileNameLabel;
+	QLineEdit * saveFileNameText;
 	QPushButton * startButton;
 	QPushButton * exitButton;
 	QPushButton * saveBrowseButton;
 	QPushButton * loadBrowseButton;
 	QGridLayout * mainLayout;
 	void constructLayout();
+	bool checkFileName(std::string filename);
 public:
     explicit ScanInputView(QWidget *parent = 0);
 	~ScanInputView();

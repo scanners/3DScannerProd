@@ -147,6 +147,11 @@ int ScanController::getRequiredNumStoredXCoords() {
 	return scanModel->getRequiredNumStoredXCoords();
 }
 
+void ScanController::setSaveFileName(string name)
+{
+	scanModel->setSaveFileName(name);
+}
+
 ScanController::~ScanController()
 {
 

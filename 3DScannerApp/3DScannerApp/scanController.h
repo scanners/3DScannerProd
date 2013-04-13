@@ -37,6 +37,7 @@ public:
 	void setScanModel(ScanModel& scanMod);
 	void setScanInputView(ScanInputView& scanInputView);
 	void resetRegions();
+	void setSaveFileName(string name);
 	int getRequiredNumStoredYCoords();
 	int getRequiredNumStoredXCoords();
 };
