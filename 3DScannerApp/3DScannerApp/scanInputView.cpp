@@ -8,6 +8,7 @@
 #include <qgridlayout.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+#include <cctype>
 
 ScanInputView::ScanInputView(QWidget *parent) : QWidget(parent)
 {
@@ -50,7 +51,30 @@ void ScanInputView::startScan()
 		error.setModal(false);
 		error.exec();
 	}
+	else if (saveFileNameText->text().toStdString() == "")
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"No output filename was given!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Please type the filename for the post-scan file.");
+		error.setInformativeText("Type a name and try again.");
+		error.setModal(false);
+		error.exec();
+	}
+	else if (!checkFileName(saveFileNameText->text().toStdString()))
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"Filename had invalid characters!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Ensure that there are only alphabetic characters in your filename");
+		error.setInformativeText("Type a name and try again.");
+		error.setModal(false);
+		error.exec();
+	}
 	else if (loadXMLSuccess) {
+		scanController->setSaveFileName(saveFileNameText->text().toStdString());
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
@@ -64,6 +88,21 @@ void ScanInputView::startScan()
 		error.setModal(false);
 		error.exec();
 	}
+}
+
+/*
+Returns true if filename is okay. False otherwise.
+*/
+bool ScanInputView::checkFileName(string filename)
+{
+	for (int i = 0; i < filename.length(); i++)
+	{
+		if (!isalpha(filename[i]))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void ScanInputView::createSaveFileDialog() {
@@ -89,6 +128,8 @@ void ScanInputView::constructLayout()
 	saveDirText->setPlaceholderText("Directory to save scan");
 	loadDirText = new QLineEdit();
 	loadDirText->setPlaceholderText("Directory to load calibration data");
+	saveFileNameLabel = new QLabel("Output File Name:");
+	saveFileNameText = new QLineEdit();
 	startButton = new QPushButton("Start Scan");
 	exitButton = new QPushButton("Exit");
 	
@@ -99,6 +140,8 @@ void ScanInputView::constructLayout()
 	mainLayout->addWidget(saveLabel, 1, 0);
 	mainLayout->addWidget(saveDirText, 1, 1);
 	mainLayout->addWidget(saveBrowseButton, 1, 2);
+	mainLayout->addWidget(saveFileNameLabel, 2, 0);
+	mainLayout->addWidget(saveFileNameText, 2, 1);
 	mainLayout->addWidget(startButton, 3, 1);
 	mainLayout->addWidget(exitButton, 3, 2);
 	setLayout(mainLayout);

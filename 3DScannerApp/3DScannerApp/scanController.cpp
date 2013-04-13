@@ -139,6 +139,11 @@ void ScanController::setScanInputView(ScanInputView& scanInpView) {
 	scanInputView = &scanInpView;
 }
 
+void ScanController::setSaveFileName(string name)
+{
+	scanModel->setSaveFileName(name);
+}
+
 ScanController::~ScanController()
 {
 
