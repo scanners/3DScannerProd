@@ -29,7 +29,7 @@ public:
 	void createOverlayView();
 	void saveScan();
 	void setRegion(int yCoordinate);
-	bool isDoneScanning();
+	bool isHardwareDoneScanning();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
 	bool savePicture(Image * image);

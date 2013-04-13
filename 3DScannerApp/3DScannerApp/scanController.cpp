@@ -80,10 +80,14 @@ bool ScanController::loadXML() {
 }
 
 void ScanController::createScanningView() {
+	scanModel->waitForHardwareScanComplete();
+
 	scanningView = new ScanningView();
 	scanningView->setScanController(*this);
 	scanningView->setModal(true);
 	scanningView->show();
+
+	scanModel->startHardwareScan();
 }
 
 void ScanController::createOverlayView()
@@ -111,8 +115,8 @@ void ScanController::resetRegions()
 	scanModel->resetRegions();
 }
 
-bool ScanController::isDoneScanning() {
-	return false;
+bool ScanController::isHardwareDoneScanning() {
+	return scanModel->isHardwareDoneScanning();
 }
 
 void ScanController::storeRedChannel(Mat image) {

@@ -7,8 +7,7 @@
 using std::vector;
 #include <string>
 #include <stdio.h>
-#include "Serial.h"
-#include <boost/thread/thread.hpp>
+#include "qthread.h"
 
 using std::string;
 using namespace::cv;
@@ -18,14 +17,15 @@ class ObjectPoint;
 class Image;
 class Intrinsic;
 class Extrinsic;
+class SerialCommunication;
 
 class ScanModel {
 private:
+	SerialCommunication * serial;
+	QThread * hardwareThread;
 	Intrinsic * intrinsics;
 	Extrinsic * backExtrinsics;
 	Extrinsic * groundExtrinsics;
-	CSerial serial;
-	LONG lLastError;
 	vector<int> regionYCoordinates;
 	vector<Mat> redChannels;
 	vector<vector<Point3f>> objectPoints;
@@ -41,7 +41,6 @@ private:
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
 	int bottomOfGroundPlane;
-	bool scanComplete;
 	vector<vector<Point2f>> redPointsInBackPlaneLine;
 	vector<vector<Point2f>> redPointsInGroundPlaneLine;
 	vector<vector<Point2f>> redPointsOnObject;
@@ -59,10 +58,9 @@ private:
 public:
 	ScanModel();
 	~ScanModel();
-	int showError (LONG lError, char * errorMessage);
-	int initializeSerialPort();
-	int startStepperMotor();
-	int isHardwareDoneScanning();
+	void startHardwareScan();
+	void waitForHardwareScanComplete();
+	bool isHardwareDoneScanning();
 	void processRedComponent();
 	void resetScan();
 	void convertCoords();

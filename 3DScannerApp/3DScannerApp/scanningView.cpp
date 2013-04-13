@@ -111,7 +111,7 @@ void ScanningView::displayVideoFrame()
 }
 
 void ScanningView::scanImage() {
-	if (!(scanController->isDoneScanning())) {
+	if (!(scanController->isHardwareDoneScanning())) {
 		scanController->storeRedChannel(image);
 	} else {
 		this->stopVideo();
