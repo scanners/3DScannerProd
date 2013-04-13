@@ -56,7 +56,8 @@ public:
 	OverlayView(QWidget * parent = 0);
 	~OverlayView();
 	void setScanController(ScanController& scanController);
-	void drawOverlayRegions(vector<Point> coords, int imageWidth);
+	void drawOverlayYRegions(vector<Point> coords, int imageWidth);
+	void drawOverlayXRegions(vector<Point> coords);
 };
 
 #endif //OVERLAYVIEW_H

@@ -94,15 +94,19 @@ void ScanController::createOverlayView()
 	overlayView->show();
 }
 
-void ScanController::saveScan() {
-
-}
-
-void ScanController::setRegion(int yCoordinate) {
-	int regions = scanModel->setRegion(yCoordinate);
+void ScanController::setYRegion(int yCoordinate) {
+	int regions = scanModel->setYRegion(yCoordinate);
 	if (regions == scanModel->getRequiredNumStoredYCoords()) {
 		scanModel->sortStoredYCoords();
-		overlayView->drawOverlayRegions(scanModel->getRegionPixels(), scanModel->getImageWidth());
+		overlayView->drawOverlayYRegions(scanModel->getRegionYPixels(), scanModel->getImageWidth());
+	}
+}
+
+void ScanController::setXRegion(int xCoordinate) {
+	int regions = scanModel->setXRegion(xCoordinate);
+	if (regions == scanModel->getRequiredNumStoredXCoords()) {
+		scanModel->sortStoredXCoords();
+		overlayView->drawOverlayXRegions(scanModel->getRegionXPixels());
 	}
 }
 
@@ -123,10 +127,6 @@ void ScanController::setImageWidth(Mat image) {
 	scanModel->setImageWidth(image);
 }
 
-bool ScanController::savePicture(Image * image) {
-	return false;
-}
-
 void ScanController::exit() {
 
 }
@@ -137,6 +137,14 @@ void ScanController::setScanModel(ScanModel& scanMod) {
 
 void ScanController::setScanInputView(ScanInputView& scanInpView) {
 	scanInputView = &scanInpView;
+}
+
+int ScanController::getRequiredNumStoredYCoords() {
+	return scanModel->getRequiredNumStoredYCoords();
+}
+
+int ScanController::getRequiredNumStoredXCoords() {
+	return scanModel->getRequiredNumStoredXCoords();
 }
 
 void ScanController::setSaveFileName(string name)

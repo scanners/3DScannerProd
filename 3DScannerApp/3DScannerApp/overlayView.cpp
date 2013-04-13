@@ -134,9 +134,13 @@ void OverlayView::obtainCoordinates()
 	this->x = displayImage->getX();
 	this->y = displayImage->getY();
 	numClicks++; // another click has been made
-	if (numClicks <= 4)
+	
+	if (numClicks <= scanController->getRequiredNumStoredYCoords()) //Region Y Clicking
 	{
-		scanController->setRegion(this->y); // send the y-click
+		scanController->setYRegion(this->y); // send the y-click
+	} else if (numClicks <= 
+			(scanController->getRequiredNumStoredXCoords() + scanController->getRequiredNumStoredYCoords())) { // Region X Clicking
+		scanController->setXRegion(this->x);
 	}
 	updateCoords();
 }
@@ -153,12 +157,12 @@ void OverlayView::updateCoords()
 	positionLabel->setText(stream.str().c_str());
 }
 
-void OverlayView::drawOverlayRegions(vector<Point> coords, int rectWidth)
+void OverlayView::drawOverlayYRegions(vector<Point> coords, int rectWidth)
 {
 	// create painter for displaying overlays:
 	QPainter painter;
 	painter.begin(videoFrame); // tell the painter where it is drawing
-	QLinearGradient linearGrad(QPointF(0, 0), QPointF(rectWidth, 0));
+	QLinearGradient linearGrad(QPointF(0, 0), QPointF(0, 0));
 	linearGrad.setColorAt(0, QColor(255,255,255, 180));
 	linearGrad.setColorAt(1, QColor(255,255,255, 180));
 	painter.fillRect(coords.at(0).x, coords.at(0).y, rectWidth, coords.at(1).y-coords.at(0).y, linearGrad);
@@ -166,6 +170,22 @@ void OverlayView::drawOverlayRegions(vector<Point> coords, int rectWidth)
 	painter.drawText(QPointF((rectWidth/2)-100, coords.at(0).y + 30), "Back Plane");
 	painter.fillRect(coords.at(2).x, coords.at(2).y, rectWidth, coords.at(3).y-coords.at(2).y, linearGrad);
 	painter.drawText(QPointF((rectWidth/2)-100, (coords.at(2).y) + 30), "Ground Plane");
+	painter.end(); // free up resources
+
+	// refresh the image
+	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
+}
+
+void OverlayView::drawOverlayXRegions(vector<Point> coords) {
+	// create painter for displaying overlays:
+	QPainter painter;
+	painter.begin(videoFrame); // tell the painter where it is drawing
+	QLinearGradient linearGrad(QPointF(0, 0), QPointF(0, 0));
+	linearGrad.setColorAt(0, QColor(150,150,150, 180));
+	linearGrad.setColorAt(1, QColor(150,150,150, 180));
+	painter.fillRect(coords.at(0).x, coords.at(0).y, coords.at(1).x-coords.at(0).x, coords.at(1).y-coords.at(0).y, linearGrad);
+	painter.setFont(QFont("Verdana", 24, 10, false));
+	painter.fillRect(coords.at(2).x, coords.at(2).y, coords.at(3).x-coords.at(2).x, coords.at(3).y-coords.at(2).y, linearGrad);
 	painter.end(); // free up resources
 
 	// refresh the image
