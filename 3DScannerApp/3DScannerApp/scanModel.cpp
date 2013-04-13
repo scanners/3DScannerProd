@@ -52,21 +52,6 @@ void ScanModel::processRedComponent() {
 	//this->findRedPoints();
 }
 
-// i is the index of the image we are processing
-void ScanModel::processNextFrame(int imageNum)
-{
-	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
-		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
-		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
-	}
-	processedImages++;
-}
-
-int ScanModel::getProcessedImages()
-{
-	return processedImages;
-}
-
 void ScanModel::resetScan() {
 	//Free memory
 	vector<int>().swap(regionYCoordinates);
