@@ -32,6 +32,7 @@ public:
 	bool isHardwareDoneScanning();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
+	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();
 	void setScanModel(ScanModel& scanMod);
