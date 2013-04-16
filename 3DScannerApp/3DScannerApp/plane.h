@@ -3,18 +3,18 @@
 
 #include "extrinsic.h"
 
-using cv::Point3f;
-using cv::Vec3f;
+using cv::Point3d;
+using cv::Vec3d;
 
 class Plane {
 private:
-	Point3f pointOnPlane;
-	Vec3f normalVector;
+	Point3d pointOnPlane;
+	Vec3d normalVector;
 public:
-	Plane(Point3f pointOnPlane, Vec3f normalVector);
+	Plane(Point3d pointOnPlane, Vec3d normalVector);
 	~Plane();
-	Point3f getPointOnPlane();
-	Vec3f getNormalVector();
+	Point3d getPointOnPlane();
+	Vec3d getNormalVector();
 };
 
 #endif //PLANE_H

@@ -1,0 +1,12 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+# Images should be treated as binary
+# (binary is a macro for -text -diff)
+*.png     binary
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat 	  	-crlf
+*.sln 		-crlf
+*.*proj* 	-crlf
+*.xml 		-crlf

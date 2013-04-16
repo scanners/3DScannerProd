@@ -2,16 +2,16 @@
 
 #include "plane.h"
 
-Plane::Plane(Point3f ptOnPlane, Vec3f normal) {
+Plane::Plane(Point3d ptOnPlane, Vec3d normal) {
 	pointOnPlane = ptOnPlane;
 	normalVector = normal;
 }
 
-Point3f Plane::getPointOnPlane() {
+Point3d Plane::getPointOnPlane() {
 	return pointOnPlane;
 }
 
-Vec3f Plane::getNormalVector() {
+Vec3d Plane::getNormalVector() {
 	return normalVector;
 }
 

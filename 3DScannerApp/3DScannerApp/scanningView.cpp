@@ -111,12 +111,26 @@ void ScanningView::displayVideoFrame()
 }
 
 void ScanningView::scanImage() {
-	if (!(scanController->isDoneScanning())) {
+	//For testing -------------------------------
+	static int numImages = 0;
+	if (numImages >= 100) {
+		this->stopVideo();
+		scanController->processScan();
+		numImages = 0;
+	} else {
+		numImages++;
+	} //End test section
+	
+	scanController->storeRedChannel(image);
+	//END TEST ------------------------------------
+
+
+	/*if (!(scanController->isDoneScanning())) {
 		scanController->storeRedChannel(image);
 	} else {
 		this->stopVideo();
 		scanController->processScan();		
-	}
+	}*/
 }
 
 ScanningView::~ScanningView()
