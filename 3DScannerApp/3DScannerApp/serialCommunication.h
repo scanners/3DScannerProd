@@ -10,7 +10,7 @@ class SerialCommunication : public QObject
 	Q_OBJECT
 
 public slots:
-	int recieveStopSignalFromHardware();
+	int receiveStopSignalFromHardware();
 private:
 	CSerial serial;
 	LONG lLastError;

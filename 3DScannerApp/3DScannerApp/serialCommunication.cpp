@@ -61,7 +61,7 @@ int SerialCommunication::startStepperMotor(){
 	return 0;
 }
 
-int SerialCommunication::recieveStopSignalFromHardware() {
+int SerialCommunication::receiveStopSignalFromHardware() {
 
 	char * complete = "stop";
 
