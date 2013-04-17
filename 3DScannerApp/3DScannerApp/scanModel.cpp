@@ -364,12 +364,12 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	
 	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
 		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * cameraOriginInCameraCoords-
-			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
+		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+			backExtrinsics->getTranslationMatrix()));
 	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
 		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * cameraOriginInCameraCoords-
-			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
+		cameraOriginInWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+			groundExtrinsics->getTranslationMatrix()));
 	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
@@ -426,11 +426,11 @@ Point3d ScanModel::findLineLineIntersection(Vec6d backLine, Vec6d groundLine) {
 	Vec3d pointOnGroundLine(groundLine[3], groundLine[4], groundLine[5]);
 
 	//Compute ||v||^2 = v_x^2 + v_y^2 + v_z^2
-	double squaredMagnitudeOfBackLineVector = normalizedVectorOfBackLine[0]*normalizedVectorOfBackLine[0] +
-		normalizedVectorOfBackLine[1]*normalizedVectorOfBackLine[1] + normalizedVectorOfBackLine[2]*normalizedVectorOfBackLine[2];
+	double squaredMagnitudeOfBackLineVector = std::pow(normalizedVectorOfBackLine[0], 2) +
+		std::pow(normalizedVectorOfBackLine[1], 2) + std::pow(normalizedVectorOfBackLine[2], 2);
 
-	double squaredMagnitudeOfGroundLineVector = normalizedVectorOfGroundLine[0]*normalizedVectorOfGroundLine[0] +
-		normalizedVectorOfGroundLine[1]*normalizedVectorOfGroundLine[1] + normalizedVectorOfGroundLine[2]*normalizedVectorOfGroundLine[2];
+	double squaredMagnitudeOfGroundLineVector = std::pow(normalizedVectorOfGroundLine[0], 2) +
+		std::pow(normalizedVectorOfGroundLine[1], 2) + std::pow(normalizedVectorOfGroundLine[2], 2);
 
 	//Perform least squares approximation for approximate intersection of back and ground lines
 	double m1[2][2] = {{squaredMagnitudeOfBackLineVector, -((normalizedVectorOfBackLine.t()*normalizedVectorOfGroundLine)[0])},
@@ -472,10 +472,10 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<double>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
-		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords -
-			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
-		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords - 
-			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
+		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords -
+			backExtrinsics->getTranslationMatrix()));
+		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords - 
+			groundExtrinsics->getTranslationMatrix()));
 		if (std::abs(redPointBackWorldCoordMatrix.at<double>(2,0)) < 0.10) {
 			//Point is on the back plane, so don't include it
 			continue;
