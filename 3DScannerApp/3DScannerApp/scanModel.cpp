@@ -333,10 +333,10 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<double>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
-		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords -
-			backExtrinsics->getTranslationMatrix()));
-		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords - 
-			groundExtrinsics->getTranslationMatrix()));
+		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords -
+			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
+		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords - 
+			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
 		if (std::abs(redPointBackWorldCoordMatrix.at<double>(2,0)) < 0.10) {
 			//Point is on the back plane, so don't include it
 			continue;
