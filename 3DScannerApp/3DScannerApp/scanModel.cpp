@@ -46,16 +46,6 @@ bool ScanModel::isHardwareDoneScanning(){
 	return hardwareThread->isFinished();
 }
 
-int ScanModel::getNumImages()
-{
-	return numImages;
-}
-
-int ScanModel::getProcessedImages()
-{
-	return processedImages;
-}
-
 void ScanModel::resetScan() {
 	//Free memory
 	vector<int>().swap(regionYCoordinates);
