@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 			"min-width: 5em;"
 			"padding: 4px;}"
 			"QPushButton:hover {"
-			"background-color: #666;}"
+			"background-color: #000;}"
 			"QLineEdit { background-color: #EEE;}"
 			"QLineEdit:hover { background-color: #FFF;}"
 			"QLineEdit:selected { background-color: #FFF;}"

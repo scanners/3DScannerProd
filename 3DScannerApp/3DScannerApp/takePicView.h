@@ -33,6 +33,7 @@ private:
 	VideoCapture capture;
 	Mat image;
 	CalibrationController * calibrationController;
+	void setButtonStyle(QPushButton * button, bool isEnabled);
 public:
     explicit TakePicView(int calibType, int numPictures, QWidget *parent = 0);
 	~TakePicView();

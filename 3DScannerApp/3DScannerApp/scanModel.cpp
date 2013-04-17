@@ -299,7 +299,7 @@ Point3d ScanModel::findLineLineIntersection(Vec6d backLine, Vec6d groundLine) {
 	double m2[2][1] = {{(normalizedVectorOfBackLine.t()*(pointOnGroundLine-pointOnBackLine))[0]}, {(normalizedVectorOfGroundLine.t()*(pointOnBackLine-pointOnGroundLine))[0]}};
 	double lambda = Mat(Mat(2,2,CV_64F,m1).inv()*Mat(2,1,CV_64F,m2)).at<double>(0, 0);
 
-	Point3f approximateIntersection = pointOnBackLine + lambda * normalizedVectorOfBackLine;
+	Point3d approximateIntersection = pointOnBackLine + lambda * normalizedVectorOfBackLine;
 	
 	return approximateIntersection;
 }
@@ -323,6 +323,8 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 
 	double lambda;
 	Mat redPointOnObjectInCameraCoords;
+	Mat redPointBackWorldCoordMatrix;
+	Mat redPointGroundWorldCoordMatrix;
 	//Calculate the lambda value of each red point on the back plane and store the Camera coordinate of the red point on the object
 	for (int i = 0; i < redPointsOnObjectInCameraCoords.size(); i++) {
 		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
@@ -331,13 +333,38 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<double>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
-		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords-
+		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords -
 			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
-		redPointsOnObjectInBackWorldCoords.push_back(Point3f(redPointWorldCoordMatrix.at<double>(0,0), 
-			redPointWorldCoordMatrix.at<double>(1,0), redPointWorldCoordMatrix.at<double>(2,0)));
+		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords - 
+			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
+		if (std::abs(redPointBackWorldCoordMatrix.at<double>(2,0)) < 0.10) {
+			//Point is on the back plane, so don't include it
+			continue;
+		}
+		if (std::abs(redPointGroundWorldCoordMatrix.at<double>(2,0)) < 0.10) {
+			//Point is on the ground plane, so don't include it
+			continue;
+		}
+		/*
+		If the distance from the point in back coordinates to the back origin
+		is greater than the distance from the camera origin to the back origin...
+		*/
+		if (vectorLength(redPointBackWorldCoordMatrix) > vectorLength(backExtrinsics->getTranslationMatrix())) {
+			//Point is an outlier, so don't include it
+			continue;
+		}
+
+		//None of the conditions are met, so include the point as valid
+		redPointsOnObjectInBackWorldCoords.push_back(Point3d(redPointBackWorldCoordMatrix.at<double>(0,0), 
+				redPointBackWorldCoordMatrix.at<double>(1,0), redPointBackWorldCoordMatrix.at<double>(2,0)));
 	}
 
 	return redPointsOnObjectInBackWorldCoords;
+}
+
+double ScanModel::vectorLength(Mat vector) {
+	double sumOfSquares = std::pow(vector.at<double>(0,0), 2) + std::pow(vector.at<double>(1,0), 2) + std::pow(vector.at<double>(2,0), 2);
+	return std::sqrt(sumOfSquares);
 }
 
 /*
