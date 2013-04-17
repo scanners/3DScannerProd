@@ -128,8 +128,8 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 					szBuffer[dwBytesRead] = '\0';
 
 					// Check for Stop Text
-					if(strstr(szBuffer, complete) != NULL)
-						fContinue = false;
+					//if(strstr(szBuffer, complete) != NULL)
+					fContinue = false;
 				}
 			}
 		    while (dwBytesRead == sizeof(szBuffer)-1);

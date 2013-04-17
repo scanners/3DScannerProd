@@ -116,7 +116,7 @@ void ScanningView::scanImage() {
 	} else {
 		this->stopVideo();
 		scanController->processScan();		
-	}*/
+	}
 }
 
 ScanningView::~ScanningView()
