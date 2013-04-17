@@ -81,6 +81,19 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	{
 		// if the Video Capture Stream is open, set button and create timer
 		takePicButton->setEnabled(true);
+		takePicButton->setStyleSheet("QPushButton {"
+			"background-color: #333;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			"QPushButton:hover {"
+			"background-color: #666;}"
+			);
 		timer = new QTimer(this);
 		// slot for displaying video every 20ms
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
@@ -90,6 +103,17 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	{
 		videoLabel->setPixmap(QPixmap("noCamera.png"));
 		takePicButton->setEnabled(false);
+		takePicButton->setStyleSheet("QPushButton {"
+			"background-color: #666;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			);
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		messages->setText("No camera is detected! Please check your connection!");
 	}

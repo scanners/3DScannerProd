@@ -158,6 +158,11 @@ void InputView::constructLayout()
 		saveDirText->setReadOnly(true);
 		saveDirText->setPlaceholderText("Directory to save intrinsic calibration data");
 
+		this->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+
 		// Add widgets to layout
 		mainLayout->addWidget(horizontalLabel, 0, 0);
 		mainLayout->addWidget(horizontalText, 0, 1);
@@ -199,6 +204,11 @@ void InputView::constructLayout()
 		loadDirText = new QLineEdit();
 		loadDirText->setReadOnly(true);
 		loadDirText->setPlaceholderText("Directory to load intrinsic calibration data");
+
+		this->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
 
 		// Add widgets to layout
 		mainLayout->addWidget(horizontalLabel, 0, 0);

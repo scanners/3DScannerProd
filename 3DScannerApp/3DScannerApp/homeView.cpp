@@ -48,9 +48,22 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	setLayout(mainLayout);
 
 	setWindowTitle("3D Scanner");
-	//this->setFixedSize(550, 350);
 	this->setFixedSize(515, 515);
-	//this->setBaseSize(550, 600);
+
+	this->setStyleSheet("QTabWidget::pane { background-color: white; border: 1px solid black;}"
+		);
+	tabWidget->setStyleSheet("QTabBar::tab {"
+		"background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+		"stop: 0 #FFF, stop: 1 #CCC);"
+		"border: 1px solid #000;"
+		"border-bottom-color: #000;" /* same as the pane color */
+		"border-top-left-radius: 5px;"
+		"border-top-right-radius: 5px;"
+		"min-width: 12ex;"
+		"padding: 6px; }"
+		"QTabBar::tab:hover, QTabBar::tab:selected { background-color: white; border-bottom: 1px solid red }"
+		);
+	
 	
 }
 

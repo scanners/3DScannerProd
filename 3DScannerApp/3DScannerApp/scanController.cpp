@@ -131,10 +131,6 @@ void ScanController::setImageWidth(Mat image) {
 	scanModel->setImageWidth(image);
 }
 
-bool ScanController::savePicture(Image * image) {
-	return false;
-}
-
 void ScanController::exit() {
 
 }

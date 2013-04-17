@@ -46,20 +46,24 @@ bool ScanModel::isHardwareDoneScanning(){
 	return hardwareThread->isFinished();
 }
 
-void ScanModel::processRedComponent() {
-	numImages = redChannels.size();
-	//this->findDifferenceImages();
-	//this->findRedPoints();
+int ScanModel::getNumImages()
+{
+	return numImages;
+}
+
+int ScanModel::getProcessedImages()
+{
+	return processedImages;
 }
 
 void ScanModel::resetScan() {
 	//Free memory
 	vector<int>().swap(regionYCoordinates);
 	vector<Mat>().swap(redChannels);
-	vector<vector<Point3f>>().swap(objectPoints);
-	vector<vector<Point2f>>().swap(redPointsInBackPlaneLine);
-	vector<vector<Point2f>>().swap(redPointsInGroundPlaneLine);
-	vector<vector<Point2f>>().swap(redPointsOnObject);
+	vector<vector<Point3d>>().swap(objectPoints);
+	vector<vector<Point2d>>().swap(redPointsInBackPlaneLine);
+	vector<vector<Point2d>>().swap(redPointsInGroundPlaneLine);
+	vector<vector<Point2d>>().swap(redPointsOnObject);
 	numImages = 0;
 	processedImages = 0;
 	processedRows = 0;
@@ -70,13 +74,13 @@ void ScanModel::storeRedChannel(Mat image) {
 	//Split the image into its 3 channels: B, G, R
 	split(image, channels);
 	//Convert red component uchar matrix to float matrix
-	channels[2].convertTo(channels[2], CV_32F);
+	channels[2].convertTo(channels[2], CV_64F);
 	redChannels.push_back(channels[2]);
 	numImages++;
 }
 
 void ScanModel::findNextDifferenceImage(int y) {
-	float midpointRedComponent;
+	double midpointRedComponent;
 
 	midpointRedComponent = this->findMidpointRedComponentInRow(y);
 	//Only need difference image for the object region
@@ -87,21 +91,21 @@ void ScanModel::findNextDifferenceImage(int y) {
 	processedRows++;
 }
 
-float ScanModel::findMidpointRedComponentInRow(int y) {
+double ScanModel::findMidpointRedComponentInRow(int y) {
 	//Set min to the maximum value so it gets set to a lower value
-	float minRedComponent = 255;
+	double minRedComponent = 255;
 	//Set max to the minimum value so it gets set to a higher value
-	float maxRedComponent = 0;
-	float midpointRedComponent;
+	double maxRedComponent = 0;
+	double midpointRedComponent;
 
 	//Find midpoint across an entire row, rather than just the object region
 	for (int x = 0; x < imageWidth; x++) {
 		for (int n = 0; n < numImages; n++) {
-			if (redChannels.at(n).at<float>(Point(x, y)) < minRedComponent) {
-				minRedComponent = redChannels.at(n).at<float>(Point(x, y));
+			if (redChannels.at(n).at<double>(Point(x, y)) < minRedComponent) {
+				minRedComponent = redChannels.at(n).at<double>(Point(x, y));
 			}
-			if (redChannels.at(n).at<float>(Point(x, y)) > maxRedComponent) {
-				maxRedComponent = redChannels.at(n).at<float>(Point(x, y));
+			if (redChannels.at(n).at<double>(Point(x, y)) > maxRedComponent) {
+				maxRedComponent = redChannels.at(n).at<double>(Point(x, y));
 			}
 		}
 	}
@@ -110,10 +114,10 @@ float ScanModel::findMidpointRedComponentInRow(int y) {
 	return midpointRedComponent;
 }
 
-void ScanModel::findDifferenceImageAtPixel(int x, int y, float midpointRedComponent) {
+void ScanModel::findDifferenceImageAtPixel(int x, int y, double midpointRedComponent) {
 	//Compute difference image. 
 	for (int n = 0; n < numImages; n++) {
-		redChannels.at(n).at<float>(Point(x, y)) = redChannels.at(n).at<float>(Point(x, y)) - midpointRedComponent;
+		redChannels.at(n).at<double>(Point(x, y)) = redChannels.at(n).at<double>(Point(x, y)) - midpointRedComponent;
 	}
 }
 
@@ -135,8 +139,8 @@ void ScanModel::findNextRedPoints(int imageNum) {
 	processedImages++;
 }
 
-vector<Point2f> ScanModel::findRedPointsInRegion(int region, int imageNum) {
-	vector<Point2f> redPoints;
+vector<Point2d> ScanModel::findRedPointsInRegion(int region, int imageNum) {
+	vector<Point2d> redPoints;
 	
 	int startIndex;
 	int upperBound;
@@ -170,23 +174,22 @@ vector<Point2f> ScanModel::findRedPointsInRegion(int region, int imageNum) {
 	return redPoints;
 }
 
-Point2f ScanModel::findZeroCrossingInRow(int y, int imageNum) {
-	float interpolatedX;
+Point2d ScanModel::findZeroCrossingInRow(int y, int imageNum) {
+	double interpolatedX;
 
 	//Only need to find zero crossing in object region cols
 	for (int x = leftSideOfObject; x < rightSideOfObject - 1; x++) {
-		float test = redChannels.at(imageNum).at<float>(Point(x, y));
-		if ((redChannels.at(imageNum).at<float>(Point(x, y)) < 0.0) && (redChannels.at(imageNum).at<float>(Point(x + 1, y)) > 0.0)) {
+		if ((redChannels.at(imageNum).at<double>(Point(x, y)) < 0.0) && (redChannels.at(imageNum).at<double>(Point(x + 1, y)) > 0.0)) {
 			//Interpolate between x and x + 1 to find the x-value that crosses deltaRed = 0
 			//Formula is: x_0 = x + (0 - deltaRed(x))/(deltaRed(x+1) - deltaRed(x))
-			interpolatedX = (float)x + (0 - redChannels.at(imageNum).at<float>(Point(x, y))) / 
-				(redChannels.at(imageNum).at<float>(Point(x + 1, y)) - redChannels.at(imageNum).at<float>(Point(x, y)));
-			return Point2f(interpolatedX, (float)y);
+			interpolatedX = (double)x + (0 - redChannels.at(imageNum).at<double>(Point(x, y))) / 
+				(redChannels.at(imageNum).at<double>(Point(x + 1, y)) - redChannels.at(imageNum).at<double>(Point(x, y)));
+			return Point2d(interpolatedX, (double)y);
 		}
 	}
 	
 	//Zero crossing not found
-	return Point2f(-1.0, -1.0);
+	return Point2d(-1.0, -1.0);
 }
 
 // imageNum is the index of the image we are processing
@@ -199,7 +202,7 @@ void ScanModel::processNextFrame(int imageNum)
 	processedImages++;
 }
 
-Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f> groundPlanePoints) {
+Plane ScanModel::findLaserPlane(vector<Point2d> backPlanePoints, vector<Point2d> groundPlanePoints) {
 	//Find red points in camera coords
 	vector<Point3f> backPointsInCameraCoords = this->findRayPlaneIntersections(Enums::boardLocation::BACK_PLANE, backPlanePoints);
 	vector<Point3f> groundPointsInCameraCoords = this->findRayPlaneIntersections(Enums::boardLocation::GROUND_PLANE, groundPlanePoints);
@@ -207,23 +210,24 @@ Plane ScanModel::findLaserPlane(vector<Point2f> backPlanePoints, vector<Point2f>
 	//Find best fit line (in camera coordinates) of laser on back plane.
 	//The best fit line is a 6f vector consisting of (vx, vy, vy), which is a vector of length one collinear to the line,
 	//and (x0, y0, z0), which is a point on the line
-	Vec6f backBestFitLine = this->findBestFitRedLine(backPointsInCameraCoords);
-	Vec6f groundBestFitLine = this->findBestFitRedLine(groundPointsInCameraCoords);
+	Vec6d backBestFitLine = this->findBestFitRedLine(backPointsInCameraCoords);
+	Vec6d groundBestFitLine = this->findBestFitRedLine(groundPointsInCameraCoords);
 
 	//Find approximate intersection and normal of the laser plane to build laser plane object
-	Point3f approximateIntersection = this->findLineLineIntersection(backBestFitLine, groundBestFitLine);
-	Vec3f normalVectorOfLaserPlane = this->findLaserPlaneNormalVector(backBestFitLine, groundBestFitLine);
+	Point3d approximateIntersection = this->findLineLineIntersection(backBestFitLine, groundBestFitLine);
+	Vec3d normalVectorOfLaserPlane = this->findLaserPlaneNormalVector(backBestFitLine, groundBestFitLine);
 
 	return Plane(approximateIntersection, normalVectorOfLaserPlane);
 }
 
-vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2f> imagePoints) {
+vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2d> imagePoints) {
 	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
 	Mat planeOriginInWorldCoords(Point3d(0, 0, 0));
 	Mat planeNormalVectorInWorldCoords(Vec3d(0, 0, 1));
 	
-	vector<Point2f> undistortedImagePoints;
-	vector<Point3f> pointsInCameraCoords;
+	vector<Point2d> undistortedImagePoints;
+	vector<Point3d> pointsInCameraCoordsDouble;
+	vector<Point3f> pointsInCameraCoordsFloat;
 	
 	Mat cameraOriginInWorldCoords;
 	Mat planeOriginInCameraCoords;
@@ -240,7 +244,7 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
-	convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoords);
+	this->convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoordsDouble);
 
 	double lambda;
 	Mat pointInCameraCoords;
@@ -248,8 +252,8 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	Mat pointOnPlaneInWorldCoords;
 
 	//Calculate the lambda value of each red point on the plane and store the Camera coordinate of the red point on the back plane
-	for (int i = 0; i < pointsInCameraCoords.size(); i++) {
-		Mat(pointsInCameraCoords.at(i)).convertTo(pointInCameraCoords, CV_64F);
+	for (int i = 0; i < pointsInCameraCoordsDouble.size(); i++) {
+		Mat(pointsInCameraCoordsDouble.at(i)).convertTo(pointInCameraCoords, CV_64F);
 		if (boardLocation == Enums::boardLocation::BACK_PLANE) {
 			convertedImagePoint = Mat(backExtrinsics->getRotationMatrix().inv() * pointInCameraCoords);
 		} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
@@ -261,68 +265,80 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 			(planeNormalVectorInWorldCoords.t() * convertedImagePoint)).at<double>(0, 0);
 		pointInCameraCoords = lambda * pointInCameraCoords;
 
-		pointsInCameraCoords.at(i) = Point3f(pointInCameraCoords.at<double>(0,0), pointInCameraCoords.at<double>(1,0), pointInCameraCoords.at<double>(2,0));
+		pointsInCameraCoordsFloat.push_back(Point3d((float)pointInCameraCoords.at<double>(0,0), 
+			(float)pointInCameraCoords.at<double>(1,0), (float)pointInCameraCoords.at<double>(2,0)));
 	}
 
-	return pointsInCameraCoords;
+	return pointsInCameraCoordsFloat;
 }
 
-Vec6f ScanModel::findBestFitRedLine(vector<Point3f> redPointsInCameraCoords) {
-	Vec6f bestFitLine;
-	fitLine(redPointsInCameraCoords, bestFitLine, CV_DIST_L2, 0, 0.01, 0.01);
-	return bestFitLine;
+void ScanModel::convertPointsToHomogeneous(vector<Point2d> & imagePoints, vector<Point3d> & homogeneousCoords) {
+	for (int i = 0; i < imagePoints.size(); i++) {
+		homogeneousCoords.push_back(Point3d(imagePoints.at(i).x, imagePoints.at(i).y, 1));
+	}
 }
 
-Point3f ScanModel::findLineLineIntersection(Vec6f backLine, Vec6f groundLine) {
-	Vec3f normalizedVectorOfBackLine(backLine[0], backLine[1], backLine[2]);
-	Vec3f pointOnBackLine(backLine[3], backLine[4], backLine[5]);
+Vec6d ScanModel::findBestFitRedLine(vector<Point3f> redPointsInCameraCoords) {
+	Vec6f bestFitLineFloat;
+	fitLine(redPointsInCameraCoords, bestFitLineFloat, CV_DIST_L2, 0, 0.01, 0.01);
 
-	Vec3f normalizedVectorOfGroundLine(groundLine[0], groundLine[1], groundLine[2]);
-	Vec3f pointOnGroundLine(groundLine[3], groundLine[4], groundLine[5]);
+	Vec6d bestFitLineDouble;
+	for (int i = 0; i < bestFitLineFloat.rows; i++) {
+		bestFitLineDouble(i) = bestFitLineFloat(i);
+	}
+	return bestFitLineDouble;
+}
+
+Point3d ScanModel::findLineLineIntersection(Vec6d backLine, Vec6d groundLine) {
+	Vec3d normalizedVectorOfBackLine(backLine[0], backLine[1], backLine[2]);
+	Vec3d pointOnBackLine(backLine[3], backLine[4], backLine[5]);
+
+	Vec3d normalizedVectorOfGroundLine(groundLine[0], groundLine[1], groundLine[2]);
+	Vec3d pointOnGroundLine(groundLine[3], groundLine[4], groundLine[5]);
 
 	//Compute ||v||^2 = v_x^2 + v_y^2 + v_z^2
-	float squaredMagnitudeOfBackLineVector = normalizedVectorOfBackLine[0]*normalizedVectorOfBackLine[0] +
+	double squaredMagnitudeOfBackLineVector = normalizedVectorOfBackLine[0]*normalizedVectorOfBackLine[0] +
 		normalizedVectorOfBackLine[1]*normalizedVectorOfBackLine[1] + normalizedVectorOfBackLine[2]*normalizedVectorOfBackLine[2];
 
-	float squaredMagnitudeOfGroundLineVector = normalizedVectorOfGroundLine[0]*normalizedVectorOfGroundLine[0] +
+	double squaredMagnitudeOfGroundLineVector = normalizedVectorOfGroundLine[0]*normalizedVectorOfGroundLine[0] +
 		normalizedVectorOfGroundLine[1]*normalizedVectorOfGroundLine[1] + normalizedVectorOfGroundLine[2]*normalizedVectorOfGroundLine[2];
 
 	//Perform least squares approximation for approximate intersection of back and ground lines
-	float m1[2][2] = {{squaredMagnitudeOfBackLineVector, -((normalizedVectorOfBackLine.t()*normalizedVectorOfGroundLine)[0])},
+	double m1[2][2] = {{squaredMagnitudeOfBackLineVector, -((normalizedVectorOfBackLine.t()*normalizedVectorOfGroundLine)[0])},
 		{-((normalizedVectorOfGroundLine.t()*normalizedVectorOfBackLine)[0]), squaredMagnitudeOfGroundLineVector}};
-	float m2[2][1] = {{(normalizedVectorOfBackLine.t()*(pointOnGroundLine-pointOnBackLine))[0]}, {(normalizedVectorOfGroundLine.t()*(pointOnBackLine-pointOnGroundLine))[0]}};
-	float lambda = Mat(Mat(2,2,CV_32F,m1).inv()*Mat(2,1,CV_32F,m2)).at<float>(0, 0);
+	double m2[2][1] = {{(normalizedVectorOfBackLine.t()*(pointOnGroundLine-pointOnBackLine))[0]}, {(normalizedVectorOfGroundLine.t()*(pointOnBackLine-pointOnGroundLine))[0]}};
+	double lambda = Mat(Mat(2,2,CV_64F,m1).inv()*Mat(2,1,CV_64F,m2)).at<double>(0, 0);
 
 	Point3f approximateIntersection = pointOnBackLine + lambda * normalizedVectorOfBackLine;
 	
 	return approximateIntersection;
 }
 
-Point3f ScanModel::findLaserPlaneNormalVector(Vec6f backLine, Vec6f groundLine) {
-	Vec3f normalizedVectorOfBackLine(backLine[0], backLine[1], backLine[2]);
-	Vec3f normalizedVectorOfGroundLine(groundLine[0], groundLine[1], groundLine[2]);
-	Vec3f normalVectorOfLaserPlane = normalizedVectorOfBackLine.cross(normalizedVectorOfGroundLine);
+Point3d ScanModel::findLaserPlaneNormalVector(Vec6d backLine, Vec6d groundLine) {
+	Vec3d normalizedVectorOfBackLine(backLine[0], backLine[1], backLine[2]);
+	Vec3d normalizedVectorOfGroundLine(groundLine[0], groundLine[1], groundLine[2]);
+	Vec3d normalVectorOfLaserPlane = normalizedVectorOfBackLine.cross(normalizedVectorOfGroundLine);
 	
 	return normalVectorOfLaserPlane;
 }
 
-vector<Point3f> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector<Point2f> redPtsOnObject) {
-	vector<Point2f> undistortedRedPointsOnObject;
-	vector<Point3f> redPointsOnObjectInCameraCoords;
-	vector<Point3f> redPointsOnObjectInBackWorldCoords;
-	Point3f cameraOriginInCameraCoords(0, 0, 0);
+vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector<Point2d> redPtsOnObject) {
+	vector<Point2d> undistortedRedPointsOnObject;
+	vector<Point3d> redPointsOnObjectInCameraCoords;
+	vector<Point3d> redPointsOnObjectInBackWorldCoords;
+	Point3d cameraOriginInCameraCoords(0, 0, 0);
 
 	undistortPoints(redPtsOnObject, undistortedRedPointsOnObject, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
-	convertPointsToHomogeneous(undistortedRedPointsOnObject, redPointsOnObjectInCameraCoords);
+	this->convertPointsToHomogeneous(undistortedRedPointsOnObject, redPointsOnObjectInCameraCoords);
 
-	float lambda;
+	double lambda;
 	Mat redPointOnObjectInCameraCoords;
 	//Calculate the lambda value of each red point on the back plane and store the Camera coordinate of the red point on the object
 	for (int i = 0; i < redPointsOnObjectInCameraCoords.size(); i++) {
 		//normal is 3x1 so convert to 1x3. backOrigin is 3x1, Mat(cameraOrigin) is 3x1
 		//The multiplication is ((1x3)*(3x1-3x1)/((1x3)*(3x1)), resulting in a 1x1 matrix, that is, a float at (0,0)
 		lambda = Mat(Mat(laserPlane.getNormalVector()).t() * (Mat(laserPlane.getPointOnPlane()) - Mat(cameraOriginInCameraCoords)) / 
-			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<float>(0, 0);
+			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<double>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
 		Mat redPointWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords-
@@ -342,6 +358,7 @@ bool ScanModel::createPointCloud()
 {
 	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
 	ofstream outputStream;
+	outputStream.precision(17);
 	try {
 		outputStream.open(fileName);
 
@@ -357,6 +374,7 @@ bool ScanModel::createPointCloud()
 
 		for(int i = 0; i < objectPoints.size(); i++) {
 			for (int j = 0; j < objectPoints.at(i).size(); j++) {
+				double test = objectPoints.at(i).at(j).y;
 				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
 			}
 		}
