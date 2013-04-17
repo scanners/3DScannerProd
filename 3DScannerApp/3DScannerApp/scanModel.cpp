@@ -36,7 +36,7 @@ void ScanModel::waitForHardwareScanComplete()
 	
 	hardwareThread = new QThread();
 
-	QObject::connect(hardwareThread, SIGNAL(started()), serial, SLOT(recieveStopSignalFromHardware()));
+	QObject::connect(hardwareThread, SIGNAL(started()), serial, SLOT(receiveStopSignalFromHardware()));
 	serial->moveToThread(hardwareThread);
 
 	hardwareThread->start();
