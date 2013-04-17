@@ -27,13 +27,13 @@ int ScanModel::getProcessedImages()
 }
 
 void ScanModel::startHardwareScan(){
-	serial->initializeSerialPort();
 	serial->startStepperMotor();
 }
 
 void ScanModel::waitForHardwareScanComplete()
 {
 	serial = new SerialCommunication();
+	
 	hardwareThread = new QThread();
 
 	QObject::connect(hardwareThread, SIGNAL(started()), serial, SLOT(recieveStopSignalFromHardware()));

@@ -1,6 +1,8 @@
 #include "serialCommunication.h"
 
-SerialCommunication::SerialCommunication(){}
+SerialCommunication::SerialCommunication(){
+	this->initializeSerialPort();
+}
 
 int SerialCommunication::showError (LONG lError, char * errorMessage)
 {
@@ -23,7 +25,6 @@ int SerialCommunication::initializeSerialPort() {
 
 	// Attempt to open the serial port (COM1)
 	lLastError = serial.Open("COM1",0,0,true);
-
 	if (lLastError != ERROR_SUCCESS)
 		return showError(serial.GetLastError(), "Unable to open COM-port");
 	
