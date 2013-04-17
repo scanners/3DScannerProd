@@ -40,6 +40,7 @@ private:
 	QLabel * messageLabel;
 	void constructLayout();
 	void releaseVideo();
+	void setButtonStyle(QPushButton * button, bool isEnabled);
 protected:
 	void closeEvent(QCloseEvent * event);
 public:

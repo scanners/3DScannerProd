@@ -26,6 +26,7 @@ OverlayView::OverlayView(QWidget * parent) : QDialog(parent) {
 	{
 		// if the Video Capture Stream is open, set button and create timer
 		takePicButton->setEnabled(true);
+		setButtonStyle(takePicButton, true);
 		timer = new QTimer(this);
 		// slot for displaying video every 20ms
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayCameraFrame()));
@@ -70,14 +71,20 @@ void OverlayView::constructLayout()
 	positionLabel = new QLabel("X = ? Y = ?");
 	startButton = new QPushButton("Start Scan");
 	startButton->setEnabled(false);
+	setButtonStyle(startButton, false);
 	startButton->setMaximumWidth(80);
 	takePicButton = new QPushButton("Being Region Clicking");
-	takePicButton->setMaximumWidth(120);
+	//takePicButton->setMaximumWidth(120);
 	takePicButton->setEnabled(false);
+	setButtonStyle(takePicButton, false);
+
 	resetButton = new QPushButton("Reset");
 	resetButton->setMaximumWidth(80);
 	resetButton->setEnabled(false);
+	setButtonStyle(resetButton, false);
+
 	exitButton = new QPushButton("Exit");
+	setButtonStyle(exitButton, true);
 	exitButton->setMaximumWidth(80);
 	// create layouts and add the widgets
 	mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
@@ -86,23 +93,59 @@ void OverlayView::constructLayout()
 	mainLayout->addWidget(displayImage);
 	mainLayout->addWidget(positionLabel);
 	buttonLayout->addWidget(startButton, 0, 0);
-	buttonLayout->addWidget(takePicButton, 0, 1);
-	buttonLayout->addWidget(resetButton, 0, 2);
-	buttonLayout->addWidget(exitButton, 0, 3);
+	buttonLayout->addWidget(takePicButton, 0, 1, 1, 2);
+	buttonLayout->addWidget(resetButton, 0, 3);
+	buttonLayout->addWidget(exitButton, 0, 4);
 	mainLayout->addLayout(buttonLayout);
 	setLayout(mainLayout);
 }
 
 void OverlayView::takePicture() {
 	resetButton->setEnabled(true);
+	setButtonStyle(resetButton, true);
 	timer->stop();
 	scanController->setImageWidth(image);
 	takePicButton->setEnabled(false);
+	setButtonStyle(takePicButton, false);
 	resetButton->setToolTip("Retakes picture and resets clicks/regions");
 	// only want to connect this here, because otherwise users can click before frame is rendered
 	connect(displayImage, SIGNAL(mousePressed()), this, SLOT(obtainCoordinates()));
 	// when the start button is clicked, display the single frame for overlay
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(displayCameraFrame()));
+}
+
+void OverlayView::setButtonStyle(QPushButton * button, bool isEnabled)
+{
+	if (isEnabled == true)
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #333;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			"QPushButton:hover {"
+			"background-color: #000;}"
+			);
+	}
+	else
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #666;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			);
+	}
 }
 
 // this method will simply display a single frame to the overlayLabel
@@ -121,6 +164,7 @@ void OverlayView::resetClicks()
 {
 	numClicks = 0;
 	startButton->setEnabled(false);
+	setButtonStyle(startButton, false);
 	scanController->resetRegions();
 	this->displayCameraFrame();
 	//To be used to display ? instead of int
@@ -192,6 +236,7 @@ void OverlayView::drawOverlayXRegions(vector<Point> coords) {
 	displayImage->setPixmap(QPixmap::fromImage(*videoFrame));
 	//set accept button so the scan can begin
 	startButton->setEnabled(true);
+	setButtonStyle(startButton, true);
 }
 
 void OverlayView::startScan() {

@@ -83,6 +83,7 @@ void ScanningView::constructLayout()
 	titleLabel = new QLabel("<h1>Scanning Process</h1>");
 	doneButton = new QPushButton("Done");
 	doneButton->setEnabled(false);
+	setButtonStyle(doneButton, false);
 	doneButton->setMaximumWidth(80);
 	progressBar = new QProgressBar();
 	progressLabel = new QLabel("Scan Progress:");
@@ -148,4 +149,39 @@ ScanningView::~ScanningView()
 void ScanningView::enableDoneButton(bool enable)
 {
 	this->doneButton->setEnabled(enable);
+	setButtonStyle(doneButton, true);
+}
+
+void ScanningView::setButtonStyle(QPushButton * button, bool isEnabled)
+{
+	if (isEnabled == true)
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #333;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			"QPushButton:hover {"
+			"background-color: #000;}"
+			);
+	}
+	else
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #666;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			);
+	}
 }

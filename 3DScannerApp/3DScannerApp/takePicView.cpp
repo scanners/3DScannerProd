@@ -25,7 +25,9 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		takePicButton = new QPushButton("Take Picture");
 		takePicButton->setEnabled(false);
+		setButtonStyle(takePicButton, false);
 		cancelButton = new QPushButton("Cancel");
+		setButtonStyle(cancelButton, true);
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
@@ -57,7 +59,10 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 		messages = new QLabel("<b>Messages Go Here</b>");
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		takePicButton = new QPushButton("Take Picture");
+		takePicButton->setEnabled(false);
+		setButtonStyle(takePicButton, false);
 		cancelButton = new QPushButton("Cancel");
+		setButtonStyle(cancelButton, true);
 
 		connect(takePicButton, SIGNAL(clicked()), this, SLOT(takePicture()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(stopVideo()));
@@ -81,19 +86,7 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	{
 		// if the Video Capture Stream is open, set button and create timer
 		takePicButton->setEnabled(true);
-		takePicButton->setStyleSheet("QPushButton {"
-			"background-color: #333;"
-			"color : white;"
-			"border-style: outset;"
-			"border-width: 2px;"
-			"border-radius: 10px;"
-			"border-color: white;"
-			"font: bold 14px;"
-			"min-width: 5em;"
-			"padding: 4px;}"
-			"QPushButton:hover {"
-			"background-color: #666;}"
-			);
+		setButtonStyle(takePicButton, true);
 		timer = new QTimer(this);
 		// slot for displaying video every 20ms
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
@@ -103,17 +96,7 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	{
 		videoLabel->setPixmap(QPixmap("noCamera.png"));
 		takePicButton->setEnabled(false);
-		takePicButton->setStyleSheet("QPushButton {"
-			"background-color: #666;"
-			"color : white;"
-			"border-style: outset;"
-			"border-width: 2px;"
-			"border-radius: 10px;"
-			"border-color: white;"
-			"font: bold 14px;"
-			"min-width: 5em;"
-			"padding: 4px;}"
-			);
+		setButtonStyle(takePicButton, false);
 		messages->setStyleSheet("color: red; font-weight: bold;");
 		messages->setText("No camera is detected! Please check your connection!");
 	}
@@ -183,6 +166,40 @@ void TakePicView::showMessage(int messageEnum) {
 		messages->setText("Calibration was successful!");
 	}
 	
+}
+
+void TakePicView::setButtonStyle(QPushButton * button, bool isEnabled)
+{
+	if (isEnabled == true)
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #333;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			"QPushButton:hover {"
+			"background-color: #000;}"
+			);
+	}
+	else
+	{
+		button->setStyleSheet("QPushButton {"
+			"background-color: #666;"
+			"color : white;"
+			"border-style: outset;"
+			"border-width: 2px;"
+			"border-radius: 10px;"
+			"border-color: white;"
+			"font: bold 14px;"
+			"min-width: 5em;"
+			"padding: 4px;}"
+			);
+	}
 }
 
 TakePicView::~TakePicView()

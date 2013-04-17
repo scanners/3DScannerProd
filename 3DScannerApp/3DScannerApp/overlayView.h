@@ -52,6 +52,7 @@ private:
 	Mat display;
 	void constructLayout();
 	void updateCoords();
+	void setButtonStyle(QPushButton * button, bool isEnabled);
 public:
 	OverlayView(QWidget * parent = 0);
 	~OverlayView();
