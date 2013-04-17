@@ -52,6 +52,7 @@ private:
 	Vec6d findBestFitRedLine(vector<Point3f> redPointsInCameraCoords);
 	Point3d findLineLineIntersection(Vec6d backLine, Vec6d groundLine);
 	Point3d findLaserPlaneNormalVector(Vec6d backLine, Vec6d groundLine);
+	double vectorLength(Mat vector);
 	double findMidpointRedComponentInRow(int y);
 	void findDifferenceImageAtPixel(int x, int y, double midpointRedComponent);
 	vector<Point2d> findRedPointsInRegion(int region, int imageNum);
