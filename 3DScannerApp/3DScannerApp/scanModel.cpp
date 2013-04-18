@@ -10,7 +10,7 @@
 #include <fstream>
 using std::ofstream;
 
-ScanModel::ScanModel() : scanComplete(false), processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
+ScanModel::ScanModel() : numImages(0), processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
 groundExtrinsics(0){}
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
@@ -187,15 +187,8 @@ int ScanModel::getProcessedImages()
 
 void ScanModel::resetScan() {
 	//Free memory
-	vector<int>().swap(regionYCoordinates);
-	vector<Mat>().swap(redChannels);
-	vector<vector<Point3d>>().swap(objectPoints);
-	vector<vector<Point2d>>().swap(redPointsInBackPlaneLine);
-	vector<vector<Point2d>>().swap(redPointsInGroundPlaneLine);
-	vector<vector<Point2d>>().swap(redPointsOnObject);
-	numImages = 0;
-	processedImages = 0;
-	processedRows = 0;
+	
+	
 }
 
 void ScanModel::storeRedChannel(Mat image) {
@@ -561,8 +554,10 @@ bool ScanModel::createPointCloud()
 		outputStream << "}" << std::endl; //Shape{
 
 		outputStream.close();
+		vector<vector<Point3d>>().swap(objectPoints);
 		return true;
 	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
 		return false;
 	}
 }
@@ -611,6 +606,8 @@ void ScanModel::sortStoredYCoords() {
 	bottomOfBackPlane = regionYCoordinates[1];
 	topOfGroundPlane = regionYCoordinates[2];
 	bottomOfGroundPlane = regionYCoordinates[3];
+
+	vector<int>().swap(regionYCoordinates);
 }
 
 void ScanModel::sortStoredXCoords() {
@@ -619,6 +616,8 @@ void ScanModel::sortStoredXCoords() {
 	//After sorted, we know which click is on which side of the object
 	leftSideOfObject = regionXCoordinates[0];
 	rightSideOfObject = regionXCoordinates[1];
+
+	vector<int>().swap(regionXCoordinates);
 }
 
 vector<Point> ScanModel::getRegionYPixels() {
@@ -692,7 +691,12 @@ int ScanModel::getRequiredNumStoredXCoords() {
 }
 
 bool ScanModel::isDoneFindingFindingDifferenceImages() {
-	return (bottomOfGroundPlane - topOfBackPlane) == processedRows;
+	if ((bottomOfGroundPlane - topOfBackPlane) == processedRows) {
+		processedRows = 0;
+		return true;
+	}
+	
+	return false;
 }
 
 bool ScanModel::isDoneFindingRedPoints() {
@@ -710,11 +714,19 @@ bool ScanModel::isDoneFindingRedPoints() {
 
 bool ScanModel::isDoneProcessingFrames()
 {
-	return numImages == processedImages;
+	if (numImages == processedImages) {
+		vector<vector<Point2d>>().swap(redPointsInBackPlaneLine);
+		vector<vector<Point2d>>().swap(redPointsInGroundPlaneLine);
+		vector<vector<Point2d>>().swap(redPointsOnObject);
+		this->deleteIntrinsicAndExtrinsicMatrices();
+		processedImages = 0;
+		numImages = 0;
+		return true;
+	}
+	return false;
 }
 
-ScanModel::~ScanModel()
-{
+void ScanModel::deleteIntrinsicAndExtrinsicMatrices() {
 	if(intrinsics)
 	{
 		if (!intrinsics->getIntrinsicMatrix().empty() &&
@@ -739,4 +751,10 @@ ScanModel::~ScanModel()
 			delete groundExtrinsics;
 		}
 	}
+}
+
+ScanModel::~ScanModel()
+{
+	//Code to delete intrinsic and extrinsic data is now done after the process is done
+	//but before writing to the file. The destructor is left in place here.
 }
