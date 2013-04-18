@@ -185,12 +185,6 @@ int ScanModel::getProcessedImages()
 	return processedImages;
 }
 
-void ScanModel::resetScan() {
-	//Free memory
-	
-	
-}
-
 void ScanModel::storeRedChannel(Mat image) {
 	vector<Mat> channels(image.channels());
 	//Split the image into its 3 channels: B, G, R

@@ -36,7 +36,6 @@ void ScanningView::setScanController(ScanController& scanControl)
 
 void ScanningView::cancelScan() {
 	this->releaseVideo();
-	scanController->resetScan();
 }
 
 void ScanningView::stopVideo()

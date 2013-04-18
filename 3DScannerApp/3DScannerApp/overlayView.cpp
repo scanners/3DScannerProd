@@ -247,7 +247,6 @@ void OverlayView::startScan() {
 	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.");
 	message.exec();
 	this->reject();
-	scanController->resetScan();
 	scanController->createScanningView();
 }
 

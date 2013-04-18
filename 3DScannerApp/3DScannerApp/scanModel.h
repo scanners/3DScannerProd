@@ -67,7 +67,6 @@ public:
 	int ShowError (LONG lError, LPCTSTR lptszMessage);
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);
-	void resetScan();
 	void setSaveDirectory(string saveDir);
 	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);
