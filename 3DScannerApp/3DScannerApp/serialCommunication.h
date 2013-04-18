@@ -16,9 +16,12 @@ signals:
 private:
 	CSerial serial;
 	LONG lLastError;
+	bool isScanComplete;
 public:
 	SerialCommunication();
 	int showError (LONG lError, char * errorMessage);
+	void setScanDoneTrue();
+	bool getIsScanComplete();
 	int initializeSerialPort();
 	int startStepperMotor();
 };

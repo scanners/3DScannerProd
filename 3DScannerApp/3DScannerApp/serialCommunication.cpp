@@ -4,6 +4,14 @@ SerialCommunication::SerialCommunication(){
 	this->initializeSerialPort();
 }
 
+void SerialCommunication::setScanDoneTrue(){
+	isScanComplete = true;
+}
+
+bool SerialCommunication::getIsScanComplete(){
+	return isScanComplete;
+}
+
 int SerialCommunication::showError (LONG lError, char * errorMessage)
 {
 	QMessageBox messageBox;
