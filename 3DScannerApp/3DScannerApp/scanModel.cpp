@@ -289,7 +289,7 @@ vector<Point2d> ScanModel::findRedPointsInRegion(int region, int imageNum) {
 		break;
 	}
 
-	Point2f zeroCrossing;
+	Point2d zeroCrossing;
 	//Only need zero crossings between the top of the back plane and the bottom of the ground plane
 	for (int y = startIndex; y < upperBound; y++) {
 		//Find zero crossing from image left to image right
@@ -350,27 +350,30 @@ Plane ScanModel::findLaserPlane(vector<Point2d> backPlanePoints, vector<Point2d>
 }
 
 vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2d> imagePoints) {
-	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
 	Mat planeOriginInWorldCoords(Point3d(0, 0, 0));
 	Mat planeNormalVectorInWorldCoords(Vec3d(0, 0, 1));
+	Mat cameraOriginInWorldCoords;
 	
+	static bool originConvertedToBack = false;
+	static bool originConvertedToGround = false;
+
+	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
+		if (!originConvertedToBack) {
+			this->findCameraOriginInBackWorldCoords();
+			originConvertedToBack = true;
+		}
+		cameraOriginInWorldCoords = this->cameraOriginInBackWorldCoords;
+	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
+		if (!originConvertedToGround) {
+			this->findCameraOriginInGroundWorldCoords();
+			originConvertedToGround = true;
+		}
+		cameraOriginInWorldCoords = this->cameraOriginInGroundWorldCoords;
+	}
+
 	vector<Point2d> undistortedImagePoints;
 	vector<Point3d> pointsInCameraCoordsDouble;
 	vector<Point3f> pointsInCameraCoordsFloat;
-	
-	Mat cameraOriginInWorldCoords;
-	Mat planeOriginInCameraCoords;
-	Mat planeNormalVectorInCameraCoords;
-	
-	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
-		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
-			backExtrinsics->getTranslationMatrix()));
-	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
-		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
-			groundExtrinsics->getTranslationMatrix()));
-	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
 	this->convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoordsDouble);
@@ -399,6 +402,18 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	}
 
 	return pointsInCameraCoordsFloat;
+}
+
+void ScanModel::findCameraOriginInBackWorldCoords() {
+	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
+	cameraOriginInBackWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+		backExtrinsics->getTranslationMatrix()));
+}
+
+void ScanModel::findCameraOriginInGroundWorldCoords() {
+	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
+	cameraOriginInGroundWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+		groundExtrinsics->getTranslationMatrix()));
 }
 
 void ScanModel::convertPointsToHomogeneous(vector<Point2d> & imagePoints, vector<Point3d> & homogeneousCoords) {
