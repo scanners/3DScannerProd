@@ -11,10 +11,11 @@ class SerialCommunication : public QObject
 
 public slots:
 	int receiveStopSignalFromHardware();
+signals:
+	void sendErrorMessage(LONG, char *);
 private:
 	CSerial serial;
 	LONG lLastError;
-	bool scanComplete;
 public:
 	SerialCommunication();
 	int showError (LONG lError, char * errorMessage);

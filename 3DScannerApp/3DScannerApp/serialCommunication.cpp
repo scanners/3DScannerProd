@@ -26,30 +26,30 @@ int SerialCommunication::initializeSerialPort() {
 	// Attempt to open the serial port (COM1)
 	lLastError = serial.Open("COM1",0,0,true);
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to open COM-port");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to open COM-port");
 	
 	//Setup the Serial Port
 	lLastError = serial.Setup(CSerial::EBaud9600,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to set COM-port setting");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port setting");
 
 	// Setup handshaking
     lLastError = serial.SetupHandshaking(CSerial::EHandshakeSoftware);
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to set COM-port handshaking");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port handshaking");
 
 	// Register only for the receive event
     lLastError = serial.SetMask(CSerial::EEventError |
 								CSerial::EEventRecv);
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to set COM-port event mask");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port event mask");
 
 	// Use 'non-blocking' reads, because we don't know how many bytes
 	// will be received. This is normally the most convenient mode
 	// (and also the default mode for reading data).
     lLastError = serial.SetupReadTimeouts(CSerial::EReadTimeoutNonblocking);
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to set COM-port read timeout.");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port read timeout.");
 	
 	return 0;
 }
@@ -57,7 +57,7 @@ int SerialCommunication::initializeSerialPort() {
 int SerialCommunication::startStepperMotor(){
 	lLastError = serial.Write("stop");
 	if (lLastError != ERROR_SUCCESS)
-		return showError(serial.GetLastError(), "Unable to send data");
+		emit sendErrorMessage(serial.GetLastError(), "Unable to send data");
 
 	return 0;
 }
@@ -72,7 +72,7 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 		// Wait for an event
 		lLastError = serial.WaitEvent();
 		if (lLastError != ERROR_SUCCESS)
-			return showError(serial.GetLastError(), "Unable to wait for a COM-port event.");
+			emit sendErrorMessage(serial.GetLastError(), "Unable to wait for a COM-port event.");
 
 		// Save event
 		const CSerial::EEvent eEvent = serial.GetEventType();
@@ -86,10 +86,7 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 		// Handle error event
 		if (eEvent & CSerial::EEventError)
 		{
-			QMessageBox messageBox;
 			QString message;
-			messageBox.setIcon(QMessageBox::Information);
-			messageBox.setWindowTitle("Scanning Error");
 			message.append("Error occured while scanning.\nError Type: ");
 
 			switch (serial.GetError())
@@ -105,9 +102,8 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 				default:						message.append("Unknown Error");			break;
 			}
 
-			messageBox.setText(message);
-			messageBox.exec();
-			return 1;
+			
+			emit sendErrorMessage(serial.GetLastError(), message.toLocal8Bit().data());
 		}
 
 		// Handle data receive event
@@ -121,7 +117,7 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 				// Read data from the COM-port
 				lLastError = serial.Read(szBuffer,sizeof(szBuffer)-1,&dwBytesRead);
 				if (lLastError != ERROR_SUCCESS)
-					return showError(serial.GetLastError(), "Unable to read from COM-port.");
+					emit sendErrorMessage(serial.GetLastError(), "Unable to read from COM-port.");
 
 				if (dwBytesRead > 0)
 				{
