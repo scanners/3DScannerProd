@@ -5,7 +5,9 @@ SerialCommunication::SerialCommunication(){
 }
 
 void SerialCommunication::setScanDoneTrue(){
+	mutex.lock();
 	isScanComplete = true;
+	mutex.unlock();
 }
 
 bool SerialCommunication::getIsScanComplete(){

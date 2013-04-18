@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include "Serial.h"
 #include <qmessagebox.h>
+#include <QMutex>
 
 class SerialCommunication : public QObject
 {
@@ -16,6 +17,7 @@ signals:
 private:
 	CSerial serial;
 	LONG lLastError;
+	QMutex mutex;
 	bool isScanComplete;
 public:
 	SerialCommunication();
