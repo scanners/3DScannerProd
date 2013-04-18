@@ -32,10 +32,6 @@ void ResultsView::createFileDialog()
 
 void ResultsView::constructLayout()
 {
-	pointCloudFrame = new QWidget(this);
-	pointCloudFrame->setFixedSize(300, 300);
-	pointCloudFrame->setStyleSheet("background-color: black;");
-	pointCloudLabel = new QLabel("Point Cloud:");
 	title = new QLabel("<h1>Scan Results</h1>");
 	browseButton = new QPushButton("Browse...");
 	exitButton = new QPushButton("Exit");
@@ -52,8 +48,6 @@ void ResultsView::constructLayout()
 	dirLayout->addWidget(outputDirTextField);
 	dirLayout->addWidget(browseButton);
 	mainLayout->addLayout(dirLayout);
-	mainLayout->addWidget(pointCloudLabel);
-	mainLayout->addWidget(pointCloudFrame);
 	mainLayout->addWidget(exitButton);
 	setLayout(mainLayout);
 }
@@ -66,5 +60,4 @@ ResultsView::~ResultsView()
 	delete mainLayout;
 	delete outputDirTextField;
 	delete outputDirLabel;
-	delete pointCloudLabel;
 }

@@ -11,13 +11,12 @@
 #include <qlabel.h>
 #include <qboxlayout.h>
 
-
-HomeView::HomeView(QWidget *parent) : QDialog (parent)
+HomeView::HomeView(QWidget *parent) : QDialog (parent) 
 {
 	InputView * intrinsicInputView = new InputView(Enums::controllerEnum::INTRINSIC);
 	InputView * extrinsicInputView = new InputView(Enums::controllerEnum::EXTRINSIC);
 	ScanInputView * scanInputView = new ScanInputView();
-	ResultsView * resultsView = new ResultsView();
+	//ResultsView * resultsView = new ResultsView();
 
 	intrinsicController = new IntrinsicController();
 	extrinsicController = new ExtrinsicController();
@@ -41,14 +40,25 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	tabWidget->addTab(intrinsicInputView, "Intrinsic Calibration");
 	tabWidget->addTab(extrinsicInputView, "Extrinsic Calibration");
 	tabWidget->addTab(scanInputView, "Scan Object");
-	tabWidget->addTab(resultsView, "Results/Export");
+	//tabWidget->addTab(resultsView, "Results/Export"); --> no time! taking it off the tabs!
+
+	messageTitle = new QLabel("Messages: ");
+	messageTitle->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+
+	messageText = new QLabel("");
+	messageText->setStyleSheet( "QLabel { font-weight: bold; color: red; }");
 
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);
+	mainLayout->addWidget(messageTitle);
+	mainLayout->addWidget(messageText);
 	setLayout(mainLayout);
 
 	setWindowTitle("3D Scanner");
-	this->setFixedSize(515, 515);
+	this->setFixedSize(515, 300);
 
 	this->setStyleSheet("QTabWidget::pane { background-color: white; border: 1px solid black;}"
 		);
@@ -64,7 +74,10 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 		"QTabBar::tab:hover, QTabBar::tab:selected { background-color: white; border-bottom: 1px solid red }"
 		);
 	
-	
+	intrinsicInputView->connectGlobalMessage(messageText);
+	extrinsicInputView->connectGlobalMessage(messageText);
+	scanInputView->connectGlobalMessage(messageText);
+
 }
 
 HomeView::~HomeView()

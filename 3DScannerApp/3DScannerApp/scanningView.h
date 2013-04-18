@@ -25,6 +25,7 @@ private slots:
 	void cancelScan();
 private:
 	ScanController * scanController;
+	QLabel * globalText;
 	QWidget * scanFrame;
 	QLabel * titleLabel;
 	QPushButton * cancelButton;

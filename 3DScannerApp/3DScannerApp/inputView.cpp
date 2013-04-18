@@ -41,27 +41,50 @@ void InputView::setCalibrationController(CalibrationController& calibControl) {
 	calibrationController = &calibControl;
 }
 
+void InputView::connectGlobalMessage(QLabel * text)
+{
+	globalText = text;
+}
+
 void InputView::showMessage(QString msg)
 {
 	// todo
-	message->setText(msg);
-	message->setVisible(true);
+	/*message->setText(msg);
+	message->setVisible(true);*/
+	globalText->setText(msg);
+	globalText->setVisible(true);
 }
 
 void InputView::startCalibration()
 {
-	message->setStyleSheet("color: red; font-weight: bold;");
+	setDefaultStyles();
+	
 	errors = false; // reset errors previously set
 	//--------------HANDLE ERRORS-----------------------
 	// Input Errors --> No input given
-	if (this->horizontalText->text().toInt() == 0 || this->verticalText->text().toInt() == 0)
+	if (this->horizontalText->text().toInt() == 0)
 	{
 		this->showMessage("Error, please input a valid integer.");
+		this->horizontalText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		errors = true;
 	}
-	else if(this->horizontalText->text().toInt() < 4 || this->verticalText->text().toInt() < 4)
+	else if (this->verticalText->text().toInt() == 0)
 	{
-		this->showMessage("Horizontal and vertical squares must both be at least 4");
+		this->showMessage("Error, please input a valid integer.");
+		this->verticalText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		errors = true;
+	}
+	else if(this->horizontalText->text().toInt() < 4)
+	{
+		this->showMessage("Horizontal squares must be at least 4");
+		this->horizontalText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		errors = true;
+	}
+	else if(this->verticalText->text().toInt() < 4)
+	{
+		this->showMessage("Vertical squares must be at least 4");
+		this->verticalText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		errors = true;
 	}
 	else
 	{
@@ -69,12 +92,14 @@ void InputView::startCalibration()
 		if (saveDirText->text().isEmpty())
 		{
 			this->showMessage("Please select a save directory.");
+			this->saveDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 			errors = true;
 		}
 		// check if the directory exists (it should, but just in case)
 		else if(!saveDir->exists())
 		{
 			this->showMessage("This directory does not exist. Please check the directory input!");
+			this->saveDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 			errors = true;
 		}
 		// check for extrinsic calibration-exclusive errors
@@ -84,12 +109,14 @@ void InputView::startCalibration()
 			if (loadDirText->text().isEmpty())
 			{
 				this->showMessage("Please select a load directory.");
+				this->loadDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 				errors = true;
 			}
 			// check if the directory exists
 			else if (!loadDir->exists())
 			{
 				this->showMessage("This directory does not exist. Please check the directory input(s)!");
+				this->loadDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 				errors = true;
 			}
 		}
@@ -133,17 +160,12 @@ void InputView::createLoadFileDialog()
 
 void InputView::constructLayout()
 {
-	//message = new QLabel(""); // this is just used to set error messages
-	message = new QTextEdit();
-	message->setReadOnly(true);
-	message->setVisible(false);
-
 	if (calibrationType == Enums::controllerEnum::INTRINSIC)
 	{
 		mainLayout = new QGridLayout();
 		horizontalLabel = new QLabel("Horizontal Squares:");
 		verticalLabel = new QLabel("Vertical Squares:");
-		messagesLabel = new QLabel("Messages:" );
+		
 		saveLabel = new QLabel("Save Directory:");
 		startButton = new QPushButton("Start");
 		exitButton = new QPushButton("Exit");
@@ -173,9 +195,9 @@ void InputView::constructLayout()
 		mainLayout->addWidget(saveBrowseButton, 2, 2);
 		mainLayout->addWidget(startButton, 4, 1);
 		mainLayout->addWidget(exitButton, 4, 2);
-		mainLayout->addWidget(messagesLabel, 5, 0);
-		mainLayout->addWidget(message, 5, 1, 1, 2);
 		setLayout(mainLayout);
+
+		setDefaultStyles();
 	}
 	else if (calibrationType == Enums::controllerEnum::EXTRINSIC)
 	{
@@ -183,11 +205,8 @@ void InputView::constructLayout()
 		mainLayout = new QGridLayout();
 		horizontalLabel = new QLabel("Horizontal Squares:");
 		verticalLabel = new QLabel("Vertical Squares:");
-		messagesLabel = new QLabel("Messages:" ); 
 		loadLabel = new QLabel("Load Directory:");
 		saveLabel = new QLabel("Save Directory:");
-		//message = new QLabel(); 
-		message->setVisible(false);
 		startButton = new QPushButton("Start");
 		exitButton = new QPushButton("Exit");
 		loadBrowseButton = new QPushButton("Browse...");
@@ -205,11 +224,6 @@ void InputView::constructLayout()
 		loadDirText->setReadOnly(true);
 		loadDirText->setPlaceholderText("Directory to load intrinsic calibration data");
 
-		this->setStyleSheet(
-			"QLabel {"
-			"font-weight: bold; }"
-			);
-
 		// Add widgets to layout
 		mainLayout->addWidget(horizontalLabel, 0, 0);
 		mainLayout->addWidget(horizontalText, 0, 1);
@@ -223,9 +237,30 @@ void InputView::constructLayout()
 		mainLayout->addWidget(saveBrowseButton, 3, 2);
 		mainLayout->addWidget(startButton, 5, 1);
 		mainLayout->addWidget(exitButton, 5, 2);
-		mainLayout->addWidget(messagesLabel, 6, 0);
-		mainLayout->addWidget(message, 6, 1, 1, 2);
 		setLayout(mainLayout);
+
+		setDefaultStyles();
+	}
+}
+
+void InputView::setDefaultStyles()
+{
+	this->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+	if (calibrationType == Enums::controllerEnum::EXTRINSIC)
+	{
+		this->horizontalText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+		this->verticalText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+		this->saveDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+		this->loadDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+	}
+	else
+	{
+		this->horizontalText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+		this->verticalText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+		this->saveDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
 	}
 }
 
@@ -236,7 +271,6 @@ InputView::~InputView()
 		delete mainLayout;
 		delete horizontalLabel;
 		delete verticalLabel;
-		delete messagesLabel;
 		delete saveLabel;
 		delete startButton;
 		delete exitButton;
@@ -250,7 +284,6 @@ InputView::~InputView()
 		delete mainLayout;
 		delete horizontalLabel;
 		delete verticalLabel;
-		delete messagesLabel;
 		delete loadLabel;
 		delete saveLabel;
 		delete startButton;
@@ -262,5 +295,4 @@ InputView::~InputView()
 		delete saveDirText;
 		delete loadDirText;
 	}
-	delete message;
 }

@@ -22,6 +22,7 @@ private:
 	ScanController * scanController;
 	QLineEdit * saveDirText;
 	QLineEdit * loadDirText;
+	QLabel * globalMessage;
 	QLabel * saveLabel;
 	QLabel * loadLabel;
 	QLabel * saveFileNameLabel;
@@ -33,10 +34,13 @@ private:
 	QGridLayout * mainLayout;
 	void constructLayout();
 	bool checkFileName(std::string filename);
+	void setDefaultStyles();
 public:
     explicit ScanInputView(QWidget *parent = 0);
 	~ScanInputView();
 	void setScanController(ScanController& scanControl);
+	void connectGlobalMessage(QLabel * text);
+	void showMessage(QString msg);
 };
 
 #endif

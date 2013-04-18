@@ -7,6 +7,9 @@
 #include <qdialog.h>
 #include <qdialogbuttonbox.h>
 #include <qtabwidget.h>
+#include <qlabel.h>
+#include <qstring.h>
+
 class ScanController;
 class CalibrationController;
 class CalibrationModel;
@@ -20,7 +23,6 @@ public:
 	explicit HomeView(QWidget *parent = 0);
 	~HomeView();
 	void setScanController(const ScanController& scanControl);
-
 private:
 	QTabWidget *tabWidget;
 	QDialogButtonBox *buttonBox;
@@ -31,6 +33,9 @@ private:
 	CalibrationModel * extrinsicCalibrationModel;
 	ScanController * scanController;
 	ScanModel * scanModel;
+	QLabel * messageTitle;
+	QLabel * messageText;
+	
 };
 
 class HomeTab : public QWidget

@@ -24,6 +24,16 @@ void ScanInputView::setScanController(ScanController& scanControl) {
 	scanController = &scanControl;
 }
 
+void ScanInputView::connectGlobalMessage(QLabel * text)
+{
+	globalMessage = text;
+}
+void ScanInputView::showMessage(QString msg)
+{
+	globalMessage->setText(msg);
+	globalMessage->setVisible(true);
+}
+
 void ScanInputView::startScan()
 {
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
@@ -31,47 +41,19 @@ void ScanInputView::startScan()
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadDirText->text().toStdString() == "")
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"No load directory was given!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Please select the directory containing the calibration XML files.");
-		error.setInformativeText("Check the directory and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("No load directory was given!");
 	}
 	else if (saveDirText->text().toStdString() == "")
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"No output directory was given!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Please select an output directory for the scan.");
-		error.setInformativeText("Check the directory and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("Please specify an output directory for the scan.");
 	}
 	else if (saveFileNameText->text().toStdString() == "")
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"No output filename was given!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Please type the filename for the post-scan file.");
-		error.setInformativeText("Type a name and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("No output filename was given.");
 	}
 	else if (!checkFileName(saveFileNameText->text().toStdString()))
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"Filename had invalid characters!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Ensure that there are only alphabetic characters in your filename");
-		error.setInformativeText("Type a name and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("Only alphabetic characters(a-z, A-Z) are allowed in the filename.");
 	}
 	else if (loadXMLSuccess) {
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
@@ -144,7 +126,21 @@ void ScanInputView::constructLayout()
 	mainLayout->addWidget(saveFileNameText, 2, 1);
 	mainLayout->addWidget(startButton, 3, 1);
 	mainLayout->addWidget(exitButton, 3, 2);
+
+	this->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+	
 	setLayout(mainLayout);
+	setDefaultStyles();
+}
+
+void ScanInputView::setDefaultStyles()
+{
+	this->saveDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+	this->loadDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+	this->saveFileNameText->setStyleSheet("border: 1px solid gray; padding: 5px;");
 }
 
 ScanInputView::~ScanInputView()
