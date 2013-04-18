@@ -324,9 +324,13 @@ Point2d ScanModel::findZeroCrossingInRow(int y, int imageNum) {
 // imageNum is the index of the image we are processing
 void ScanModel::processNextFrame(int imageNum)
 {
+	vector<Point3d> objectLaserIntersections;
 	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
 		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
-		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
+		objectLaserIntersections = this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum));
+		if (objectLaserIntersections.size() > 0) {
+			objectPoints.push_back(objectLaserIntersections);
+		}
 	}
 	processedImages++;
 }
