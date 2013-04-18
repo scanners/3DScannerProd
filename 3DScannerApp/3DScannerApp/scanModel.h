@@ -41,7 +41,10 @@ private:
 	int bottomOfGroundPlane;
 	int leftSideOfObject;
 	int rightSideOfObject;
-	bool scanComplete;
+	Mat cameraOriginInBackWorldCoords;
+	Mat cameraOriginInGroundWorldCoords;
+	void findCameraOriginInBackWorldCoords();
+	void findCameraOriginInGroundWorldCoords();
 	vector<vector<Point2d>> redPointsInBackPlaneLine;
 	vector<vector<Point2d>> redPointsInGroundPlaneLine;
 	vector<vector<Point2d>> redPointsOnObject;
@@ -57,6 +60,7 @@ private:
 	void findDifferenceImageAtPixel(int x, int y, double midpointRedComponent);
 	vector<Point2d> findRedPointsInRegion(int region, int imageNum);
 	Point2d findZeroCrossingInRow(int y, int imageNum);
+	void deleteIntrinsicAndExtrinsicMatrices();
 public:
 	ScanModel();
 	~ScanModel();
