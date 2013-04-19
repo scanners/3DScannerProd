@@ -18,6 +18,11 @@ ScanningView::ScanningView(QWidget *parent) : QDialog(parent)
 	capture.open(0);
 	if (capture.isOpened())
 	{
+
+		capture.set(CV_CAP_PROP_EXPOSURE, EXPOSURE_VALUE);
+		capture.set(CV_CAP_PROP_GAIN, GAIN_VALUE);
+		capture.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS_VALUE);
+		capture.set(CV_CAP_PROP_CONTRAST, CONTRAST_VALUE);
 		timer = new QTimer(this);
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
 		connect(timer, SIGNAL(timeout()), this, SLOT(scanImage()));
@@ -48,6 +53,11 @@ void ScanningView::stopVideo()
 
 void ScanningView::releaseVideo() {
 	if (capture.isOpened()) {
+		vector<double> cameraProperties = scanController->getCameraProperties();
+		capture.set(CV_CAP_PROP_EXPOSURE, cameraProperties.at(0));
+		capture.set(CV_CAP_PROP_GAIN, cameraProperties.at(1));
+		capture.set(CV_CAP_PROP_BRIGHTNESS, cameraProperties.at(2));
+		capture.set(CV_CAP_PROP_CONTRAST, cameraProperties.at(3));
 		capture.release();
 	}
 	if (timer->isActive()) {

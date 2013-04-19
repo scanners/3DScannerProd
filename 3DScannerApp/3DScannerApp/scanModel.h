@@ -31,6 +31,7 @@ private:
 	string saveDirectory;
 	string saveFileName;
 	string loadDirectory;
+	vector<double> cameraProperties;
 	int imageWidth;
 	int numImages;
 	int processedImages;
@@ -67,6 +68,8 @@ public:
 	int ShowError (LONG lError, LPCTSTR lptszMessage);
 	int scan();
 	bool isDoneScanning(CSerial &serial, LONG &lLastError);
+	void setCameraProperties(double exposure, double gain, double brightness, double contrast);
+	vector<double> getCameraProperties();
 	void setSaveDirectory(string saveDir);
 	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);
