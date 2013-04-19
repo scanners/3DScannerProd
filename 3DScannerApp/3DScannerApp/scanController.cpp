@@ -80,13 +80,14 @@ bool ScanController::loadXML() {
 }
 
 void ScanController::createScanningView() {
-	scanModel->waitForHardwareScanComplete();
+	
 
 	scanningView = new ScanningView();
 	scanningView->setScanController(*this);
 	scanningView->setModal(true);
 	scanningView->show();
 
+	scanModel->waitForHardwareScanComplete();
 	scanModel->startHardwareScan();
 }
 
