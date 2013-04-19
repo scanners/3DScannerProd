@@ -2,12 +2,7 @@
 
 SerialCommunication::SerialCommunication(){
 	this->initializeSerialPort();
-}
-
-void SerialCommunication::setScanDoneTrue(){
-	mutex.lock();
-	isScanComplete = true;
-	mutex.unlock();
+	isScanComplete = false;
 }
 
 bool SerialCommunication::getIsScanComplete(){
@@ -36,30 +31,30 @@ int SerialCommunication::initializeSerialPort() {
 	// Attempt to open the serial port (COM1)
 	lLastError = serial.Open("COM1",0,0,true);
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to open COM-port");
+		return showError(serial.GetLastError(), "Unable to open COM-port");
 	
 	//Setup the Serial Port
 	lLastError = serial.Setup(CSerial::EBaud9600,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port setting");
+		return showError(serial.GetLastError(), "Unable to set COM-port setting");
 
 	// Setup handshaking
     lLastError = serial.SetupHandshaking(CSerial::EHandshakeSoftware);
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port handshaking");
+		return showError(serial.GetLastError(), "Unable to set COM-port handshaking");
 
 	// Register only for the receive event
     lLastError = serial.SetMask(CSerial::EEventError |
 								CSerial::EEventRecv);
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port event mask");
+		return showError(serial.GetLastError(), "Unable to set COM-port event mask");
 
 	// Use 'non-blocking' reads, because we don't know how many bytes
 	// will be received. This is normally the most convenient mode
 	// (and also the default mode for reading data).
     lLastError = serial.SetupReadTimeouts(CSerial::EReadTimeoutNonblocking);
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to set COM-port read timeout.");
+		return showError(serial.GetLastError(), "Unable to set COM-port read timeout.");
 	
 	return 0;
 }
@@ -67,12 +62,12 @@ int SerialCommunication::initializeSerialPort() {
 int SerialCommunication::startStepperMotor(){
 	lLastError = serial.Write("stop");
 	if (lLastError != ERROR_SUCCESS)
-		emit sendErrorMessage(serial.GetLastError(), "Unable to send data");
+		return showError(serial.GetLastError(), "Unable to send data");
 
 	return 0;
 }
 
-int SerialCommunication::receiveStopSignalFromHardware() {
+void SerialCommunication::receiveStopSignalFromHardware() {
 
 	char * complete = "stop";
 
@@ -137,6 +132,10 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 					// Check for Stop Text
 					//if(strstr(szBuffer, complete) != NULL)
 					fContinue = false;
+					
+					mutex.lock();
+					isScanComplete = true;
+					mutex.unlock();
 				}
 			}
 		    while (dwBytesRead == sizeof(szBuffer)-1);
@@ -146,5 +145,4 @@ int SerialCommunication::receiveStopSignalFromHardware() {
 
     // Close the port again
     serial.Close();
-    return 0;
 }

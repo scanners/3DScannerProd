@@ -11,7 +11,8 @@ class SerialCommunication : public QObject
 	Q_OBJECT
 
 public slots:
-	int receiveStopSignalFromHardware();
+	int showError (LONG lError, char * errorMessage);
+	void receiveStopSignalFromHardware();
 signals:
 	void sendErrorMessage(LONG, char *);
 private:
@@ -21,7 +22,6 @@ private:
 	bool isScanComplete;
 public:
 	SerialCommunication();
-	int showError (LONG lError, char * errorMessage);
 	void setScanDoneTrue();
 	bool getIsScanComplete();
 	int initializeSerialPort();
