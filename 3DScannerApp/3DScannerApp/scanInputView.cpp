@@ -53,7 +53,7 @@ void ScanInputView::startScan()
 	}
 	else if (!checkFileName(saveFileNameText->text().toStdString()))
 	{
-		this->showMessage("Only alphabetic characters(a-z, A-Z) are allowed in the filename.");
+		this->showMessage("Only alphanumeric characters (a-Z, 0-9) are allowed in the filename.");
 	}
 	else if (loadXMLSuccess) {
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
@@ -79,7 +79,7 @@ bool ScanInputView::checkFileName(string filename)
 {
 	for (int i = 0; i < filename.length(); i++)
 	{
-		if (!isalpha(filename[i]))
+		if (!isalnum(filename[i]))
 		{
 			return false;
 		}
@@ -107,8 +107,10 @@ void ScanInputView::constructLayout()
 	loadBrowseButton = new QPushButton("Browse...");
 	saveBrowseButton = new QPushButton("Browse...");
 	saveDirText = new QLineEdit();
+	saveDirText->setReadOnly(true);
 	saveDirText->setPlaceholderText("Directory to save scan");
 	loadDirText = new QLineEdit();
+	loadDirText->setReadOnly(true);
 	loadDirText->setPlaceholderText("Directory to load calibration data");
 	saveFileNameLabel = new QLabel("Output File Name:");
 	saveFileNameText = new QLineEdit();

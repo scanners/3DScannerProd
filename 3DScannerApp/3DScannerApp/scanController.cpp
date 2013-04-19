@@ -33,6 +33,7 @@ void ScanController::processScan() {
 	int progressBarCounter = 0;
 
 	while(!scanModel->isDoneFindingFindingDifferenceImages()) {
+		scanningView->showMessage("Finding difference images...");
 		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->findNextDifferenceImage(currentRow);
 		progressBarCounter++;
@@ -40,6 +41,7 @@ void ScanController::processScan() {
 	}
 
 	while(!scanModel->isDoneFindingRedPoints()) {
+		scanningView->showMessage("Finding red points...");
 		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->findNextRedPoints(currentFrame);
 		progressBarCounter++;
@@ -49,12 +51,13 @@ void ScanController::processScan() {
 	currentFrame = 0;
 
 	while(!scanModel->isDoneProcessingFrames())	{
+		scanningView->showMessage("Processing frames...");
 		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->processNextFrame(currentFrame);
 		progressBarCounter++;
 		currentFrame++;
 	}
-
+	scanningView->showMessage("Exporting data...");
 	// scanning processing is complete, create point cloud:
 	scanModel->createPointCloud();
 	//ProgressBarCounter was incremented in above while loop after updating the progress bar

@@ -13,6 +13,8 @@
 
 HomeView::HomeView(QWidget *parent) : QDialog (parent) 
 {
+	this->setAutoFillBackground(true);
+	this->setStyleSheet("background-color: #333;");
 	InputView * intrinsicInputView = new InputView(Enums::controllerEnum::INTRINSIC);
 	InputView * extrinsicInputView = new InputView(Enums::controllerEnum::EXTRINSIC);
 	ScanInputView * scanInputView = new ScanInputView();
