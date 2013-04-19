@@ -52,13 +52,15 @@ void OverlayView::stopVideo()
 	{
 		capture.release();
 	}
+	if (timer->isActive()) {
+		timer->stop();
+	}
 }
 
 void OverlayView::closeEvent(QCloseEvent * event)
 {
 	this->resetClicks();
-	this->stopVideo();
-	
+	this->stopVideo();	
 }
 
 void OverlayView::constructLayout()

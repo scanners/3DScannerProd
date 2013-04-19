@@ -49,6 +49,8 @@ void ScanningView::stopVideo()
 void ScanningView::releaseVideo() {
 	if (capture.isOpened()) {
 		capture.release();
+	}
+	if (timer->isActive()) {
 		timer->stop();
 	}
 }
