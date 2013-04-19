@@ -36,7 +36,6 @@ void ScanningView::setScanController(ScanController& scanControl)
 
 void ScanningView::cancelScan() {
 	this->releaseVideo();
-	scanController->resetScan();
 }
 
 void ScanningView::stopVideo()
@@ -50,6 +49,8 @@ void ScanningView::stopVideo()
 void ScanningView::releaseVideo() {
 	if (capture.isOpened()) {
 		capture.release();
+	}
+	if (timer->isActive()) {
 		timer->stop();
 	}
 }

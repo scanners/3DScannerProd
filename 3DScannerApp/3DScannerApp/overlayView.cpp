@@ -52,13 +52,15 @@ void OverlayView::stopVideo()
 	{
 		capture.release();
 	}
+	if (timer->isActive()) {
+		timer->stop();
+	}
 }
 
 void OverlayView::closeEvent(QCloseEvent * event)
 {
 	this->resetClicks();
-	this->stopVideo();
-	
+	this->stopVideo();	
 }
 
 void OverlayView::constructLayout()
@@ -249,7 +251,6 @@ void OverlayView::startScan() {
 	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.");
 	message.exec();
 	this->reject();
-	scanController->resetScan();
 	scanController->createScanningView();
 }
 

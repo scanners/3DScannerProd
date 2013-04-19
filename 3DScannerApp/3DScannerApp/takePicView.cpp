@@ -113,14 +113,13 @@ void TakePicView::displayVideoFrame()
 
 
 // releases the video input and stops the timer.
-// we might need to do some extra clean up here.
-// doesn't work when the window is closed with the "X" button.
 void TakePicView::stopVideo()
 {
 	if (capture.isOpened())
 	{
-		capture.read(image);
 		capture.release();
+	}
+	if (timer->isActive()) {
 		timer->stop();
 	}
 }
@@ -129,7 +128,6 @@ void TakePicView::stopVideo()
 void TakePicView::closeEvent(QCloseEvent * event)
 {
 	this->stopVideo();
-	//***probably should free up memory here
 }
 
 void TakePicView::takePicture()

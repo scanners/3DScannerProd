@@ -66,10 +66,6 @@ void ScanController::processScan() {
 	scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
 }
 
-void ScanController::resetScan() {
-	scanModel->resetScan();
-}
-
 void ScanController::setSaveDirectory(string saveDir) {
 	scanModel->setSaveDirectory(saveDir);
 }
