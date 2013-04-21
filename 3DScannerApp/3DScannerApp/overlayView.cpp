@@ -101,11 +101,6 @@ void OverlayView::constructLayout()
 }
 
 void OverlayView::takePicture() {
-	double exposure = capture.get(CV_CAP_PROP_EXPOSURE);
-	double gain = capture.get(CV_CAP_PROP_GAIN);
-	double brightness = capture.get(CV_CAP_PROP_BRIGHTNESS);
-	double contrast = capture.get(CV_CAP_PROP_CONTRAST);
-	scanController->setCameraProperties(exposure, gain, brightness, contrast);
 	resetButton->setEnabled(true);
 	setButtonStyle(resetButton, true);
 	timer->stop();
@@ -251,7 +246,8 @@ void OverlayView::startScan() {
 	QMessageBox message;
 	message.setIcon(QMessageBox::Information);
 	message.setWindowTitle("Turn Off Lights");
-	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.");
+	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.\n"
+		"If you are using a Logitech Camera, please be sure to disable 'RightLight'.");
 	message.exec();
 	this->reject();
 	scanController->createScanningView();

@@ -22,8 +22,6 @@ public:
 	ScanController();
 	~ScanController();
 	void processScan();
-	void setCameraProperties(double exposure, double gain, double brightness, double contrast);
-	vector<double> getCameraProperties();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
 	void createScanningView();

@@ -175,17 +175,6 @@ bool ScanModel::isDoneScanning(CSerial &serial, LONG &lLastError) {
     return !fContinue;
 }
 
-void ScanModel::setCameraProperties(double exposure, double gain, double brightness, double contrast) {
-	cameraProperties.push_back(exposure);
-	cameraProperties.push_back(gain);
-	cameraProperties.push_back(brightness);
-	cameraProperties.push_back(contrast);
-}
-
-vector<double> ScanModel::getCameraProperties() {
-	return cameraProperties;
-}
-
 int ScanModel::getNumImages()
 {
 	return numImages;

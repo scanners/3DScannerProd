@@ -66,14 +66,6 @@ void ScanController::processScan() {
 	scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
 }
 
-void ScanController::setCameraProperties(double exposure, double gain, double brightness, double contrast) {
-	scanModel->setCameraProperties(exposure, gain, brightness, contrast);
-}
-
-vector<double> ScanController::getCameraProperties() {
-	return scanModel->getCameraProperties();
-}
-
 void ScanController::setSaveDirectory(string saveDir) {
 	scanModel->setSaveDirectory(saveDir);
 }
