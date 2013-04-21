@@ -51,8 +51,6 @@ void OverlayView::stopVideo()
 	if (capture.isOpened())
 	{
 		capture.release();
-	}
-	if (timer->isActive()) {
 		timer->stop();
 	}
 }

@@ -59,8 +59,6 @@ void ScanningView::releaseVideo() {
 		capture.set(CV_CAP_PROP_BRIGHTNESS, cameraProperties.at(2));
 		capture.set(CV_CAP_PROP_CONTRAST, cameraProperties.at(3));
 		capture.release();
-	}
-	if (timer->isActive()) {
 		timer->stop();
 	}
 }
