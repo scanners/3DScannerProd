@@ -118,10 +118,9 @@ void ScanningView::scanImage() {
 		scanController->processScan();
 		numImages = 0;
 	} else {
+		scanController->storeRedChannel(image);
 		numImages++;
 	} //End test section
-	
-	scanController->storeRedChannel(image);
 	//END TEST ------------------------------------
 
 

@@ -60,15 +60,8 @@ void ScanInputView::startScan()
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
-		//Dialog box for errors
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"Error loading XML file",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("The XML file could not be successfully loaded.");
-		error.setInformativeText("Please check the file and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("Unable to load XML! Please check the directory and/or\n"
+			"try running the program running as an Administrator?");
 	}
 }
 

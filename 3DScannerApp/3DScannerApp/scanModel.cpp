@@ -7,8 +7,6 @@
 #include "plane.h"
 #include "Serial.h"
 #include <Windows.h>
-#include <fstream>
-using std::ofstream;
 
 ScanModel::ScanModel() : numImages(0), processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
 groundExtrinsics(0){}
@@ -519,7 +517,6 @@ https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
 bool ScanModel::createPointCloud()
 {
 	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
-	ofstream outputStream;
 	outputStream.precision(17);
 	try {
 		outputStream.open(fileName);
@@ -536,7 +533,6 @@ bool ScanModel::createPointCloud()
 
 		for(int i = 0; i < objectPoints.size(); i++) {
 			for (int j = 0; j < objectPoints.at(i).size(); j++) {
-				double test = objectPoints.at(i).at(j).y;
 				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
 			}
 		}

@@ -93,7 +93,6 @@ void CalibrationModel::calibrateIntrinsics() {
 	objectPoints.resize(imagePoints.size(), objectPoints[0]);
 	double error = calibrateCamera(objectPoints, imagePoints, imageSize, intrinsicMatrix,
 		distortionCoefficients, rotationVectors, translationVectors);
-	saveIntrinsicFiles();
 
 	//FOR TEST DEMO ONLY
 	Mat copyImage = demoImage.clone();
