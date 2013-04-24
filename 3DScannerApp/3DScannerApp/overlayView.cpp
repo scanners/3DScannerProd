@@ -247,7 +247,7 @@ void OverlayView::startScan() {
 	message.setIcon(QMessageBox::Information);
 	message.setWindowTitle("Turn Off Lights");
 	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.\n"
-		"If you are using a Logitech Camera, please be sure to disable 'RightLight'.");
+		"Make sure your camera settings are properly adjusted for the scan.");
 	message.exec();
 	this->reject();
 	scanController->createScanningView();

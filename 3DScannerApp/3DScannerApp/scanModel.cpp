@@ -480,12 +480,13 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			backExtrinsics->getTranslationMatrix()));
 		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords - 
 			groundExtrinsics->getTranslationMatrix()));
-		if (std::abs(redPointBackWorldCoordMatrix.at<double>(2,0)) < 0.10) {
-			//Point is on the back plane, so don't include it
+		if (redPointBackWorldCoordMatrix.at<double>(2,0) > -0.10) {
+			//Point is on or behind the back plane, so don't include it
 			continue;
 		}
-		if (std::abs(redPointGroundWorldCoordMatrix.at<double>(2,0)) < 0.10) {
-			//Point is on the ground plane, so don't include it
+
+		if (redPointGroundWorldCoordMatrix.at<double>(2,0) > -0.10) {
+			//Point is on or behind the ground plane, so don't include it
 			continue;
 		}
 		/*
