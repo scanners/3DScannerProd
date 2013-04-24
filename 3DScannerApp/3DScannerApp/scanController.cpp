@@ -34,16 +34,16 @@ void ScanController::processScan() {
 
 	while(!scanModel->isDoneFindingFindingDifferenceImages()) {
 		scanningView->showMessage("Finding difference images...");
-		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->findNextDifferenceImage(currentRow);
+		scanningView->updateProgressBar(progressBarCounter);
 		progressBarCounter++;
 		currentRow++;
 	}
 
 	while(!scanModel->isDoneFindingRedPoints()) {
 		scanningView->showMessage("Finding red points...");
-		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->findNextRedPoints(currentFrame);
+		scanningView->updateProgressBar(progressBarCounter);
 		progressBarCounter++;
 		currentFrame++;
 	}
@@ -52,18 +52,44 @@ void ScanController::processScan() {
 
 	while(!scanModel->isDoneProcessingFrames())	{
 		scanningView->showMessage("Processing frames...");
-		scanningView->updateProgressBar(progressBarCounter);
 		scanModel->processNextFrame(currentFrame);
+		scanningView->updateProgressBar(progressBarCounter);
 		progressBarCounter++;
 		currentFrame++;
 	}
-	scanningView->showMessage("Exporting data...");
-	// scanning processing is complete, create point cloud:
-	scanModel->createPointCloud();
-	//ProgressBarCounter was incremented in above while loop after updating the progress bar
-	scanningView->updateProgressBar(progressBarCounter);
-	scanningView->enableDoneButton(true);
-	scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
+
+	bool openSuccess = scanModel->openFileAndAddHeaders();
+
+	int currentObjectPointIndex = 0;
+	//Default to true in case there was no data for the while loop to go through
+	bool writeSuccess = true;
+	bool closeSuccess = false;
+
+	if (openSuccess) {
+		// scanning processing is complete, create point cloud:
+		while(!scanModel->isDoneWritingToFile()) {
+			scanningView->showMessage("Exporting data...");
+			writeSuccess = scanModel->writeNextObjectPointSet(currentObjectPointIndex);
+			if (!writeSuccess) {
+				break;
+			}
+			//Used to update frame to show message
+			scanningView->updateProgressBar(progressBarCounter);
+			currentObjectPointIndex++;
+		}
+		closeSuccess = scanModel->addFootersAndCloseFile();
+		progressBarCounter++;
+	}
+
+	if (openSuccess && writeSuccess && closeSuccess) {
+		scanningView->updateProgressBar(progressBarCounter);
+		scanningView->enableDoneButton(true);
+		scanningView->showMessage("Scan Complete. Click \"Done\" to close this window");
+	} else {
+		scanningView->enableDoneButton(true);
+		scanningView->showMessage("There was an error saving the file. Try choosing a different directory or running the program as an Administrator.\n"
+			"Click \"Done\" To close this window");
+	}
 }
 
 void ScanController::setSaveDirectory(string saveDir) {

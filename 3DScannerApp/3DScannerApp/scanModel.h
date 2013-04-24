@@ -38,6 +38,7 @@ private:
 	int numImages;
 	int processedImages;
 	int processedRows;
+	int numTimesWritten;
 	int topOfBackPlane;
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
@@ -93,10 +94,13 @@ public:
 	bool isDoneFindingFindingDifferenceImages();
 	bool isDoneFindingRedPoints();
 	bool isDoneProcessingFrames();
+	bool isDoneWritingToFile();
 	void processNextFrame(int imageNum);
 	int getNumImages(); // returns how many images there are to process
 	int getProcessedImages(); // returns the number of processed images
-	bool createPointCloud();
+	bool openFileAndAddHeaders();
+	bool writeNextObjectPointSet(int objectPointIndex);
+	bool addFootersAndCloseFile();
 };
 
 #endif //SCANMODEL_H

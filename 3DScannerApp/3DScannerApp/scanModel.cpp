@@ -8,7 +8,7 @@
 #include "Serial.h"
 #include <Windows.h>
 
-ScanModel::ScanModel() : numImages(0), processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
+ScanModel::ScanModel() : numImages(0), processedImages(0), processedRows(0), numTimesWritten(0), intrinsics(0), backExtrinsics(0),
 groundExtrinsics(0){}
 
 int ScanModel::ShowError (LONG lError, LPCTSTR lptszMessage)
@@ -510,12 +510,7 @@ double ScanModel::vectorLength(Mat vector) {
 	return std::sqrt(sumOfSquares);
 }
 
-/*
-Method adapted from opencv code, obtained from:
-https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
-*/
-bool ScanModel::createPointCloud()
-{
+bool ScanModel::openFileAndAddHeaders() {
 	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
 	outputStream.precision(17);
 	try {
@@ -530,13 +525,37 @@ bool ScanModel::createPointCloud()
 		outputStream << "geometry PointSet" << std::endl << "{" << std::endl;
 		outputStream << "coord Coordinate" << std::endl << "{" << std::endl;
 		outputStream << "point[" << std::endl;
+		return true;
+	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
+		return false;
+	}
+}
 
-		for(int i = 0; i < objectPoints.size(); i++) {
-			for (int j = 0; j < objectPoints.at(i).size(); j++) {
-				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
-			}
+/*
+Method adapted from opencv code, obtained from:
+https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
+*/
+bool ScanModel::writeNextObjectPointSet(int objectPointIndex)
+{
+	try {
+		for (int j = 0; j < objectPoints.at(objectPointIndex).size(); j++) {
+			outputStream << objectPoints.at(objectPointIndex).at(j).x << " " 
+				<< objectPoints.at(objectPointIndex).at(j).y << " " 
+				<< objectPoints.at(objectPointIndex).at(j).z << std::endl;
 		}
+		numTimesWritten++;
+		return true;
+	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
+		return false;
+	}
+}
 
+bool ScanModel::addFootersAndCloseFile() {
+	try {
 		outputStream << "]" << std::endl; //point[
 		outputStream << "}" << std::endl; //Coordinate{
 
@@ -548,6 +567,7 @@ bool ScanModel::createPointCloud()
 		return true;
 	} catch (std::exception& e) {
 		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
 		return false;
 	}
 }
@@ -711,6 +731,15 @@ bool ScanModel::isDoneProcessingFrames()
 		this->deleteIntrinsicAndExtrinsicMatrices();
 		processedImages = 0;
 		numImages = 0;
+		return true;
+	}
+	return false;
+}
+
+bool ScanModel::isDoneWritingToFile() {
+	if (objectPoints.size() == numTimesWritten) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
 		return true;
 	}
 	return false;

@@ -65,7 +65,7 @@ void ScanningView::showMessage(QString message)
 
 void ScanningView::setProgressBarRange(int range) {
 	//Subtract 1 from range because it starts at 0
-	this->progressBar->setRange(0, range - 1);
+	this->progressBar->setRange(0, range);
 }
 
 void ScanningView::updateProgressBar(int done)

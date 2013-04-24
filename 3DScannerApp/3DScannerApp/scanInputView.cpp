@@ -61,7 +61,7 @@ void ScanInputView::startScan()
 		scanController->createOverlayView();
 	} else {
 		this->showMessage("Unable to load XML! Please check the directory and/or\n"
-			"try running the program running as an Administrator?");
+			"try running the program running as an Administrator.");
 	}
 }
 

@@ -31,8 +31,8 @@ void IntrinsicController::findCorners(Mat image) {
 			QMessageBox message;
 			message.setIcon(QMessageBox::Information);
 			message.setWindowTitle("Error Saving File");
-			message.setText("There was an error saving the file. Please choose a \n"
-				"different directory or run the program as an Administrator.");
+			message.setText("There was an error saving the file. Try choosing a \n"
+				"different directory or running the program as an Administrator.");
 			message.exec();
 		} else {
 			takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));

@@ -134,7 +134,7 @@ void InputView::startCalibration()
 				} else {
 					//Dialog box for error
 					this->showMessage("Unable to load XML! Did you run intrinsic calibration prior to extrinsic?\n"
-						"Is the program running as an Administrator?");
+						"Did you try running the program running as an Administrator?");
 					errors = true;
 				}
 			} else {
