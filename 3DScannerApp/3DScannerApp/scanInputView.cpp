@@ -36,26 +36,32 @@ void ScanInputView::showMessage(QString msg)
 
 void ScanInputView::startScan()
 {
+	setDefaultStyles();
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadDirText->text().toStdString() == "")
 	{
+		this->loadDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("No load directory was given!");
 	}
 	else if (saveDirText->text().toStdString() == "")
 	{
+		this->saveDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("Please specify an output directory for the scan.");
 	}
 	else if (saveFileNameText->text().toStdString() == "")
 	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("No output filename was given.");
 	}
 	else if (!checkFileName(saveFileNameText->text().toStdString()))
 	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("Only alphanumeric characters (a-Z, 0-9) are allowed in the filename.");
 	}
 	else if (loadXMLSuccess) {
+		this->showMessage("");
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
 		scanController->resetRegions();
 		scanController->createOverlayView();
