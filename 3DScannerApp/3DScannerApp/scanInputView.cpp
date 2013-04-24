@@ -36,39 +36,38 @@ void ScanInputView::showMessage(QString msg)
 
 void ScanInputView::startScan()
 {
+	setDefaultStyles();
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadDirText->text().toStdString() == "")
 	{
+		this->loadDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("No load directory was given!");
 	}
 	else if (saveDirText->text().toStdString() == "")
 	{
+		this->saveDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("Please specify an output directory for the scan.");
 	}
 	else if (saveFileNameText->text().toStdString() == "")
 	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("No output filename was given.");
 	}
 	else if (!checkFileName(saveFileNameText->text().toStdString()))
 	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("Only alphanumeric characters (a-Z, 0-9) are allowed in the filename.");
 	}
 	else if (loadXMLSuccess) {
+		this->showMessage("");
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
 		//Dialog box for errors
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"Error loading XML file",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("The XML file could not be successfully loaded.");
-		error.setInformativeText("Please check the file and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("XML file could not be loaded. Please check the file and try again.");
 	}
 }
 

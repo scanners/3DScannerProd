@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
 			);
 
 	MainFrame mf;
-	mf.move(0,0);
 	QVBoxLayout * layout = new QVBoxLayout(mf.contentWidget());
 	layout->setMargin(0);
 	HomeView hv;

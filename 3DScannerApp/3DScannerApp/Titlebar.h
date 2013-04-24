@@ -10,9 +10,8 @@ class TitleBar : public QWidget
 	Q_OBJECT
 private:
 	QToolButton * minimize;
-	QToolButton * maximize;
 	QToolButton * close;
-	QPixmap restorePix, minPix, maxPix;
+	QPixmap restorePix, minPix;
 	bool maxNormal;
 	QPoint startPos;
 	QPoint clickPos;

@@ -14,22 +14,26 @@ TitleBar::TitleBar(QWidget *parent)
 	//this->setStyleSheet("background-color: #000;");
 
 	minimize = new QToolButton(this);
-	maximize = new QToolButton(this);
 	close = new QToolButton(this);
 
 	// use the style to determine the pixmap of the buttons
-	QPixmap pix = this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
-	close->setIcon(pix);
+	QPixmap pix;
+	pix.load("close.png");
+	QIcon closeIcon(pix);
+	close->setIcon(closeIcon);
+	close->setIconSize(QSize(16,16));
+	close->setStyleSheet("border: 0px;");
 
-	maxPix = this->style()->standardPixmap(QStyle::SP_TitleBarMaxButton);
-	maximize->setIcon(maxPix);
-
-	minPix = this->style()->standardPixmap(QStyle::SP_TitleBarMinButton);
+	//minPix = this->style()->standardPixmap(QStyle::SP_TitleBarMinButton);
+	minPix.load("minimize.png");
+	QIcon minIcon(minPix);
 	minimize->setIcon(minPix);
+	minimize->setIconSize(QSize(16, 16));
+	minimize->setStyleSheet("border: 0px;");
 
-	minimize->setMinimumHeight(20);
+
+	//minimize->setMinimumHeight(20);
 	close->setMinimumHeight(20);
-	maximize->setMaximumHeight(20);
 
 	QLabel * label = new QLabel(this);
 	label->setText("<b>3D Scanner</b>");
@@ -40,7 +44,6 @@ TitleBar::TitleBar(QWidget *parent)
 
 	hbox->addWidget(label);
 	hbox->addWidget(minimize);
-	hbox->addWidget(maximize);
 	hbox->addWidget(close);
 
 	// not entirely sure how this works, we will have to wait and see
@@ -52,7 +55,6 @@ TitleBar::TitleBar(QWidget *parent)
 
 	connect(close, SIGNAL(clicked()), parent, SLOT(close()));
 	connect(minimize, SIGNAL(clicked()), this, SLOT(showSmall()));
-	connect(maximize, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
 }
 
 void TitleBar::showSmall()
