@@ -66,8 +66,8 @@ void ScanInputView::startScan()
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
-		//Dialog box for errors
-		this->showMessage("XML file could not be loaded. Please check the file and try again.");
+		this->showMessage("Unable to load XML! Please check the directory and/or\n"
+			"try running the program running as an Administrator?");
 	}
 }
 

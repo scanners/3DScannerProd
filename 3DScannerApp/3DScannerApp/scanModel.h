@@ -9,6 +9,8 @@ using std::vector;
 #include <string>
 #include <stdio.h>
 #include "Serial.h"
+#include <fstream>
+using std::ofstream;
 
 using std::string;
 using namespace::cv;
@@ -30,6 +32,7 @@ private:
 	vector<vector<Point3d>> objectPoints;
 	string saveDirectory;
 	string saveFileName;
+	ofstream outputStream;
 	string loadDirectory;
 	int imageWidth;
 	int numImages;
