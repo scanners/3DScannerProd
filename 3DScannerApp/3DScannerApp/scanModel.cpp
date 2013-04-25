@@ -12,8 +12,8 @@
 #include <fstream>
 using std::ofstream;
 
-ScanModel::ScanModel() : processedImages(0), processedRows(0), intrinsics(0), backExtrinsics(0),
-groundExtrinsics(0), serial(), hardwareThread(0){
+ScanModel::ScanModel() : numImages(0), processedImages(0), processedRows(0), numTimesWritten(0), intrinsics(0), backExtrinsics(0),
+groundExtrinsics(0), serial(), scanComplete(false), hardwareThread(0){
 }
 
 int ScanModel::getNumImages()
@@ -46,7 +46,7 @@ void ScanModel::waitForHardwareScanComplete()
 bool ScanModel::isHardwareDoneScanning(){
 	bool scanComplete = serial->getIsScanComplete();
 
-	if(serial->getIsScanComplete() && serial){
+	if(scanComplete && serial){
 		hardwareThread->exit(0);
 		delete serial;
 	}
