@@ -54,19 +54,6 @@ bool ScanModel::isHardwareDoneScanning(){
 	return scanComplete;
 }
 
-void ScanModel::resetScan() {
-	//Free memory
-	vector<int>().swap(regionYCoordinates);
-	vector<Mat>().swap(redChannels);
-	vector<vector<Point3d>>().swap(objectPoints);
-	vector<vector<Point2d>>().swap(redPointsInBackPlaneLine);
-	vector<vector<Point2d>>().swap(redPointsInGroundPlaneLine);
-	vector<vector<Point2d>>().swap(redPointsOnObject);
-	numImages = 0;
-	processedImages = 0;
-	processedRows = 0;
-}
-
 void ScanModel::storeRedChannel(Mat image) {
 	vector<Mat> channels(image.channels());
 	//Split the image into its 3 channels: B, G, R
@@ -158,7 +145,7 @@ vector<Point2d> ScanModel::findRedPointsInRegion(int region, int imageNum) {
 		break;
 	}
 
-	Point2f zeroCrossing;
+	Point2d zeroCrossing;
 	//Only need zero crossings between the top of the back plane and the bottom of the ground plane
 	for (int y = startIndex; y < upperBound; y++) {
 		//Find zero crossing from image left to image right
@@ -193,9 +180,13 @@ Point2d ScanModel::findZeroCrossingInRow(int y, int imageNum) {
 // imageNum is the index of the image we are processing
 void ScanModel::processNextFrame(int imageNum)
 {
+	vector<Point3d> objectLaserIntersections;
 	if ((redPointsInBackPlaneLine.at(imageNum).size() > 0) && (redPointsInGroundPlaneLine.at(imageNum).size() > 0)) {
 		Plane laserPlane(this->findLaserPlane(redPointsInBackPlaneLine.at(imageNum), redPointsInGroundPlaneLine.at(imageNum)));
-		objectPoints.push_back(this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum)));
+		objectLaserIntersections = this->findObjectLaserIntersections(laserPlane, redPointsOnObject.at(imageNum));
+		if (objectLaserIntersections.size() > 0) {
+			objectPoints.push_back(objectLaserIntersections);
+		}
 	}
 	processedImages++;
 }
@@ -219,27 +210,30 @@ Plane ScanModel::findLaserPlane(vector<Point2d> backPlanePoints, vector<Point2d>
 }
 
 vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<Point2d> imagePoints) {
-	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
 	Mat planeOriginInWorldCoords(Point3d(0, 0, 0));
 	Mat planeNormalVectorInWorldCoords(Vec3d(0, 0, 1));
+	Mat cameraOriginInWorldCoords;
 	
+	static bool originConvertedToBack = false;
+	static bool originConvertedToGround = false;
+
+	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
+		if (!originConvertedToBack) {
+			this->findCameraOriginInBackWorldCoords();
+			originConvertedToBack = true;
+		}
+		cameraOriginInWorldCoords = this->cameraOriginInBackWorldCoords;
+	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
+		if (!originConvertedToGround) {
+			this->findCameraOriginInGroundWorldCoords();
+			originConvertedToGround = true;
+		}
+		cameraOriginInWorldCoords = this->cameraOriginInGroundWorldCoords;
+	}
+
 	vector<Point2d> undistortedImagePoints;
 	vector<Point3d> pointsInCameraCoordsDouble;
 	vector<Point3f> pointsInCameraCoordsFloat;
-	
-	Mat cameraOriginInWorldCoords;
-	Mat planeOriginInCameraCoords;
-	Mat planeNormalVectorInCameraCoords;
-	
-	if (boardLocation == Enums::boardLocation::BACK_PLANE) {
-		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
-			backExtrinsics->getTranslationMatrix()));
-	} else if (boardLocation == Enums::boardLocation::GROUND_PLANE) {
-		//3x1 Matrices representing Point3f. Convert camera origin to world coords
-		cameraOriginInWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
-			groundExtrinsics->getTranslationMatrix()));
-	}
 
 	undistortPoints(imagePoints, undistortedImagePoints, intrinsics->getIntrinsicMatrix(), intrinsics->getDistortionCoefficients());
 	this->convertPointsToHomogeneous(undistortedImagePoints, pointsInCameraCoordsDouble);
@@ -268,6 +262,18 @@ vector<Point3f> ScanModel::findRayPlaneIntersections(int boardLocation, vector<P
 	}
 
 	return pointsInCameraCoordsFloat;
+}
+
+void ScanModel::findCameraOriginInBackWorldCoords() {
+	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
+	cameraOriginInBackWorldCoords = Mat(backExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+		backExtrinsics->getTranslationMatrix()));
+}
+
+void ScanModel::findCameraOriginInGroundWorldCoords() {
+	Mat cameraOriginInCameraCoords(Point3d(0, 0, 0));
+	cameraOriginInGroundWorldCoords = Mat(groundExtrinsics->getRotationMatrix().inv() * (cameraOriginInCameraCoords -
+		groundExtrinsics->getTranslationMatrix()));
 }
 
 void ScanModel::convertPointsToHomogeneous(vector<Point2d> & imagePoints, vector<Point3d> & homogeneousCoords) {
@@ -341,16 +347,17 @@ vector<Point3d> ScanModel::findObjectLaserIntersections(Plane laserPlane, vector
 			(Mat(laserPlane.getNormalVector()).t() * Mat(redPointsOnObjectInCameraCoords.at(i)))).at<double>(0, 0);
 		redPointsOnObjectInCameraCoords.at(i) = lambda * redPointsOnObjectInCameraCoords.at(i);
 		Mat(redPointsOnObjectInCameraCoords.at(i)).convertTo(redPointOnObjectInCameraCoords, CV_64F);
-		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords -
-			backExtrinsics->getRotationMatrix().inv() * backExtrinsics->getTranslationMatrix());
-		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * redPointOnObjectInCameraCoords - 
-			groundExtrinsics->getRotationMatrix().inv() * groundExtrinsics->getTranslationMatrix());
-		if (std::abs(redPointBackWorldCoordMatrix.at<double>(2,0)) < 0.10) {
-			//Point is on the back plane, so don't include it
+		redPointBackWorldCoordMatrix = Mat(backExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords -
+			backExtrinsics->getTranslationMatrix()));
+		redPointGroundWorldCoordMatrix = Mat(groundExtrinsics->getRotationMatrix().inv() * (redPointOnObjectInCameraCoords - 
+			groundExtrinsics->getTranslationMatrix()));
+		if (redPointBackWorldCoordMatrix.at<double>(2,0) > -0.10) {
+			//Point is on or behind the back plane, so don't include it
 			continue;
 		}
-		if (std::abs(redPointGroundWorldCoordMatrix.at<double>(2,0)) < 0.10) {
-			//Point is on the ground plane, so don't include it
+
+		if (redPointGroundWorldCoordMatrix.at<double>(2,0) > -0.10) {
+			//Point is on or behind the ground plane, so don't include it
 			continue;
 		}
 		/*
@@ -375,14 +382,8 @@ double ScanModel::vectorLength(Mat vector) {
 	return std::sqrt(sumOfSquares);
 }
 
-/*
-Method adapted from opencv code, obtained from:
-https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
-*/
-bool ScanModel::createPointCloud()
-{
+bool ScanModel::openFileAndAddHeaders() {
 	string fileName = saveDirectory + "\\" + saveFileName + ".wrl";
-	ofstream outputStream;
 	outputStream.precision(17);
 	try {
 		outputStream.open(fileName);
@@ -396,14 +397,37 @@ bool ScanModel::createPointCloud()
 		outputStream << "geometry PointSet" << std::endl << "{" << std::endl;
 		outputStream << "coord Coordinate" << std::endl << "{" << std::endl;
 		outputStream << "point[" << std::endl;
+		return true;
+	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
+		return false;
+	}
+}
 
-		for(int i = 0; i < objectPoints.size(); i++) {
-			for (int j = 0; j < objectPoints.at(i).size(); j++) {
-				double test = objectPoints.at(i).at(j).y;
-				outputStream << objectPoints.at(i).at(j).x << " " << objectPoints.at(i).at(j).y << " " << objectPoints.at(i).at(j).z << std::endl;
-			}
+/*
+Method adapted from opencv code, obtained from:
+https://github.com/Itseez/opencv/blob/master/modules/contrib/src/spinimages.cpp
+*/
+bool ScanModel::writeNextObjectPointSet(int objectPointIndex)
+{
+	try {
+		for (int j = 0; j < objectPoints.at(objectPointIndex).size(); j++) {
+			outputStream << objectPoints.at(objectPointIndex).at(j).x << " " 
+				<< objectPoints.at(objectPointIndex).at(j).y << " " 
+				<< objectPoints.at(objectPointIndex).at(j).z << std::endl;
 		}
+		numTimesWritten++;
+		return true;
+	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
+		return false;
+	}
+}
 
+bool ScanModel::addFootersAndCloseFile() {
+	try {
 		outputStream << "]" << std::endl; //point[
 		outputStream << "}" << std::endl; //Coordinate{
 
@@ -411,8 +435,11 @@ bool ScanModel::createPointCloud()
 		outputStream << "}" << std::endl; //Shape{
 
 		outputStream.close();
+		vector<vector<Point3d>>().swap(objectPoints);
 		return true;
 	} catch (std::exception& e) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
 		return false;
 	}
 }
@@ -461,6 +488,8 @@ void ScanModel::sortStoredYCoords() {
 	bottomOfBackPlane = regionYCoordinates[1];
 	topOfGroundPlane = regionYCoordinates[2];
 	bottomOfGroundPlane = regionYCoordinates[3];
+
+	vector<int>().swap(regionYCoordinates);
 }
 
 void ScanModel::sortStoredXCoords() {
@@ -469,6 +498,8 @@ void ScanModel::sortStoredXCoords() {
 	//After sorted, we know which click is on which side of the object
 	leftSideOfObject = regionXCoordinates[0];
 	rightSideOfObject = regionXCoordinates[1];
+
+	vector<int>().swap(regionXCoordinates);
 }
 
 vector<Point> ScanModel::getRegionYPixels() {
@@ -542,7 +573,12 @@ int ScanModel::getRequiredNumStoredXCoords() {
 }
 
 bool ScanModel::isDoneFindingFindingDifferenceImages() {
-	return (bottomOfGroundPlane - topOfBackPlane) == processedRows;
+	if ((bottomOfGroundPlane - topOfBackPlane) == processedRows) {
+		processedRows = 0;
+		return true;
+	}
+	
+	return false;
 }
 
 bool ScanModel::isDoneFindingRedPoints() {
@@ -560,11 +596,28 @@ bool ScanModel::isDoneFindingRedPoints() {
 
 bool ScanModel::isDoneProcessingFrames()
 {
-	return numImages == processedImages;
+	if (numImages == processedImages) {
+		vector<vector<Point2d>>().swap(redPointsInBackPlaneLine);
+		vector<vector<Point2d>>().swap(redPointsInGroundPlaneLine);
+		vector<vector<Point2d>>().swap(redPointsOnObject);
+		this->deleteIntrinsicAndExtrinsicMatrices();
+		processedImages = 0;
+		numImages = 0;
+		return true;
+	}
+	return false;
 }
 
-ScanModel::~ScanModel()
-{
+bool ScanModel::isDoneWritingToFile() {
+	if (objectPoints.size() == numTimesWritten) {
+		vector<vector<Point3d>>().swap(objectPoints);
+		numTimesWritten = 0;
+		return true;
+	}
+	return false;
+}
+
+void ScanModel::deleteIntrinsicAndExtrinsicMatrices() {
 	if(intrinsics)
 	{
 		if (!intrinsics->getIntrinsicMatrix().empty() &&
@@ -589,4 +642,10 @@ ScanModel::~ScanModel()
 			delete groundExtrinsics;
 		}
 	}
+}
+
+ScanModel::~ScanModel()
+{
+	//Code to delete intrinsic and extrinsic data is now done after the process is done
+	//but before writing to the file. The destructor is left in place here.
 }

@@ -2,7 +2,7 @@
 #include "extrinsicController.h"
 #include "calibrationModel.h"
 #include "takePicView.h"
-
+#include <qmessagebox.h>
 
 ExtrinsicController::ExtrinsicController() {
 	
@@ -25,9 +25,18 @@ void ExtrinsicController::findCorners(Mat image) {
 		takePicView->showMessage(Enums::calibrationEnum::CORNERS_SUCCESS);
 	} else if (successes == calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC)) {
 		calibrationModel->calibrateExtrinsics(Enums::boardLocation::GROUND_PLANE);
-		calibrationModel->saveExtrinsicFiles();
-		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
-		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
+		bool saveSuccess = calibrationModel->saveExtrinsicFiles();
+		if (!saveSuccess) {
+			QMessageBox message;
+			message.setIcon(QMessageBox::Information);
+			message.setWindowTitle("Error Saving File");
+			message.setText("There was an error saving the file. Try choosing a \n"
+				"different directory or running the program as an Administrator.");
+			message.exec();
+		} else {
+			takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::EXTRINSIC));
+			takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
+		}
 	}
 }
 

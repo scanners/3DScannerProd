@@ -24,10 +24,11 @@ private slots:
 	void createLoadFileDialog();
 	void createSaveFileDialog();
 private:
+	QLabel * globalText;
 	TakePicView * takePicView;
 	CalibrationController * calibrationController;
-	//QLabel * message;
-	QTextEdit * message;
+	QLabel * message;
+	//QTextEdit * message;
 	int calibrationType;
 	QDir * loadDir;
 	QDir * saveDir;
@@ -47,11 +48,13 @@ private:
 	QPushButton * saveBrowseButton;
 	QPushButton * loadBrowseButton;
 	void constructLayout();
+	void setDefaultStyles();
 public:
 	explicit InputView(int calibType, QWidget *parent = 0);
 	~InputView(); // dtor!
 	void showMessage(QString msg);
 	void setCalibrationController(CalibrationController& calibControl);
+	void connectGlobalMessage(QLabel * text);
 };
 
 #endif

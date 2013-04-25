@@ -3,7 +3,7 @@
 #include "intrinsicController.h"
 #include "calibrationModel.h"
 #include "takePicView.h"
-
+#include <qmessagebox.h>
 
 IntrinsicController::IntrinsicController() {
 	
@@ -26,8 +26,18 @@ void IntrinsicController::findCorners(Mat image) {
 	} else if (successes == calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC)) {
 		calibrationModel->setImageForCornerDisplay(image);
 		calibrationModel->calibrateIntrinsics();
-		takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));
-		takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
+		bool saveSuccess = calibrationModel->saveIntrinsicFiles();
+		if (!saveSuccess) {
+			QMessageBox message;
+			message.setIcon(QMessageBox::Information);
+			message.setWindowTitle("Error Saving File");
+			message.setText("There was an error saving the file. Try choosing a \n"
+				"different directory or running the program as an Administrator.");
+			message.exec();
+		} else {
+			takePicView->incrementSuccesses(successes, calibrationModel->getRequiredNumSuccesses(Enums::controllerEnum::INTRINSIC));
+			takePicView->showMessage(Enums::calibrationEnum::CALIBRATION_SUCCESS);
+		}
 	}
 }
 

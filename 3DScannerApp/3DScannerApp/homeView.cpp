@@ -11,13 +11,14 @@
 #include <qlabel.h>
 #include <qboxlayout.h>
 
-
-HomeView::HomeView(QWidget *parent) : QDialog (parent)
+HomeView::HomeView(QWidget *parent) : QDialog (parent) 
 {
+	this->setAutoFillBackground(true);
+	this->setStyleSheet("background-color: #333;");
 	InputView * intrinsicInputView = new InputView(Enums::controllerEnum::INTRINSIC);
 	InputView * extrinsicInputView = new InputView(Enums::controllerEnum::EXTRINSIC);
 	ScanInputView * scanInputView = new ScanInputView();
-	ResultsView * resultsView = new ResultsView();
+	//ResultsView * resultsView = new ResultsView();
 
 	intrinsicController = new IntrinsicController();
 	extrinsicController = new ExtrinsicController();
@@ -41,14 +42,25 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 	tabWidget->addTab(intrinsicInputView, "Intrinsic Calibration");
 	tabWidget->addTab(extrinsicInputView, "Extrinsic Calibration");
 	tabWidget->addTab(scanInputView, "Scan Object");
-	tabWidget->addTab(resultsView, "Results/Export");
+	//tabWidget->addTab(resultsView, "Results/Export"); --> no time! taking it off the tabs!
+
+	messageTitle = new QLabel("Messages: ");
+	messageTitle->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+
+	messageText = new QLabel("");
+	messageText->setStyleSheet( "QLabel { font-weight: bold; color: red; }");
 
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);
+	mainLayout->addWidget(messageTitle);
+	mainLayout->addWidget(messageText);
 	setLayout(mainLayout);
 
 	setWindowTitle("3D Scanner");
-	this->setFixedSize(515, 515);
+	this->setFixedSize(515, 300);
 
 	this->setStyleSheet("QTabWidget::pane { background-color: white; border: 1px solid black;}"
 		);
@@ -64,7 +76,10 @@ HomeView::HomeView(QWidget *parent) : QDialog (parent)
 		"QTabBar::tab:hover, QTabBar::tab:selected { background-color: white; border-bottom: 1px solid red }"
 		);
 	
-	
+	intrinsicInputView->connectGlobalMessage(messageText);
+	extrinsicInputView->connectGlobalMessage(messageText);
+	scanInputView->connectGlobalMessage(messageText);
+
 }
 
 HomeView::~HomeView()
@@ -82,8 +97,11 @@ HomeView::~HomeView()
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
 {
 	QLabel *title = new QLabel("<h1>Welcome to 3D Scanner</h1>");
+	title->setStyleSheet("color: red;");
 	QLabel *title2 = new QLabel("To get started, please click on the tabs above.");
-	QLabel *title3 = new QLabel("Note: We could also place instructions, or a link to a pdf <b>here</b>");
+	QLabel *title3 = new QLabel("Begin with <b>Intrinsic Calibration</b>, following the prompts.<br />"
+		"Once complete, click on <b>Extrinsic Calibration</b> to begin extrinsic camera calibration.<br />"
+		"Finally, scan the object in the <b>Scan</b> tab, which will be output as a VRML file.");
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(title);
 	mainLayout->addWidget(title2);

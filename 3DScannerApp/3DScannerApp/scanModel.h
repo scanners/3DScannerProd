@@ -9,6 +9,9 @@ using std::vector;
 #include <string>
 #include <stdio.h>
 #include "qthread.h"
+#include "Serial.h"
+#include <fstream>
+using std::ofstream;
 
 using std::string;
 using namespace::cv;
@@ -33,11 +36,13 @@ private:
 	vector<vector<Point3d>> objectPoints;
 	string saveDirectory;
 	string saveFileName;
+	ofstream outputStream;
 	string loadDirectory;
 	int imageWidth;
 	int numImages;
 	int processedImages;
 	int processedRows;
+	int numTimesWritten;
 	int topOfBackPlane;
 	int bottomOfBackPlane;
 	int topOfGroundPlane;
@@ -45,6 +50,10 @@ private:
 	int leftSideOfObject;
 	int rightSideOfObject;
 	bool scanComplete;
+	Mat cameraOriginInBackWorldCoords;
+	Mat cameraOriginInGroundWorldCoords;
+	void findCameraOriginInBackWorldCoords();
+	void findCameraOriginInGroundWorldCoords();
 	vector<vector<Point2d>> redPointsInBackPlaneLine;
 	vector<vector<Point2d>> redPointsInGroundPlaneLine;
 	vector<vector<Point2d>> redPointsOnObject;
@@ -60,14 +69,13 @@ private:
 	void findDifferenceImageAtPixel(int x, int y, double midpointRedComponent);
 	vector<Point2d> findRedPointsInRegion(int region, int imageNum);
 	Point2d findZeroCrossingInRow(int y, int imageNum);
+	void deleteIntrinsicAndExtrinsicMatrices();
 public:
 	ScanModel();
 	~ScanModel();
 	void startHardwareScan();
 	void waitForHardwareScanComplete();
 	bool isHardwareDoneScanning();
-	void processRedComponent();
-	void resetScan();
 	void setSaveDirectory(string saveDir);
 	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);
@@ -91,10 +99,13 @@ public:
 	bool isDoneFindingFindingDifferenceImages();
 	bool isDoneFindingRedPoints();
 	bool isDoneProcessingFrames();
+	bool isDoneWritingToFile();
 	void processNextFrame(int imageNum);
 	int getNumImages(); // returns how many images there are to process
 	int getProcessedImages(); // returns the number of processed images
-	bool createPointCloud();
+	bool openFileAndAddHeaders();
+	bool writeNextObjectPointSet(int objectPointIndex);
+	bool addFootersAndCloseFile();
 };
 
 #endif //SCANMODEL_H

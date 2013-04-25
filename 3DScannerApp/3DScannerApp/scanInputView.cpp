@@ -24,32 +24,41 @@ void ScanInputView::setScanController(ScanController& scanControl) {
 	scanController = &scanControl;
 }
 
+void ScanInputView::connectGlobalMessage(QLabel * text)
+{
+	globalMessage = text;
+}
+void ScanInputView::showMessage(QString msg)
+{
+	globalMessage->setText(msg);
+	globalMessage->setVisible(true);
+}
+
 void ScanInputView::startScan()
 {
+	setDefaultStyles();
 	scanController->setSaveDirectory(saveDirText->text().toStdString());
 	scanController->setLoadDirectory(loadDirText->text().toStdString());
 	bool loadXMLSuccess = scanController->loadXML();
 	if (loadDirText->text().toStdString() == "")
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"No load directory was given!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Please select the directory containing the calibration XML files.");
-		error.setInformativeText("Check the directory and try again.");
-		error.setModal(false);
-		error.exec();
+		this->loadDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		this->showMessage("No load directory was given!");
 	}
 	else if (saveDirText->text().toStdString() == "")
 	{
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"No output directory was given!",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("Please select an output directory for the scan.");
-		error.setInformativeText("Check the directory and try again.");
-		error.setModal(false);
-		error.exec();
+		this->saveDirText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		this->showMessage("Please specify an output directory for the scan.");
+	}
+	else if (saveFileNameText->text().toStdString() == "")
+	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		this->showMessage("No output filename was given.");
+	}
+	else if (!checkFileName(saveFileNameText->text().toStdString()))
+	{
+		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
+		this->showMessage("Only alphanumeric characters (a-Z, 0-9) are allowed in the filename.");
 	}
 	else if (saveFileNameText->text().toStdString() == "")
 	{
@@ -74,19 +83,13 @@ void ScanInputView::startScan()
 		error.exec();
 	}
 	else if (loadXMLSuccess) {
+		this->showMessage("");
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
 		scanController->resetRegions();
 		scanController->createOverlayView();
 	} else {
-		//Dialog box for errors
-		QMessageBox error(QMessageBox::Icon::Critical,
-				"Error loading XML file",
-				"", 
-				QMessageBox::StandardButton::Ok);
-		error.setText("The XML file could not be successfully loaded.");
-		error.setInformativeText("Please check the file and try again.");
-		error.setModal(false);
-		error.exec();
+		this->showMessage("Unable to load XML! Please check the directory and/or\n"
+			"try running the program running as an Administrator.");
 	}
 }
 
@@ -97,7 +100,7 @@ bool ScanInputView::checkFileName(string filename)
 {
 	for (int i = 0; i < filename.length(); i++)
 	{
-		if (!isalpha(filename[i]))
+		if (!isalnum(filename[i]))
 		{
 			return false;
 		}
@@ -125,8 +128,10 @@ void ScanInputView::constructLayout()
 	loadBrowseButton = new QPushButton("Browse...");
 	saveBrowseButton = new QPushButton("Browse...");
 	saveDirText = new QLineEdit();
+	saveDirText->setReadOnly(true);
 	saveDirText->setPlaceholderText("Directory to save scan");
 	loadDirText = new QLineEdit();
+	loadDirText->setReadOnly(true);
 	loadDirText->setPlaceholderText("Directory to load calibration data");
 	saveFileNameLabel = new QLabel("Output File Name:");
 	saveFileNameText = new QLineEdit();
@@ -144,7 +149,21 @@ void ScanInputView::constructLayout()
 	mainLayout->addWidget(saveFileNameText, 2, 1);
 	mainLayout->addWidget(startButton, 3, 1);
 	mainLayout->addWidget(exitButton, 3, 2);
+
+	this->setStyleSheet(
+			"QLabel {"
+			"font-weight: bold; }"
+			);
+	
 	setLayout(mainLayout);
+	setDefaultStyles();
+}
+
+void ScanInputView::setDefaultStyles()
+{
+	this->saveDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+	this->loadDirText->setStyleSheet("border: 1px solid gray; padding: 5px;");
+	this->saveFileNameText->setStyleSheet("border: 1px solid gray; padding: 5px;");
 }
 
 ScanInputView::~ScanInputView()

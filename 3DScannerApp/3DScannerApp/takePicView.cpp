@@ -84,6 +84,8 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	capture.open(0);
 	if (capture.isOpened())
 	{
+		//Disable autofocus by setting focus to current focus only
+		capture.set(CV_CAP_PROP_FOCUS, capture.get(CV_CAP_PROP_FOCUS));
 		// if the Video Capture Stream is open, set button and create timer
 		takePicButton->setEnabled(true);
 		setButtonStyle(takePicButton, true);
@@ -113,13 +115,10 @@ void TakePicView::displayVideoFrame()
 
 
 // releases the video input and stops the timer.
-// we might need to do some extra clean up here.
-// doesn't work when the window is closed with the "X" button.
 void TakePicView::stopVideo()
 {
 	if (capture.isOpened())
 	{
-		capture.read(image);
 		capture.release();
 		timer->stop();
 	}
@@ -129,7 +128,6 @@ void TakePicView::stopVideo()
 void TakePicView::closeEvent(QCloseEvent * event)
 {
 	this->stopVideo();
-	//***probably should free up memory here
 }
 
 void TakePicView::takePicture()
@@ -183,16 +181,18 @@ void TakePicView::setButtonStyle(QPushButton * button, bool isEnabled)
 			"min-width: 5em;"
 			"padding: 4px;}"
 			"QPushButton:hover {"
-			"background-color: #000;}"
+			"background-color: #FFF;"
+			"border: 1px solid black;"
+			"color: #000;}"
 			);
 	}
 	else
 	{
 		button->setStyleSheet("QPushButton {"
-			"background-color: #666;"
-			"color : white;"
+			"background-color: #CCC;"
+			"color : #AAA;"
 			"border-style: outset;"
-			"border-width: 2px;"
+			"border-width: 1px;"
 			"border-radius: 10px;"
 			"border-color: white;"
 			"font: bold 14px;"

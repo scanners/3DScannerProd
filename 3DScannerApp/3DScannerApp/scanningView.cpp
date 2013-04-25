@@ -17,7 +17,7 @@ ScanningView::ScanningView(QWidget *parent) : QDialog(parent)
 	connect(doneButton, SIGNAL(clicked()), this, SLOT(cancelScan()));
 	capture.open(0);
 	if (capture.isOpened())
-	{
+	{	
 		timer = new QTimer(this);
 		connect(timer, SIGNAL(timeout()), this, SLOT(displayVideoFrame()));
 		connect(timer, SIGNAL(timeout()), this, SLOT(scanImage()));
@@ -36,7 +36,6 @@ void ScanningView::setScanController(ScanController& scanControl)
 
 void ScanningView::cancelScan() {
 	this->releaseVideo();
-	scanController->resetScan();
 }
 
 void ScanningView::stopVideo()
@@ -66,7 +65,7 @@ void ScanningView::showMessage(QString message)
 
 void ScanningView::setProgressBarRange(int range) {
 	//Subtract 1 from range because it starts at 0
-	this->progressBar->setRange(0, range - 1);
+	this->progressBar->setRange(0, range);
 }
 
 void ScanningView::updateProgressBar(int done)
@@ -153,16 +152,18 @@ void ScanningView::setButtonStyle(QPushButton * button, bool isEnabled)
 			"min-width: 5em;"
 			"padding: 4px;}"
 			"QPushButton:hover {"
-			"background-color: #000;}"
+			"background-color: #FFF;"
+			"border: 1px solid black;"
+			"color: #000;}"
 			);
 	}
 	else
 	{
 		button->setStyleSheet("QPushButton {"
-			"background-color: #666;"
-			"color : white;"
+			"background-color: #CCC;"
+			"color : #AAA;"
 			"border-style: outset;"
-			"border-width: 2px;"
+			"border-width: 1px;"
 			"border-radius: 10px;"
 			"border-color: white;"
 			"font: bold 14px;"

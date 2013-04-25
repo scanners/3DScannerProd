@@ -22,7 +22,6 @@ public:
 	ScanController();
 	~ScanController();
 	void processScan();
-	void resetScan();
 	void setSaveDirectory(string saveDir);
 	void setLoadDirectory(string loadDir);
 	void createScanningView();
@@ -32,16 +31,14 @@ public:
 	bool isHardwareDoneScanning();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
-	bool savePicture(Image * image);
 	bool loadXML();
 	void exit();
 	void setScanModel(ScanModel& scanMod);
 	void setScanInputView(ScanInputView& scanInputView);
 	void resetRegions();
+	void setSaveFileName(string name);
 	int getRequiredNumStoredYCoords();
 	int getRequiredNumStoredXCoords();
-	void setSaveFileName(string name);
-
 };
 
 #endif //SCANCONTROLLER_H

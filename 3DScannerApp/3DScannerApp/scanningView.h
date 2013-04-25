@@ -1,6 +1,11 @@
 #ifndef SCANNINGVIEW_H
 #define SCANNINGVIEW_H
 
+#define EXPOSURE_VALUE -2
+#define GAIN_VALUE 95
+#define BRIGHTNESS_VALUE 128
+#define CONTRAST_VALUE 32
+
 //#include "scanController.h"
 #include <qdialog.h>
 #include "stdafx.h"
@@ -25,6 +30,7 @@ private slots:
 	void cancelScan();
 private:
 	ScanController * scanController;
+	QLabel * globalText;
 	QWidget * scanFrame;
 	QLabel * titleLabel;
 	QPushButton * cancelButton;

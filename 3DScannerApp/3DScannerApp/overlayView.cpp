@@ -51,14 +51,14 @@ void OverlayView::stopVideo()
 	if (capture.isOpened())
 	{
 		capture.release();
+		timer->stop();
 	}
 }
 
 void OverlayView::closeEvent(QCloseEvent * event)
 {
 	this->resetClicks();
-	this->stopVideo();
-	
+	this->stopVideo();	
 }
 
 void OverlayView::constructLayout()
@@ -129,16 +129,18 @@ void OverlayView::setButtonStyle(QPushButton * button, bool isEnabled)
 			"min-width: 5em;"
 			"padding: 4px;}"
 			"QPushButton:hover {"
-			"background-color: #000;}"
+			"background-color: #FFF;"
+			"border: 1px solid black;"
+			"color: #000;}"
 			);
 	}
 	else
 	{
 		button->setStyleSheet("QPushButton {"
-			"background-color: #666;"
-			"color : white;"
+			"background-color: #CCC;"
+			"color : #AAA;"
 			"border-style: outset;"
-			"border-width: 2px;"
+			"border-width: 1px;"
 			"border-radius: 10px;"
 			"border-color: white;"
 			"font: bold 14px;"
@@ -244,10 +246,10 @@ void OverlayView::startScan() {
 	QMessageBox message;
 	message.setIcon(QMessageBox::Information);
 	message.setWindowTitle("Turn Off Lights");
-	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.");
+	message.setText("Please turn off the lights.  Then hit 'OK' to begin the scan.\n"
+		"Make sure your camera settings are properly adjusted for the scan.");
 	message.exec();
 	this->reject();
-	scanController->resetScan();
 	scanController->createScanningView();
 }
 
