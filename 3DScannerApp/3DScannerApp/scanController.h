@@ -28,7 +28,7 @@ public:
 	void createOverlayView();
 	void setYRegion(int yCoordinate);
 	void setXRegion(int xCoordinate);
-	bool isDoneScanning();
+	bool isHardwareDoneScanning();
 	void storeRedChannel(Mat image);
 	void setImageWidth(Mat image);
 	bool loadXML();

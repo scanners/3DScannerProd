@@ -8,6 +8,7 @@
 using std::vector;
 #include <string>
 #include <stdio.h>
+#include "qthread.h"
 #include "Serial.h"
 #include <fstream>
 using std::ofstream;
@@ -20,9 +21,12 @@ class ObjectPoint;
 class Image;
 class Intrinsic;
 class Extrinsic;
+class SerialCommunication;
 
 class ScanModel {
 private:
+	SerialCommunication * serial;
+	QThread * hardwareThread;
 	Intrinsic * intrinsics;
 	Extrinsic * backExtrinsics;
 	Extrinsic * groundExtrinsics;
@@ -45,6 +49,7 @@ private:
 	int bottomOfGroundPlane;
 	int leftSideOfObject;
 	int rightSideOfObject;
+	bool scanComplete;
 	Mat cameraOriginInBackWorldCoords;
 	Mat cameraOriginInGroundWorldCoords;
 	void findCameraOriginInBackWorldCoords();
@@ -68,9 +73,9 @@ private:
 public:
 	ScanModel();
 	~ScanModel();
-	int ShowError (LONG lError, LPCTSTR lptszMessage);
-	int scan();
-	bool isDoneScanning(CSerial &serial, LONG &lLastError);
+	void startHardwareScan();
+	void waitForHardwareScanComplete();
+	bool isHardwareDoneScanning();
 	void setSaveDirectory(string saveDir);
 	void setSaveFileName(string fileName);
 	void setLoadDirectory(string loadDir);

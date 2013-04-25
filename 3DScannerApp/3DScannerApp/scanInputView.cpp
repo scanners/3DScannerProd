@@ -60,6 +60,28 @@ void ScanInputView::startScan()
 		this->saveFileNameText->setStyleSheet("border: 2px solid red; padding: 5px;");
 		this->showMessage("Only alphanumeric characters (a-Z, 0-9) are allowed in the filename.");
 	}
+	else if (saveFileNameText->text().toStdString() == "")
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"No output filename was given!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Please type the filename for the post-scan file.");
+		error.setInformativeText("Type a name and try again.");
+		error.setModal(false);
+		error.exec();
+	}
+	else if (!checkFileName(saveFileNameText->text().toStdString()))
+	{
+		QMessageBox error(QMessageBox::Icon::Critical,
+				"Filename had invalid characters!",
+				"", 
+				QMessageBox::StandardButton::Ok);
+		error.setText("Ensure that there are only alphabetic characters in your filename");
+		error.setInformativeText("Type a name and try again.");
+		error.setModal(false);
+		error.exec();
+	}
 	else if (loadXMLSuccess) {
 		this->showMessage("");
 		scanController->setSaveFileName(saveFileNameText->text().toStdString());
