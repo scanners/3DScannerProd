@@ -152,7 +152,7 @@
     <ClCompile Include="overlayLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-	<ClCompile Include="GeneratedFiles\Debug\moc_Titlebar.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_Titlebar.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_Titlebar.cpp">
@@ -168,6 +168,9 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="serialCommunication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -250,8 +253,8 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="serialCommunication.h">
-	  <Filter>Header Files</Filter>
-	</CustomBuild>
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="Titlebar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
