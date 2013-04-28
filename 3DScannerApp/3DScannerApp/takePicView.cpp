@@ -85,7 +85,7 @@ TakePicView::TakePicView(int calibType, int numPictures, QWidget *parent) : QDia
 	if (capture.isOpened())
 	{
 		//Disable autofocus by setting focus to current focus only
-		capture.set(CV_CAP_PROP_FOCUS, capture.get(CV_CAP_PROP_FOCUS));
+		//capture.set(CV_CAP_PROP_FOCUS, capture.get(CV_CAP_PROP_FOCUS));
 		// if the Video Capture Stream is open, set button and create timer
 		takePicButton->setEnabled(true);
 		setButtonStyle(takePicButton, true);

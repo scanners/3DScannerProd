@@ -48,7 +48,7 @@ bool ScanModel::isHardwareDoneScanning(){
 
 	if(scanComplete && serial){
 		hardwareThread->exit(0);
-		delete serial;
+		//delete serial;
 	}
 
 	return scanComplete;
