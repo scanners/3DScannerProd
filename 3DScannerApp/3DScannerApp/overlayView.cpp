@@ -73,7 +73,7 @@ void OverlayView::constructLayout()
 	startButton->setEnabled(false);
 	setButtonStyle(startButton, false);
 	startButton->setMaximumWidth(80);
-	takePicButton = new QPushButton("Being Region Clicking");
+	takePicButton = new QPushButton("Begin Region Clicking");
 	//takePicButton->setMaximumWidth(120);
 	takePicButton->setEnabled(false);
 	setButtonStyle(takePicButton, false);
